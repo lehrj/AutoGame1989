@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>1737cd43-a07b-4a5c-b98d-ee38ea5e6541</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dds;dlg;fbx;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="StepTimer.h" />
+    <ClInclude Include="GolfBag.h" />
+    <ClInclude Include="Environment.h" />
+    <ClInclude Include="Utility.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="GolfPlay.h" />
+    <ClInclude Include="Golf.h" />
+    <ClInclude Include="GolfBall.h" />
+    <ClInclude Include="GolfSwing.h" />
+    <ClInclude Include="sounds.h" />
+    <ClInclude Include="GolfCharacter.h" />
+    <ClInclude Include="SpriteSheet.h" />
+    <ClInclude Include="AnimatedTexture.h" />
+    <ClInclude Include="Auto.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="GolfBag.cpp" />
+    <ClCompile Include="Environment.cpp" />
+    <ClCompile Include="GolfPlay.cpp" />
+    <ClCompile Include="GolfBall.cpp" />
+    <ClCompile Include="Golf.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="GolfSwing.cpp" />
+    <ClCompile Include="GolfCharacter.cpp" />
+    <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="Auto.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="directx.ico">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="PowerbarImpact.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Chacter0SpriteSheet.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="logoJI.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="logoBMW.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="EnvironmentSelectAlien.jpg">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="EnvironmentSelectCalm.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="EnvironmentSelectBreezy.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Chacter1SpriteSheet.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Chacter2SpriteSheet.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Icon.ico">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="CharacterBackground.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="ChacterSpriteSheet.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="PowerbarBackswing.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="PowerbarMeter.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="PowerbarFrame.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.manifest">
+      <Filter>Assets</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="AudioBank.xwb" />
+    <None Include="bitwise24.spritefont" />
+    <None Include="bitwise20.spritefont" />
+    <None Include="bitwise16.spritefont" />
+    <None Include="titleFont.spritefont" />
+    <None Include="myfile.spritefont" />
+  </ItemGroup>
+</Project>
