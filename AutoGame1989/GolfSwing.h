@@ -11,7 +11,6 @@ public:
     GolfSwing();
     ~GolfSwing();
     
-
     Utility::ImpactData CalculateLaunchVector();
 
     void CycleClub(const bool aIsCycleClubUp);

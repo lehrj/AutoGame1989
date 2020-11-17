@@ -2017,7 +2017,7 @@ void Game::DrawShotTimerUI()
 
 void Game::DrawStartScreen()
 {
-    const std::string title = "GolfGame1989";
+    const std::string title = "AutoGame1989";
     const std::string author = "By Lehr Jackson";
     const std::string startText = "Press Enter to Start";
     float fontTitlePosX = m_fontPos.x;
