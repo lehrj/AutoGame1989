@@ -10,6 +10,7 @@ class GolfSwing
 public:
     GolfSwing();
     ~GolfSwing();
+    
 
     Utility::ImpactData CalculateLaunchVector();
 
