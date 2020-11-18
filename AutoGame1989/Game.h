@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "Golf.h"
+#include "Auto.h"
 #include "Keyboard.h"
 #include "AnimatedTexture.h"
 #include "SpriteSheet.h"
@@ -52,43 +52,20 @@ private:
     void CreateDevice();
     void CreateResources();
 
-    void DrawBridge(const DirectX::SimpleMath::Vector3 aPos, const float aRotation);
+
     void DrawDebugLines();
     void DrawCameraFocus();
-    void DrawFlagAndHole();
-    void DrawFlagHoleFixture(const DirectX::SimpleMath::Vector3 aPos, const float aVariation);
-    void DrawHydraShot();
+   
     void DrawIntroScreen();
-    void DrawMenuCharacterSelect();
+    
     void DrawMenuEnvironmentSelect();
     void DrawMenuMain();
-    void DrawPowerBarUI();
-    void DrawProjectile();
-    void DrawProjectileRealTime();
-    void DrawSand();
-    void DrawShotAimArrow();
-    void DrawShotAimCone();
-    void DrawShotTimerUI();
+
     void DrawStartScreen();
-    void DrawSwing();
-    void DrawSwingUI();
-    void DrawTeeBox();
-    void DrawTeeBoxFixture(const DirectX::SimpleMath::Vector3 aPos, const float aVariation);
-    void DrawTree01(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);
-    void DrawTree02(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);
-    void DrawTree03(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);  // V column tree
-    void DrawTree04(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);  // circle tree
-    void DrawTree05(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);
-    void DrawTree06(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);  // tri
-    void DrawTree07(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);  // invert V
-    void DrawTree08(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);
-    void DrawTree09(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);  // invert v
-    void DrawTree10(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);
-    void DrawTree11(const DirectX::SimpleMath::Vector3 aTreePos, const float aVariation);
-    void DrawUI();
-    void DrawWater();
+
+
     void DrawWorld();
-    void DrawWorld12th();
+
 
     void OnDeviceLost();
     void Present();
@@ -99,7 +76,7 @@ private:
     void UpdateInput(DX::StepTimer const& aTimer);
 
     Camera* pCamera;
-    Golf* pGolf;
+    Auto* pAuto;
     GolfPlay* pPlay;
 
     // Device resources.
