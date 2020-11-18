@@ -1,5 +1,4 @@
 #pragma once
-//#include <algorithm>
 #include "StepTimer.h"
 #include "Utility.h"
 

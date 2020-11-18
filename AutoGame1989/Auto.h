@@ -2,7 +2,7 @@
 #include <vector>
 #include "Environment.h"
 #include "Utility.h"
-#include "GolfPlay.h"
+#include "AutoPlay.h"
 
 class Auto
 {
@@ -20,7 +20,6 @@ public:
     std::vector<std::string> GetUIStrings() const { return m_uiStrings; };
     double GetWindDirectionRad() const { return pEnvironment->GetWindDirection(); };
 
-    void InputData();
     void LoadEnvironment(const int aIndex);
     void SetCharacter(const int aCharacterIndex);
     void SetEnvironment(const int aEnvironmentIndex);
@@ -32,7 +31,7 @@ private:
 
     void LoadCharacterTraits();
     Environment*                                pEnvironment;
-    GolfPlay*                                   pPlay;
+    AutoPlay*                                   pPlay;
     double                                      m_xWindow;
     double                                      m_yWindow;
     double                                      m_zWindow;

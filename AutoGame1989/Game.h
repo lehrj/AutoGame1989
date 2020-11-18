@@ -77,7 +77,7 @@ private:
 
     Camera* pCamera;
     Auto* pAuto;
-    GolfPlay* pPlay;
+    AutoPlay* pPlay;
 
     // Device resources.
     HWND                                            m_window;

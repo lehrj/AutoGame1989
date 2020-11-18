@@ -20,7 +20,7 @@ Game::Game() noexcept :
 {
     srand(time(NULL));
     pAuto = new Auto();
-    pPlay = new GolfPlay();
+    pPlay = new AutoPlay();
 
     pCamera = new Camera(m_outputWidth, m_outputHeight);
 
@@ -1143,16 +1143,7 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        pPlay->Swing();
 
-        if (pPlay->UpdateSwing() == true)
-        {
-            AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_IMPACTSFX1);
-
-            pPlay->ResetSwingUpdateReady();
-            m_currentUiState = UiState::UISTATE_SHOT;
-            
-        }
     }
 
     // audio

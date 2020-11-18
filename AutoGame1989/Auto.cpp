@@ -6,7 +6,7 @@
 Auto::Auto()
 {
     pEnvironment = new Environment();
-    pPlay = new GolfPlay();
+    pPlay = new AutoPlay();
     //SetCharacter(0); // ToDo WLJ : add error checking 
 
     BuildEnvironSelectStrings();

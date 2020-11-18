@@ -161,15 +161,10 @@
   <ItemGroup>
     <ClInclude Include="AnimatedTexture.h" />
     <ClInclude Include="Auto.h" />
+    <ClInclude Include="AutoPlay.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Environment.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Golf.h" />
-    <ClInclude Include="GolfBag.h" />
-    <ClInclude Include="GolfBall.h" />
-    <ClInclude Include="GolfCharacter.h" />
-    <ClInclude Include="GolfPlay.h" />
-    <ClInclude Include="GolfSwing.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="sounds.h" />
     <ClInclude Include="SpriteSheet.h" />
@@ -178,15 +173,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Auto.cpp" />
+    <ClCompile Include="AutoPlay.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Environment.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Golf.cpp" />
-    <ClCompile Include="GolfBag.cpp" />
-    <ClCompile Include="GolfBall.cpp" />
-    <ClCompile Include="GolfCharacter.cpp" />
-    <ClCompile Include="GolfPlay.cpp" />
-    <ClCompile Include="GolfSwing.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
