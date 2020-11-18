@@ -71,13 +71,13 @@ private:
     void Present();
     void Render();
     void ResetGamePlay();
-    void ResetPowerMeter() { m_powerMeterBarRect.left = static_cast<long>(m_powerMeterImpactPoint); m_powerMeterBarRect.right = static_cast<long>(m_powerMeterImpactPoint); };
+
     void Update(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
 
     Camera* pCamera;
     Auto* pAuto;
-    AutoPlay* pPlay;
+
 
     // Device resources.
     HWND                                            m_window;
@@ -166,29 +166,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_environSelectAlienTexture;
     DirectX::SimpleMath::Vector2                    m_environSelectAlienPos;
     DirectX::SimpleMath::Vector2                    m_environSelectAlienOrigin;
-
-    // WLJ swing power bar UI
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_powerFrameTexture;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_powerMeterTexture;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_powerImpactTexture;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_powerBackswingTexture;
-    DirectX::SimpleMath::Vector2                    m_powerBarFramePos;
-    DirectX::SimpleMath::Vector2                    m_powerBarMeterPos;
-    DirectX::SimpleMath::Vector2                    m_powerBarImpactPos;
-    DirectX::SimpleMath::Vector2                    m_powerBarBackswingPos;
-    DirectX::SimpleMath::Vector2                    m_powerBarFrameOrigin;
-    DirectX::SimpleMath::Vector2                    m_powerBarMeterOrigin;
-    DirectX::SimpleMath::Vector2                    m_powerBarImpactOrigin;
-    DirectX::SimpleMath::Vector2                    m_powerBarBackswingOrigin;
-
-    RECT                                            m_powerMeterBarRect;
-    RECT                                            m_powerMeterFrameRect;
-    RECT                                            m_powerMeterImpactRect;
-    RECT                                            m_powerMeterBackswingRect;
-
-    float                                           m_powerMeterSize;
-    float                                           m_powerMeterImpactPoint;
-    float                                           m_powerMeterBarScale;
 
     // WLJ Intro screen logos
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_bmwLogoTexture;

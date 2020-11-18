@@ -20,7 +20,7 @@ Game::Game() noexcept :
 {
     srand(time(NULL));
     pAuto = new Auto();
-    pPlay = new AutoPlay();
+    //pPlay = new AutoPlay();
 
     pCamera = new Camera(m_outputWidth, m_outputHeight);
 
@@ -47,7 +47,7 @@ Game::~Game()
     m_audioEffectStream.reset();
 
     delete pAuto;
-    delete pPlay;
+    //delete pPlay;
     delete pCamera;
 }
 
@@ -182,41 +182,6 @@ void Game::CreateDevice()
 
     // Start Texture
     ComPtr<ID3D11Resource> resource;
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"PowerbarFrame.png", nullptr, m_powerFrameTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"PowerbarMeter.png", nullptr, m_powerMeterTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"PowerbarImpact.png", nullptr, m_powerImpactTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"PowerbarBackswing.png", nullptr, m_powerBackswingTexture.ReleaseAndGetAddressOf()));
-
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"PowerbarFrame.png", resource.GetAddressOf(), m_powerFrameTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"PowerbarMeter.png", resource.GetAddressOf(), m_powerMeterTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"PowerbarImpact.png", resource.GetAddressOf(), m_powerImpactTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"PowerbarBackswing.png", resource.GetAddressOf(), m_powerBackswingTexture.ReleaseAndGetAddressOf()));
-    ComPtr<ID3D11Texture2D> PowerbarFrame;
-    ComPtr<ID3D11Texture2D> PowerbarMeter;
-    ComPtr<ID3D11Texture2D> PowerbarImpact;
-    ComPtr<ID3D11Texture2D> PowerbarBackswing;
-    DX::ThrowIfFailed(resource.As(&PowerbarFrame));
-    DX::ThrowIfFailed(resource.As(&PowerbarMeter));
-    DX::ThrowIfFailed(resource.As(&PowerbarImpact));
-    DX::ThrowIfFailed(resource.As(&PowerbarBackswing));
-
-    CD3D11_TEXTURE2D_DESC PowerbarFrameDesc;
-    PowerbarFrame->GetDesc(&PowerbarFrameDesc);
-    CD3D11_TEXTURE2D_DESC PowerbarMeterDesc;
-    PowerbarMeter->GetDesc(&PowerbarMeterDesc);
-    CD3D11_TEXTURE2D_DESC PowerbarImpactDesc;
-    PowerbarImpact->GetDesc(&PowerbarImpactDesc);
-    CD3D11_TEXTURE2D_DESC PowerbarBackswingDesc;
-    PowerbarBackswing->GetDesc(&PowerbarBackswingDesc);
-
-    m_powerBarFrameOrigin.x = float(PowerbarFrameDesc.Width / 2);
-    m_powerBarFrameOrigin.y = float(PowerbarFrameDesc.Height / 2);
-    m_powerBarMeterOrigin.x = float(PowerbarMeterDesc.Width / 2);
-    m_powerBarMeterOrigin.y = float(PowerbarMeterDesc.Height / 2);
-    m_powerBarImpactOrigin.x = float(PowerbarImpactDesc.Width / 2);
-    m_powerBarImpactOrigin.y = float(PowerbarImpactDesc.Height / 2);
-    m_powerBarBackswingOrigin.x = float(PowerbarBackswingDesc.Width / 2);
-    m_powerBarBackswingOrigin.y = float(PowerbarBackswingDesc.Height / 2);
 
     // Character Select Textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"ChacterSpriteSheet.png", nullptr, m_characterTexture.ReleaseAndGetAddressOf()));
@@ -413,33 +378,7 @@ void Game::CreateResources()
     m_bitwiseFontPos.x = backBufferWidth / 2.f;
     m_bitwiseFontPos.y = backBufferHeight / 2.f;
 
-    // Start swing power bar
-    m_powerMeterFrameRect.left = static_cast<long>((backBufferWidth / 2.f) - m_powerBarFrameOrigin.x);
-    m_powerMeterFrameRect.right = static_cast<long>((backBufferWidth / 2.f) + m_powerBarFrameOrigin.x);
-    m_powerMeterFrameRect.top = static_cast<long>((backBufferHeight / 1.08f) - m_powerBarFrameOrigin.y);
-    m_powerMeterFrameRect.bottom = static_cast<long>((backBufferHeight / 1.08f) + m_powerBarFrameOrigin.y);
 
-    m_powerMeterSize = static_cast<float>(m_powerMeterFrameRect.right - m_powerMeterFrameRect.left);
-
-    float powerMeterScale = pPlay->GetMeterLength();
-    float impactPointScale = pPlay->GetMeterImpactPoint();
-    impactPointScale = impactPointScale * (m_powerMeterSize / powerMeterScale);
-    m_powerMeterImpactPoint = m_powerMeterFrameRect.right - impactPointScale;
-
-    m_powerMeterImpactRect.top = m_powerMeterFrameRect.top;
-    m_powerMeterImpactRect.bottom = m_powerMeterFrameRect.bottom;
-    m_powerMeterImpactRect.right = m_powerMeterFrameRect.right - static_cast<long>(impactPointScale) + 20;
-    m_powerMeterImpactRect.left = m_powerMeterFrameRect.right - static_cast<long>(impactPointScale) - 20;
-
-    m_powerMeterBarRect = m_powerMeterFrameRect;
-    m_powerMeterBarRect.left = m_powerMeterFrameRect.right - static_cast<long>(impactPointScale);
-    m_powerMeterBarRect.right = m_powerMeterFrameRect.right - static_cast<long>(impactPointScale);
-
-    m_powerMeterBackswingRect = m_powerMeterFrameRect;
-    m_powerMeterBackswingRect.left = m_powerMeterBarRect.left;
-    m_powerMeterBackswingRect.right = m_powerMeterBarRect.right;
-
-    m_powerMeterBarScale = 1.0f - (pPlay->GetMeterImpactPoint() / pPlay->GetMeterLength());
 
     // Character textures  
     m_characterPos.x = backBufferWidth / 2.f;
@@ -915,12 +854,6 @@ void Game::OnDeviceLost()
     m_spriteBatch.reset();
     m_kbStateTracker.Reset();
 
-    //Powerbar
-    m_powerFrameTexture.Reset();
-    m_powerMeterTexture.Reset();
-    m_powerImpactTexture.Reset();
-    m_powerBackswingTexture.Reset();
-
     // Charcter Select
     m_character.reset();
     m_characterTexture.Reset();
@@ -1095,9 +1028,6 @@ void Game::Render()
 void Game::ResetGamePlay()
 {
     //pAuto->ZeroUIandRenderData();
-    pPlay->ResetPlayData();
-    //pPlay->SetAim(pGolf->GetShotStartPos(), pGolf->GetHolePosition());
-    ResetPowerMeter();
     m_projectileTimer = 0;
     m_swingPathStep = 0;
     m_projectilePathStep = 0;

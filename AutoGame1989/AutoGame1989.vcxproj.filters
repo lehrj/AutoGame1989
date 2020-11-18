@@ -17,7 +17,6 @@
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="AnimatedTexture.h" />
     <ClInclude Include="Auto.h" />
-    <ClInclude Include="AutoPlay.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -27,7 +26,6 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="Auto.cpp" />
-    <ClCompile Include="AutoPlay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

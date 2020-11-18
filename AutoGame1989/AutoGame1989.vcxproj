@@ -161,7 +161,6 @@
   <ItemGroup>
     <ClInclude Include="AnimatedTexture.h" />
     <ClInclude Include="Auto.h" />
-    <ClInclude Include="AutoPlay.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Environment.h" />
     <ClInclude Include="Game.h" />
@@ -173,7 +172,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Auto.cpp" />
-    <ClCompile Include="AutoPlay.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Environment.cpp" />
     <ClCompile Include="Game.cpp" />

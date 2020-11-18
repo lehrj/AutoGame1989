@@ -2,7 +2,6 @@
 #include <vector>
 #include "Environment.h"
 #include "Utility.h"
-#include "AutoPlay.h"
 
 class Auto
 {
@@ -31,7 +30,6 @@ private:
 
     void LoadCharacterTraits();
     Environment*                                pEnvironment;
-    AutoPlay*                                   pPlay;
     double                                      m_xWindow;
     double                                      m_yWindow;
     double                                      m_zWindow;

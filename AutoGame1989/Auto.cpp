@@ -6,7 +6,6 @@
 Auto::Auto()
 {
     pEnvironment = new Environment();
-    pPlay = new AutoPlay();
     //SetCharacter(0); // ToDo WLJ : add error checking 
 
     BuildEnvironSelectStrings();
@@ -16,7 +15,6 @@ Auto::Auto()
 Auto::~Auto()
 {
     delete pEnvironment;
-    delete pPlay;
 }
 
 void Auto::BuildEnvironSelectStrings()
