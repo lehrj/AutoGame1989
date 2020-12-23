@@ -728,6 +728,75 @@ void Game::DrawStartScreen()
     m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, Colors::White, 0.f, startTextOrigin);
 }
 
+void Game::DrawTeaserScreen()
+{
+    float fadeDuration = 1.5f;
+    float logoDisplayDuration = 5.f;
+    float logoDisplayGap = 1.f;
+    float startDelay = 4.2f;
+    float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+
+    float fadeInStart1 = startDelay;
+    float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
+    float fadeInEnd1 = startDelay + fadeDuration;
+    float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
+    float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
+    float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    float fadeOutEnd1 = startDelay + logoDisplayDuration;
+    float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+
+    DirectX::XMVECTORF32 fadeColor = DirectX::Colors::White;
+
+    if (timeStamp < fadeInStart1)
+    {
+        // Render nothing
+    }
+    else if (timeStamp < fadeOutEnd1)
+    {
+        std::string textLine = "Coming Soon...";
+        float textLinePosX = m_bitwiseFontPos.x;
+        float textLinePosY = m_bitwiseFontPos.y + 100;
+        DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
+        DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+
+        if (timeStamp < fadeInEnd1)  // fade in
+        {
+            float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+  
+            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+        else if (timeStamp > fadeOutStart1) // fade out
+        {
+            float colorIntensity = (fadeOutEnd1 - timeStamp) / (fadeDuration);
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+ 
+            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+        else // display at full intesity
+        {
+            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+    }
+    else if (timeStamp < fadeInStart2)
+    {
+        // render nothing
+    }
+    else if (timeStamp < fadeOutEnd2)
+    {
+
+    }
+    if (timeStamp > fadeOutEnd2 + logoDisplayGap)
+    {
+
+        m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
+    }
+}
+
 void Game::DrawWorld()
 {
     // draw world grid

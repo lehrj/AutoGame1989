@@ -62,7 +62,7 @@ private:
     void DrawMenuMain();
 
     void DrawStartScreen();
-
+    void DrawTeaserScreen();
 
     void DrawWorld();
 
