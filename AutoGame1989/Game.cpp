@@ -730,12 +730,16 @@ void Game::DrawStartScreen()
 
 void Game::DrawTeaserScreen()
 {
+    float timePad = static_cast<float>(m_timer.GetTotalSeconds());
+
     float fadeDuration = 1.5f;
     float logoDisplayDuration = 5.f;
     float logoDisplayGap = 1.f;
     float startDelay = 4.2f;
-    float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-
+    //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    float timeStamp = static_cast<float>(m_flightStepTimer.GetTotalSeconds()); // Piggy backing on this variable for the moment
+    //float timeStamp = static_cast<float>(m_flightStepTimer.GetElapsedSeconds()); // Piggy backing on this variable for the moment
+    
     float fadeInStart1 = startDelay;
     float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
     float fadeInEnd1 = startDelay + fadeDuration;
@@ -755,7 +759,8 @@ void Game::DrawTeaserScreen()
     {
         std::string textLine = "Coming Soon...";
         float textLinePosX = m_bitwiseFontPos.x;
-        float textLinePosY = m_bitwiseFontPos.y + 100;
+        float textLinePosY = m_bitwiseFontPos.y;
+        //float textLinePosY = m_bitwiseFontPos.y + 100;
         DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
         DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
 
@@ -1084,9 +1089,12 @@ void Game::Render()
         DrawMenuEnvironmentSelect();
     }
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-    {
-        
+    {       
         //DrawUI();
+    }
+    if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
+    {
+        DrawTeaserScreen();
     }
 
     m_spriteBatch->End();
@@ -1254,7 +1262,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
         if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
         {
-            m_currentGameState = GameState::GAMESTATE_MAINMENU;
+            m_flightStepTimer.ResetElapsedTime(); // piggy backing on this variable for the moment
+            m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
+            //m_currentGameState = GameState::GAMESTATE_MAINMENU;
         }
     }
     if (m_kbStateTracker.pressed.Up)

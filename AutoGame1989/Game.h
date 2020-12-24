@@ -52,7 +52,6 @@ private:
     void CreateDevice();
     void CreateResources();
 
-
     void DrawDebugLines();
     void DrawCameraFocus();
    
@@ -65,7 +64,6 @@ private:
     void DrawTeaserScreen();
 
     void DrawWorld();
-
 
     void OnDeviceLost();
     void Present();
@@ -134,7 +132,7 @@ private:
     DirectX::SimpleMath::Vector2                    m_bitwiseFontPos;
     std::unique_ptr<DirectX::SpriteBatch>           m_spriteBatch;
 
-    // Golf Character Texture
+    // Character Textures
     std::unique_ptr<AnimatedTexture>                m_character;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_characterTexture;
     DirectX::SimpleMath::Vector2                    m_characterPos;
@@ -187,7 +185,8 @@ private:
         GAMESTATE_CHARACTERSELECT,
         GAMESTATE_COURSESELECT,
         GAMESTATE_ENVIRONTMENTSELECT,
-        GAMESTATE_GAMEPLAY
+        GAMESTATE_GAMEPLAY,
+        GAMESTATE_TEASERSCREEN
     };
     GameState                                   m_currentGameState;
 
