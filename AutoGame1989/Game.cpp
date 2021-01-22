@@ -23,8 +23,9 @@ Game::Game() noexcept :
     //pPlay = new AutoPlay();
 
     pCamera = new Camera(m_outputWidth, m_outputHeight);
-
     pCamera->InintializePreSwingCamera(DirectX::SimpleMath::Vector3::Zero, 0.0);
+
+    m_vehicle = new Vehicle();
 
     if (m_isInDebugMode == false)
     {
@@ -34,6 +35,8 @@ Game::Game() noexcept :
     {
         m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
+    m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+
     m_currentUiState = UiState::UISTATE_SWING;
 }
 
@@ -49,6 +52,7 @@ Game::~Game()
     delete pAuto;
     //delete pPlay;
     delete pCamera;
+    delete m_vehicle;
 }
 
 void Game::AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK aSFX)
@@ -430,6 +434,43 @@ void Game::DrawCameraFocus()
     m_batch->DrawLine(origin, yOffset);
     m_batch->DrawLine(origin, xOffset);
     m_batch->DrawLine(origin, zOffset);
+}
+
+void Game::DrawCar()
+{
+
+    DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
+    //origin += m_carPos;
+    //origin.y += .1;
+    DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::UnitX;
+
+    DirectX::SimpleMath::Vector3 leftFrontBumper = origin;
+    leftFrontBumper.z -= 1.0;
+
+    DirectX::SimpleMath::Vector3 backLeft = origin;
+    backLeft.x -= 1.0f;
+    backLeft.z += -0.2f;
+    DirectX::SimpleMath::Vector3 backRight = origin;
+    backRight.x -= 1.0f;
+    backRight.z += 0.2f;
+
+    origin = DirectX::SimpleMath::Vector3::Transform(origin, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+    backLeft = DirectX::SimpleMath::Vector3::Transform(backLeft, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+    backRight = DirectX::SimpleMath::Vector3::Transform(backRight, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+    origin += m_carPos;
+    backLeft += m_carPos;
+    backRight += m_carPos;
+
+    DirectX::SimpleMath::Vector3 lineColor = DirectX::Colors::White;
+    
+    DirectX::VertexPositionColor frontVert(origin, lineColor);
+    DirectX::VertexPositionColor backLeftVert(backLeft, lineColor);
+    DirectX::VertexPositionColor backRightVert(backRight, lineColor);
+
+    m_batch->DrawLine(frontVert, backLeftVert);
+    m_batch->DrawLine(backLeftVert, backRightVert);
+    m_batch->DrawLine(backRightVert, frontVert);
+
 }
 
 void Game::DrawDebugLines()
@@ -1023,8 +1064,6 @@ void Game::Render()
     //m_d3dContext->RSSetState(m_states->CullNone());
     //m_d3dContext->RSSetState(m_states->CullClockwise());
 
-
-
     //10  m_d3dContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
     //11  m_d3dContext->RSSetState(m_states->CullCounterClockwise());
 
@@ -1042,7 +1081,7 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         DrawWorld();
-
+        DrawCar();
 
         if (pCamera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
         {
@@ -1091,6 +1130,7 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {       
         //DrawUI();
+        
     }
     if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
@@ -1394,6 +1434,48 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     if (kb.OemComma)
     {
 
+    }
+    if (kb.NumPad8)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_carPos.x += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.1f;
+        }
+    }
+    if (kb.NumPad2)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_carPos.x -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.1f;
+        }
+    }
+    if (kb.NumPad6)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_carPos.z += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.1f;
+        }
+    }
+    if (kb.NumPad4)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_carPos.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.1f;
+        }
+    }
+    if (kb.NumPad7)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_carAim += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.11f;
+        }
+    }
+    if (kb.NumPad9)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_carAim -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.11f;
+        }
     }
 
     auto mouse = m_mouse->GetState();

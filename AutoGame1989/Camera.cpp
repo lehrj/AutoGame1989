@@ -441,10 +441,6 @@ void Camera::UpdateFirstPersonCamera()
 	m_right = DirectX::XMVector3TransformCoord(m_defaultRight, m_rotationMatrix);
 	m_forward = DirectX::XMVector3TransformCoord(m_defaultForward, m_rotationMatrix);
 
-	DirectX::SimpleMath::Vector3 testVec = DirectX::XMVector3Cross(m_forward, m_right);
-	DirectX::SimpleMath::Vector3 testVec2 = DirectX::XMVector3Cross(m_right, m_forward);
-	DirectX::SimpleMath::Vector3 testVec3 = DirectX::XMVector3Cross(m_forward, -m_right);
-
 	m_up = DirectX::XMVector3Cross(m_right, m_forward);
 
 	m_position += DirectX::operator*(m_moveLeftRight, m_right);

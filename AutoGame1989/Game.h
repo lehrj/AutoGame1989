@@ -3,13 +3,14 @@
 //
 
 #pragma once
-#include "Auto.h"
 #include "Keyboard.h"
 #include "AnimatedTexture.h"
 #include "SpriteSheet.h"
 #include "WICTextureLoader.h"
+#include "Auto.h"
 #include "Camera.h"
 #include "sounds.h"
+#include "Vehicle.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -54,7 +55,7 @@ private:
 
     void DrawDebugLines();
     void DrawCameraFocus();
-   
+    void DrawCar();
     void DrawIntroScreen();
     
     void DrawMenuEnvironmentSelect();
@@ -73,8 +74,9 @@ private:
     void Update(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
 
-    Camera* pCamera;
-    Auto* pAuto;
+    Camera*                                         pCamera;
+    Auto*                                           pAuto;
+    Vehicle*                                        m_vehicle;
 
 
     // Device resources.
@@ -208,5 +210,11 @@ private:
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioEffectStream;
 
     const bool                                  m_isInDebugMode = true;
+
+    DirectX::SimpleMath::Vector3                m_carPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3                m_carDirection = DirectX::SimpleMath::Vector3::UnitX;
+    float                                       m_carAim = 0.0f;
+
+
 };
 
