@@ -104,10 +104,11 @@ void Game::CreateDevice()
         D3D_FEATURE_LEVEL_11_1,
         D3D_FEATURE_LEVEL_11_0,
         D3D_FEATURE_LEVEL_10_1,
+        /*
         D3D_FEATURE_LEVEL_10_0,
         D3D_FEATURE_LEVEL_9_3,
         D3D_FEATURE_LEVEL_9_2,
-        D3D_FEATURE_LEVEL_9_1,
+        D3D_FEATURE_LEVEL_9_1*/
     };
 
     // Create the DX11 API device object, and get a corresponding context.
@@ -153,20 +154,81 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(device.As(&m_d3dDevice));
     DX::ThrowIfFailed(context.As(&m_d3dContext));
 
+
+    ///////////////////// blank texture
+    DX::ThrowIfFailed(
+        CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture.jpg", nullptr,
+            m_texture.ReleaseAndGetAddressOf()));
+
+    // Normal map
+    DX::ThrowIfFailed(
+        CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMap.dds", nullptr,
+            m_normalMap.ReleaseAndGetAddressOf()));
+
+    /////////////////////
+
     // TODO: Initialize device dependent objects here (independent of window size).
     m_world = DirectX::SimpleMath::Matrix::Identity;
     m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
-    m_effect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
-    m_effect->SetVertexColorEnabled(true);
 
+
+    m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
+
+    // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
+    m_effect->SetTexture(m_texture.Get());
+    m_effect->SetNormalTexture(m_normalMap.Get());
+
+    m_effect->EnableDefaultLighting();
+    m_effect->SetLightDiffuseColor(0, Colors::Gray);
+
+    /*
+    //m_effect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
+    //m_effect->SetVertexColorEnabled(true);
+    
+    m_effect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
+    m_effect->SetTextureEnabled(true);
+
+    // Make sure you called CreateWICTextureFromFile before this point!
+    m_effect->SetTexture(m_texture.Get());
+    */
+
+
+
+    /*
+    m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
+
+    // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
+    m_effect->SetTexture(m_texture.Get());
+    m_effect->SetNormalTexture(m_normalMap.Get());
+
+    m_effect->EnableDefaultLighting();
+    m_effect->SetLightDiffuseColor(0, Colors::Gray);
+    */
     void const* shaderByteCode;
     size_t byteCodeLength;
 
+    /// <summary>
+    /*
+    m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
+    //m_effect->SetVertexColorEnabled(true);
+    // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
+    //m_effect->SetTexture(m_texture.Get());
+    m_effect->SetNormalTexture(m_normalMap.Get());
+
+    m_effect->EnableDefaultLighting();
+    m_effect->SetLightDiffuseColor(0, Colors::Gray);
+    /// </summary>
+
+    void const* shaderByteCode;
+    size_t byteCodeLength;
+    */
     m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
     DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType::InputElements, VertexType::InputElementCount, shaderByteCode, byteCodeLength, m_inputLayout.ReleaseAndGetAddressOf()));
 
     m_batch = std::make_unique<PrimitiveBatch<VertexType>>(m_d3dContext.Get());
+
+
 
     CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
         D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
@@ -363,7 +425,7 @@ void Game::CreateResources()
     m_view = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3(2.f, 2.f, 2.f), DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitY);
 
     const float viewPlaneNear = 0.1f;
-    const float viewPlaneFar = 400.0f;
+    const float viewPlaneFar = 900.0f;
     m_proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f, float(backBufferWidth) / float(backBufferHeight), viewPlaneNear, viewPlaneFar);
 
     m_effect->SetView(m_view);
@@ -418,6 +480,7 @@ void Game::CreateResources()
 
 void Game::DrawCameraFocus()
 {
+    /*
     const float line = .25f;
     DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
     DirectX::SimpleMath::Vector3 yLine = focalPoint;
@@ -434,6 +497,7 @@ void Game::DrawCameraFocus()
     m_batch->DrawLine(origin, yOffset);
     m_batch->DrawLine(origin, xOffset);
     m_batch->DrawLine(origin, zOffset);
+    */
 }
 
 void Game::DrawCar()
@@ -457,19 +521,73 @@ void Game::DrawCar()
     origin = DirectX::SimpleMath::Vector3::Transform(origin, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
     backLeft = DirectX::SimpleMath::Vector3::Transform(backLeft, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
     backRight = DirectX::SimpleMath::Vector3::Transform(backRight, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+
+
+    DirectX::SimpleMath::Vector3 tailTop = origin;
+    tailTop.x -= 1.0f;
+    tailTop.y += 0.2f;
+    tailTop = DirectX::SimpleMath::Vector3::Transform(tailTop, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+    DirectX::SimpleMath::Vector3 tailBase = tailTop;
+    tailBase.y -= 0.2f;
+
     origin += m_carPos;
     backLeft += m_carPos;
     backRight += m_carPos;
+    tailTop += m_carPos;
+    tailBase += m_carPos;
 
-    DirectX::SimpleMath::Vector3 lineColor = DirectX::Colors::White;
-    
+    DirectX::SimpleMath::Vector3 lineColor = DirectX::Colors::Red;
+    /*
     DirectX::VertexPositionColor frontVert(origin, lineColor);
     DirectX::VertexPositionColor backLeftVert(backLeft, lineColor);
     DirectX::VertexPositionColor backRightVert(backRight, lineColor);
+    */
+    DirectX::VertexPositionNormalColor frontVert(origin, DirectX::SimpleMath::Vector3::UnitY, lineColor);
+    DirectX::VertexPositionNormalColor backLeftVert(backLeft, DirectX::SimpleMath::Vector3::UnitY, lineColor);
+    DirectX::VertexPositionNormalColor backRightVert(backRight,  DirectX::SimpleMath::Vector3::UnitY, lineColor);
+    DirectX::VertexPositionNormalColor tailTopVert(tailTop, DirectX::SimpleMath::Vector3::UnitX, lineColor);
+    DirectX::VertexPositionNormalColor tailBaseVert(tailBase, DirectX::SimpleMath::Vector3::UnitX, lineColor);
+    DirectX::VertexPositionNormalColor frontTailVert(origin, DirectX::SimpleMath::Vector3::UnitX, lineColor);
 
-    m_batch->DrawLine(frontVert, backLeftVert);
-    m_batch->DrawLine(backLeftVert, backRightVert);
-    m_batch->DrawLine(backRightVert, frontVert);
+
+    VertexPositionNormalTexture v1(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionNormalTexture v2(backLeft, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalTexture v3(backRight, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
+    
+    VertexPositionNormalTexture v4(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionNormalTexture v5(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalTexture v6(tailBase, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
+
+    VertexPositionNormalTexture v7(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionNormalTexture v8(backLeft, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalTexture v9(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
+
+    VertexPositionNormalTexture v10(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionNormalTexture v11(backRight, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalTexture v12(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
+
+    /*
+    VertexPositionTexture v1(origin, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionTexture v2(backLeft, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionTexture v3(backRight, DirectX::SimpleMath::Vector2(0, 1));
+    VertexPositionColorTexture v4(origin, lineColor, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionColorTexture v5(backLeft, lineColor, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionColorTexture v6(backRight, lineColor, DirectX::SimpleMath::Vector2(0, 1));
+    DirectX::VertexPositionColorTexture v7(tailTop, lineColor, DirectX::SimpleMath::Vector2(.5f, 0));
+    DirectX::VertexPositionColorTexture v8(tailBase, lineColor, DirectX::SimpleMath::Vector2(1, 1));
+    DirectX::VertexPositionColorTexture v9(origin, lineColor, DirectX::SimpleMath::Vector2(0, 1));
+    */
+
+    m_batch->DrawTriangle(v1, v3, v2);
+    m_batch->DrawTriangle(v4, v5, v6);
+    m_batch->DrawTriangle(v7, v8, v9);
+    m_batch->DrawTriangle(v10, v11, v12);
+    //m_batch->DrawTriangle(frontVert, backLeftVert, backRightVert);
+    //m_batch->DrawTriangle(frontTailVert, tailBaseVert, tailTopVert);
+
+    //m_batch->DrawLine(frontVert, backLeftVert);
+    //m_batch->DrawLine(backLeftVert, backRightVert);
+    //m_batch->DrawLine(backRightVert, frontVert);
 
 }
 
@@ -845,6 +963,7 @@ void Game::DrawTeaserScreen()
 
 void Game::DrawWorld()
 {
+    /*
     // draw world grid
     DirectX::SimpleMath::Vector3 xAxis(2.f, 0.f, 0.f);
     DirectX::SimpleMath::Vector3 xFarAxis(6.f, 0.f, 0.f);
@@ -897,6 +1016,7 @@ void Game::DrawWorld()
             m_batch->DrawLine(v1, v2);
         }
     }
+    */
 }
 
 // Properties
@@ -962,6 +1082,8 @@ void Game::OnDeviceLost()
     m_states.reset();
     m_effect.reset();
     m_batch.reset();
+    m_normalMap.Reset();
+    m_texture.Reset();
     m_inputLayout.Reset();
     m_font.reset();
     m_titleFont.reset();
@@ -1069,10 +1191,16 @@ void Game::Render()
 
     //world start
     m_d3dContext->RSSetState(m_raster.Get()); // WLJ anti-aliasing  RenderTesting
+    //m_d3dContext->RSSetState(m_states->CullNone());
     m_effect->SetWorld(m_world);
     //world end
 
     m_effect->Apply(m_d3dContext.Get());
+
+    ///   
+    auto sampler = m_states->LinearClamp();
+    m_d3dContext->PSSetSamplers(0, 1, &sampler);
+    ////
 
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
 
@@ -1171,6 +1299,18 @@ void Game::Update(DX::StepTimer const& aTimer)
     double elapsedTime = double(aTimer.GetElapsedSeconds());
     m_projectileTimer += elapsedTime;
     // TODO: Add your game logic here.
+
+    auto time = static_cast<float>(m_timer.GetTotalSeconds());
+    float yaw = time * 0.4f;
+    float pitch = time * 0.7f;
+    float roll = time * 1.1f;
+
+    auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, yaw, roll);
+
+    auto light = XMVector3Rotate(g_XMOne, quat);
+
+    m_effect->SetLightDirection(0, light);
+
 
     if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
     {

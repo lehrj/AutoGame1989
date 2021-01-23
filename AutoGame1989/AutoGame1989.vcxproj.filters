@@ -81,6 +81,18 @@
     <Image Include="PowerbarFrame.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="TestMetalNormalMap.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="BlankTexture.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Texture.jpg">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="NormalMap.dds">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

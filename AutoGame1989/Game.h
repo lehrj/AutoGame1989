@@ -98,12 +98,20 @@ private:
     double                                          m_projectileTimer = 0.0;
 
     // WLJ add start
-    using VertexType = DirectX::VertexPositionColor;
+    //using VertexType = DirectX::VertexPositionColor;
+    //using VertexType = DirectX::VertexPositionNormalColor;
+    //using VertexType = DirectX::VertexPositionTexture;
+    //using VertexType = DirectX::VertexPositionColorTexture;
+    using VertexType = DirectX::VertexPositionNormalTexture;
 
     std::unique_ptr<DirectX::CommonStates>          m_states;
-    std::unique_ptr<DirectX::BasicEffect>           m_effect;
+    //std::unique_ptr<DirectX::BasicEffect>           m_effect;
+    std::unique_ptr<DirectX::NormalMapEffect>       m_effect;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
+    //std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionNormalColor>> m_batchNormal;
 
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMap;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
     // End
 

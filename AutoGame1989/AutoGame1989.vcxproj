@@ -190,6 +190,7 @@
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="BlankTexture.png" />
     <Image Include="Chacter0SpriteSheet.png" />
     <Image Include="Chacter1SpriteSheet.png" />
     <Image Include="Chacter2SpriteSheet.png" />
@@ -202,10 +203,13 @@
     <Image Include="Icon.ico" />
     <Image Include="logoBMW.png" />
     <Image Include="logoJI.png" />
+    <Image Include="NormalMap.dds" />
     <Image Include="PowerbarBackswing.png" />
     <Image Include="PowerbarFrame.png" />
     <Image Include="PowerbarImpact.png" />
     <Image Include="PowerbarMeter.png" />
+    <Image Include="TestMetalNormalMap.dds" />
+    <Image Include="Texture.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest" />
