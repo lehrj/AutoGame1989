@@ -104,11 +104,10 @@ void Game::CreateDevice()
         D3D_FEATURE_LEVEL_11_1,
         D3D_FEATURE_LEVEL_11_0,
         D3D_FEATURE_LEVEL_10_1,
-        /*
         D3D_FEATURE_LEVEL_10_0,
         D3D_FEATURE_LEVEL_9_3,
         D3D_FEATURE_LEVEL_9_2,
-        D3D_FEATURE_LEVEL_9_1*/
+        D3D_FEATURE_LEVEL_9_1
     };
 
     // Create the DX11 API device object, and get a corresponding context.
@@ -173,7 +172,7 @@ void Game::CreateDevice()
 
 
     m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
-
+    
     // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
     m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
@@ -181,31 +180,28 @@ void Game::CreateDevice()
     m_effect->EnableDefaultLighting();
     m_effect->SetLightDiffuseColor(0, Colors::Gray);
 
+    m_effect2 = std::make_unique<BasicEffect>(m_d3dDevice.Get());
+    m_effect2->SetVertexColorEnabled(true);
+
     /*
-    //m_effect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
-    //m_effect->SetVertexColorEnabled(true);
-    
+
+
     m_effect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
     m_effect->SetTextureEnabled(true);
-
     // Make sure you called CreateWICTextureFromFile before this point!
     m_effect->SetTexture(m_texture.Get());
     */
 
-
-
     /*
     m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
-
     // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
     m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
-
     m_effect->EnableDefaultLighting();
     m_effect->SetLightDiffuseColor(0, Colors::Gray);
     */
-    void const* shaderByteCode;
-    size_t byteCodeLength;
+
+
 
     /// <summary>
     /*
@@ -214,19 +210,26 @@ void Game::CreateDevice()
     // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
     //m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
-
     m_effect->EnableDefaultLighting();
     m_effect->SetLightDiffuseColor(0, Colors::Gray);
     /// </summary>
-
     void const* shaderByteCode;
     size_t byteCodeLength;
     */
+
+
+    void const* shaderByteCode2;
+    size_t byteCodeLength2;
+    m_effect2->GetVertexShaderBytecode(&shaderByteCode2, &byteCodeLength2);
+    DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType2::InputElements, VertexType2::InputElementCount, shaderByteCode2, byteCodeLength2, m_inputLayout.ReleaseAndGetAddressOf()));
+    m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(m_d3dContext.Get());
+
+    void const* shaderByteCode;
+    size_t byteCodeLength;
     m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-
     DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType::InputElements, VertexType::InputElementCount, shaderByteCode, byteCodeLength, m_inputLayout.ReleaseAndGetAddressOf()));
-
     m_batch = std::make_unique<PrimitiveBatch<VertexType>>(m_d3dContext.Get());
+
 
 
 
@@ -430,6 +433,8 @@ void Game::CreateResources()
 
     m_effect->SetView(m_view);
     m_effect->SetProjection(m_proj);
+    m_effect2->SetView(m_view);
+    m_effect2->SetProjection(m_proj);
     // world end
 
     // UI font positions
@@ -489,7 +494,6 @@ void Game::DrawCameraFocus()
     xLine.x += line;
     DirectX::SimpleMath::Vector3 zLine = focalPoint;
     zLine.z += line;
-
     VertexPositionColor origin(focalPoint, Colors::Yellow);
     VertexPositionColor yOffset(yLine, Colors::Yellow);
     VertexPositionColor xOffset(xLine, Colors::Yellow);
@@ -544,7 +548,7 @@ void Game::DrawCar()
     */
     DirectX::VertexPositionNormalColor frontVert(origin, DirectX::SimpleMath::Vector3::UnitY, lineColor);
     DirectX::VertexPositionNormalColor backLeftVert(backLeft, DirectX::SimpleMath::Vector3::UnitY, lineColor);
-    DirectX::VertexPositionNormalColor backRightVert(backRight,  DirectX::SimpleMath::Vector3::UnitY, lineColor);
+    DirectX::VertexPositionNormalColor backRightVert(backRight, DirectX::SimpleMath::Vector3::UnitY, lineColor);
     DirectX::VertexPositionNormalColor tailTopVert(tailTop, DirectX::SimpleMath::Vector3::UnitX, lineColor);
     DirectX::VertexPositionNormalColor tailBaseVert(tailBase, DirectX::SimpleMath::Vector3::UnitX, lineColor);
     DirectX::VertexPositionNormalColor frontTailVert(origin, DirectX::SimpleMath::Vector3::UnitX, lineColor);
@@ -553,7 +557,7 @@ void Game::DrawCar()
     VertexPositionNormalTexture v1(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
     VertexPositionNormalTexture v2(backLeft, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
     VertexPositionNormalTexture v3(backRight, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
-    
+
     VertexPositionNormalTexture v4(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
     VertexPositionNormalTexture v5(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
     VertexPositionNormalTexture v6(tailBase, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
@@ -578,10 +582,13 @@ void Game::DrawCar()
     DirectX::VertexPositionColorTexture v9(origin, lineColor, DirectX::SimpleMath::Vector2(0, 1));
     */
 
+    
     m_batch->DrawTriangle(v1, v3, v2);
     m_batch->DrawTriangle(v4, v5, v6);
     m_batch->DrawTriangle(v7, v8, v9);
     m_batch->DrawTriangle(v10, v11, v12);
+    
+
     //m_batch->DrawTriangle(frontVert, backLeftVert, backRightVert);
     //m_batch->DrawTriangle(frontTailVert, tailBaseVert, tailTopVert);
 
@@ -595,7 +602,6 @@ void Game::DrawDebugLines()
 {
     /*
     std::vector<std::pair<DirectX::VertexPositionColor, DirectX::VertexPositionColor>> debugLines = pAuto->GetBallDebugLines();
-
     for (int i = 0; i < debugLines.size(); ++i)
     {
         m_batch->DrawLine(debugLines[i].first, debugLines[i].second);
@@ -872,14 +878,14 @@ void Game::DrawStartScreen()
     DirectX::SimpleMath::Vector2 titleOrigin = m_titleFont->MeasureString(title.c_str()) / 2.f;
     DirectX::SimpleMath::Vector2 authorOrigin = m_font->MeasureString(author.c_str()) / 2.f;
     DirectX::SimpleMath::Vector2 startTextOrigin = m_font->MeasureString(startText.c_str()) / 2.f;
-    
+
     //m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(7.f, 7.f), logoColor1, 0.f, titleOrigin);
     //m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(6.f, 6.f), logoColor1, 0.f, titleOrigin);
-    
+
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(5.f, 5.f), logoColor1, 0.f, titleOrigin);
-    m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(4.f, 4.f), logoColor1, 0.f, titleOrigin);   
+    m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(4.f, 4.f), logoColor1, 0.f, titleOrigin);
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(3.f, 3.f), logoColor1, 0.f, titleOrigin);
-    m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(2.f, 2.f), logoColor1, 0.f, titleOrigin);  
+    m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(2.f, 2.f), logoColor1, 0.f, titleOrigin);
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(-1.f, -1.f), logoColor3, 0.f, titleOrigin);
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos, logoColor2, 0.f, titleOrigin);
 
@@ -898,7 +904,7 @@ void Game::DrawTeaserScreen()
     //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     float timeStamp = static_cast<float>(m_flightStepTimer.GetTotalSeconds()); // Piggy backing on this variable for the moment
     //float timeStamp = static_cast<float>(m_flightStepTimer.GetElapsedSeconds()); // Piggy backing on this variable for the moment
-    
+
     float fadeInStart1 = startDelay;
     float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
     float fadeInEnd1 = startDelay + fadeDuration;
@@ -929,7 +935,7 @@ void Game::DrawTeaserScreen()
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
-  
+
             m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
         else if (timeStamp > fadeOutStart1) // fade out
@@ -938,7 +944,7 @@ void Game::DrawTeaserScreen()
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
- 
+
             m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
         else // display at full intesity
@@ -963,7 +969,7 @@ void Game::DrawTeaserScreen()
 
 void Game::DrawWorld()
 {
-    /*
+    
     // draw world grid
     DirectX::SimpleMath::Vector3 xAxis(2.f, 0.f, 0.f);
     DirectX::SimpleMath::Vector3 xFarAxis(6.f, 0.f, 0.f);
@@ -971,9 +977,7 @@ void Game::DrawWorld()
     DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
     size_t divisions = 50;
     size_t extention = 50;
-
     DirectX::XMVECTORF32 gridColor = DirectX::Colors::Green;
-
     for (size_t i = 0; i <= divisions + extention; ++i)
     {
         float fPercent = float(i) / float(divisions);
@@ -985,38 +989,44 @@ void Game::DrawWorld()
             //VertexPositionColor v2(scale + zAxis, gridColor);
             VertexPositionColor v1(scale - zAxis, DirectX::Colors::LawnGreen); // Center line
             VertexPositionColor v2(scale + zAxis, DirectX::Colors::LawnGreen); // Center line
-            m_batch->DrawLine(v1, v2);
+            m_batch2->DrawLine(v1, v2);
         }
         else
         {
             VertexPositionColor v1(scale - zAxis, gridColor);
             VertexPositionColor v2(scale + zAxis, gridColor);
-            m_batch->DrawLine(v1, v2);
+            m_batch2->DrawLine(v1, v2);
         }
     }
     for (size_t i = 0; i <= divisions; i++)
     {
         float fPercent = float(i) / float(divisions);
         fPercent = (fPercent * 2.0f) - 1.0f;
-
         DirectX::SimpleMath::Vector3 scale = zAxis * fPercent + origin;
-
         if (scale.z == 0.0f)
         {
             //VertexPositionColor v1(scale - xAxis, gridColor); // Center line
             //VertexPositionColor v2(scale + xFarAxis, gridColor); // Center line
             VertexPositionColor v1(scale - xAxis, DirectX::Colors::LawnGreen); // Center line
             VertexPositionColor v2(scale + xFarAxis, DirectX::Colors::LawnGreen); // Center line
-            m_batch->DrawLine(v1, v2);
+            m_batch2->DrawLine(v1, v2);
         }
         else
         {
             VertexPositionColor v1(scale - xAxis, gridColor);
             VertexPositionColor v2(scale + xFarAxis, gridColor);
-            m_batch->DrawLine(v1, v2);
+            m_batch2->DrawLine(v1, v2);
         }
     }
-    */
+
+    DirectX::SimpleMath::Vector3 p0 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 p1(1.0, 0.5, -1.0);
+    DirectX::SimpleMath::Vector3 p2(1.0, 0.0, 1.0);
+    VertexPositionColor v0(p0, gridColor);
+    VertexPositionColor v1(p1, gridColor);
+    VertexPositionColor v2(p2, gridColor);
+
+    m_batch2->DrawTriangle(v0, v1, v2);
 }
 
 // Properties
@@ -1081,7 +1091,9 @@ void Game::OnDeviceLost()
 
     m_states.reset();
     m_effect.reset();
+    m_effect2.reset();
     m_batch.reset();
+    m_batch2.reset();
     m_normalMap.Reset();
     m_texture.Reset();
     m_inputLayout.Reset();
@@ -1146,6 +1158,7 @@ void Game::OnWindowSizeChanged(int width, int height)
     pCamera->OnResize(m_outputWidth, m_outputHeight);
     m_proj = pCamera->GetProjectionMatrix();
     m_effect->SetProjection(m_proj);
+    m_effect2->SetProjection(m_proj);
 }
 
 // Presents the back buffer contents to the screen.
@@ -1192,6 +1205,14 @@ void Game::Render()
     //world start
     m_d3dContext->RSSetState(m_raster.Get()); // WLJ anti-aliasing  RenderTesting
     //m_d3dContext->RSSetState(m_states->CullNone());
+
+
+    void const* shaderByteCode;
+    size_t byteCodeLength;
+    m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+    DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType::InputElements, VertexType::InputElementCount, shaderByteCode, byteCodeLength, m_inputLayout.ReleaseAndGetAddressOf()));
+    m_batch = std::make_unique<PrimitiveBatch<VertexType>>(m_d3dContext.Get());
+
     m_effect->SetWorld(m_world);
     //world end
 
@@ -1208,12 +1229,12 @@ void Game::Render()
     //DrawDebugLines();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawWorld();
+        //DrawWorld();
         DrawCar();
 
         if (pCamera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
         {
-            
+
         }
 
         if (pCamera->GetCameraState() == CameraState::CAMERASTATE_PRESWINGVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
@@ -1227,12 +1248,28 @@ void Game::Render()
             //DrawDebugLines();
         }
     }
-
-    
     m_batch->End();
+    
+    void const* shaderByteCode2;
+    size_t byteCodeLength2;
+    m_effect2->GetVertexShaderBytecode(&shaderByteCode2, &byteCodeLength2);
+    DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType2::InputElements, VertexType2::InputElementCount, shaderByteCode2, byteCodeLength2, m_inputLayout.ReleaseAndGetAddressOf()));
+    m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(m_d3dContext.Get());
+
+    //m_effect2->SetWorld(m_world);
+    m_effect2->Apply(m_d3dContext.Get());
+    ///   
+    
+    //m_d3dContext->PSSetSamplers(0, 1, &sampler);
+    ////
+    m_d3dContext->IASetInputLayout(m_inputLayout.Get());
+    
+    m_batch2->Begin();
+    DrawWorld();
+    m_batch2->End();
+    
 
     m_spriteBatch->Begin();
-
     //DrawShotTimerUI();
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
@@ -1249,16 +1286,16 @@ void Game::Render()
     }
     if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
     {
-        
+
     }
     if (m_currentGameState == GameState::GAMESTATE_ENVIRONTMENTSELECT)
     {
         DrawMenuEnvironmentSelect();
     }
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-    {       
+    {
         //DrawUI();
-        
+
     }
     if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
@@ -1359,8 +1396,11 @@ void Game::Update(DX::StepTimer const& aTimer)
     }
 
     pCamera->UpdateCamera(aTimer);
-    m_effect->SetView(pCamera->GetViewMatrix());
-
+    DirectX::SimpleMath::Matrix viewMatrix = pCamera->GetViewMatrix();
+    //m_effect->SetView(pCamera->GetViewMatrix());
+    //m_effect2->SetView(pCamera->GetViewMatrix());
+    m_effect->SetView(viewMatrix);
+    m_effect2->SetView(viewMatrix);
     UpdateInput(aTimer);
 }
 
@@ -1385,15 +1425,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_menuSelect == 0)
             {
-                
+
             }
             if (m_menuSelect == 1)
             {
-                
+
             }
             if (m_menuSelect == 2)
             {
-                
+
             }
             m_menuSelect = 0;
             m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
@@ -1402,15 +1442,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_menuSelect == 0)
             {
-                
+
             }
             if (m_menuSelect == 1)
             {
-                
+
             }
             if (m_menuSelect == 2)
             {
-                
+
             }
             m_menuSelect = 0;
             //m_currentGameState = GameState::GAMESTATE_MAINMENU; // Return to Main Menu after selecting character, ToDo: using value of 1 doesn't return to main menu

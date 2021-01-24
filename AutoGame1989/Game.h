@@ -57,7 +57,7 @@ private:
     void DrawCameraFocus();
     void DrawCar();
     void DrawIntroScreen();
-    
+
     void DrawMenuEnvironmentSelect();
     void DrawMenuMain();
 
@@ -74,9 +74,9 @@ private:
     void Update(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
 
-    Camera*                                         pCamera;
-    Auto*                                           pAuto;
-    Vehicle*                                        m_vehicle;
+    Camera* pCamera;
+    Auto* pAuto;
+    Vehicle* m_vehicle;
 
 
     // Device resources.
@@ -103,11 +103,13 @@ private:
     //using VertexType = DirectX::VertexPositionTexture;
     //using VertexType = DirectX::VertexPositionColorTexture;
     using VertexType = DirectX::VertexPositionNormalTexture;
+    using VertexType2 = DirectX::VertexPositionColor;
 
-    std::unique_ptr<DirectX::CommonStates>          m_states;
-    //std::unique_ptr<DirectX::BasicEffect>           m_effect;
+    std::unique_ptr<DirectX::CommonStates>          m_states;   
     std::unique_ptr<DirectX::NormalMapEffect>       m_effect;
+    std::unique_ptr<DirectX::BasicEffect>           m_effect2;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
+    std::unique_ptr<DirectX::PrimitiveBatch<VertexType2>> m_batch2;
     //std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionNormalColor>> m_batchNormal;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMap;
@@ -225,4 +227,3 @@ private:
 
 
 };
-
