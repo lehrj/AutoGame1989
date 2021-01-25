@@ -103,7 +103,7 @@ private:
     //using VertexType = DirectX::VertexPositionTexture;
     //using VertexType = DirectX::VertexPositionColorTexture;
     using VertexType = DirectX::VertexPositionNormalTexture;
-    using VertexType2 = DirectX::VertexPositionColor;
+    using VertexType2 = DirectX::VertexPositionNormalColor;
 
     std::unique_ptr<DirectX::CommonStates>          m_states;   
     std::unique_ptr<DirectX::NormalMapEffect>       m_effect;
@@ -116,6 +116,9 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
     // End
+
+    std::shared_ptr<DirectX::IEffect>               m_lightEffect;
+    //std::unique_ptr<DirectX::IEffect>               m_lightEffect;
 
     //world start 
     DirectX::SimpleMath::Matrix                     m_world;

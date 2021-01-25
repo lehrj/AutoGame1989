@@ -170,6 +170,9 @@ void Game::CreateDevice()
     m_world = DirectX::SimpleMath::Matrix::Identity;
     m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
 
+    //m_lightEffect = std::shared_ptr<DirectX::BasicEffect>(m_d3dDevice.Get());
+    //m_lightEffect = std::make_unique<DirectX::IEffect>;// (m_d3dDevice.Get());
+
 
     m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
     
@@ -182,6 +185,9 @@ void Game::CreateDevice()
 
     m_effect2 = std::make_unique<BasicEffect>(m_d3dDevice.Get());
     m_effect2->SetVertexColorEnabled(true);
+    m_effect2->EnableDefaultLighting();
+    m_effect2->SetLightDiffuseColor(0, Colors::Gray);
+
 
     /*
 
@@ -230,7 +236,7 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType::InputElements, VertexType::InputElementCount, shaderByteCode, byteCodeLength, m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch = std::make_unique<PrimitiveBatch<VertexType>>(m_d3dContext.Get());
 
-
+    
 
 
     CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
@@ -506,7 +512,6 @@ void Game::DrawCameraFocus()
 
 void Game::DrawCar()
 {
-
     DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
     //origin += m_carPos;
     //origin.y += .1;
@@ -582,13 +587,23 @@ void Game::DrawCar()
     DirectX::VertexPositionColorTexture v9(origin, lineColor, DirectX::SimpleMath::Vector2(0, 1));
     */
 
-    
+    m_effect->SetTexture(m_texture.Get());
     m_batch->DrawTriangle(v1, v3, v2);
+    m_effect->Apply(m_d3dContext.Get());
+    m_batch->End();
+    m_batch->Begin();
     m_batch->DrawTriangle(v4, v5, v6);
+    m_effect->SetTexture(m_jiLogoTexture.Get());
     m_batch->DrawTriangle(v7, v8, v9);
-    m_batch->DrawTriangle(v10, v11, v12);
+    m_effect->Apply(m_d3dContext.Get());
+    m_batch->End();
+    m_batch->Begin();
     
-
+    m_effect->SetTexture(m_bmwLogoTexture.Get());
+    m_effect->Apply(m_d3dContext.Get());
+    m_batch->DrawTriangle(v10, v11, v12);
+    //m_effect->SetTexture(m_texture.Get());
+    //m_effect->Apply(m_d3dContext.Get());
     //m_batch->DrawTriangle(frontVert, backLeftVert, backRightVert);
     //m_batch->DrawTriangle(frontTailVert, tailBaseVert, tailTopVert);
 
@@ -977,7 +992,7 @@ void Game::DrawWorld()
     DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
     size_t divisions = 50;
     size_t extention = 50;
-    DirectX::XMVECTORF32 gridColor = DirectX::Colors::Green;
+    DirectX::XMVECTORF32 gridColor = DirectX::Colors::White;
     for (size_t i = 0; i <= divisions + extention; ++i)
     {
         float fPercent = float(i) / float(divisions);
@@ -989,13 +1004,13 @@ void Game::DrawWorld()
             //VertexPositionColor v2(scale + zAxis, gridColor);
             VertexPositionColor v1(scale - zAxis, DirectX::Colors::LawnGreen); // Center line
             VertexPositionColor v2(scale + zAxis, DirectX::Colors::LawnGreen); // Center line
-            m_batch2->DrawLine(v1, v2);
+            //m_batch2->DrawLine(v1, v2);
         }
         else
         {
             VertexPositionColor v1(scale - zAxis, gridColor);
             VertexPositionColor v2(scale + zAxis, gridColor);
-            m_batch2->DrawLine(v1, v2);
+            //m_batch2->DrawLine(v1, v2);
         }
     }
     for (size_t i = 0; i <= divisions; i++)
@@ -1009,16 +1024,16 @@ void Game::DrawWorld()
             //VertexPositionColor v2(scale + xFarAxis, gridColor); // Center line
             VertexPositionColor v1(scale - xAxis, DirectX::Colors::LawnGreen); // Center line
             VertexPositionColor v2(scale + xFarAxis, DirectX::Colors::LawnGreen); // Center line
-            m_batch2->DrawLine(v1, v2);
+            //m_batch2->DrawLine(v1, v2);
         }
         else
         {
             VertexPositionColor v1(scale - xAxis, gridColor);
             VertexPositionColor v2(scale + xFarAxis, gridColor);
-            m_batch2->DrawLine(v1, v2);
+            //m_batch2->DrawLine(v1, v2);
         }
     }
-
+    /*
     DirectX::SimpleMath::Vector3 p0 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 p1(1.0, 0.5, -1.0);
     DirectX::SimpleMath::Vector3 p2(1.0, 0.0, 1.0);
@@ -1027,6 +1042,24 @@ void Game::DrawWorld()
     VertexPositionColor v2(p2, gridColor);
 
     m_batch2->DrawTriangle(v0, v1, v2);
+    */
+    
+    DirectX::SimpleMath::Vector3 p0 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 p1(1.0, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3 p2(0.0, 0.0, 1.0);
+    DirectX::SimpleMath::Vector3 p3(0.0, 1.0, 0.0);
+
+    VertexPositionNormalColor v0(p0, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+    VertexPositionNormalColor v1(p1, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+    VertexPositionNormalColor v2(p2, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+    VertexPositionNormalColor v3(p3, -DirectX::SimpleMath::Vector3::UnitX, gridColor);
+
+    VertexPositionNormalColor v4(p2, -DirectX::SimpleMath::Vector3::UnitX, gridColor);
+    VertexPositionNormalColor v5(p0, -DirectX::SimpleMath::Vector3::UnitX, gridColor);
+    VertexPositionNormalColor v6(p3, -DirectX::SimpleMath::Vector3::UnitX, gridColor);
+
+    m_batch2->DrawTriangle(v0, v1, v2);
+    m_batch2->DrawTriangle(v5, v4, v3);
 }
 
 // Properties
@@ -1190,6 +1223,16 @@ void Game::Render()
     }
 
     Clear();
+    
+    auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
+    if (ilights)
+    {
+        ilights->SetLightEnabled(0, true);
+
+        static const XMVECTORF32 light{ 0.f, -1.f, 0.f, 0.f };
+        ilights->SetLightDirection(0, light);
+    }
+    
 
     // TODO: Add your rendering code here.
     // WLJ start
@@ -1338,6 +1381,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
 
     auto time = static_cast<float>(m_timer.GetTotalSeconds());
+    time = 1.0;
     float yaw = time * 0.4f;
     float pitch = time * 0.7f;
     float roll = time * 1.1f;
@@ -1347,7 +1391,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     auto light = XMVector3Rotate(g_XMOne, quat);
 
     m_effect->SetLightDirection(0, light);
-
+    m_effect2->SetLightDirection(0, light);
 
     if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
     {
