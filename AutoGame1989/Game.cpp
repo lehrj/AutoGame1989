@@ -155,15 +155,13 @@ void Game::CreateDevice()
 
 
     ///////////////////// blank texture
-    DX::ThrowIfFailed(
-        CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture.jpg", nullptr,
-            m_texture.ReleaseAndGetAddressOf()));
-
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"title.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
     // Normal map
-    DX::ThrowIfFailed(
-        CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMap.dds", nullptr,
-            m_normalMap.ReleaseAndGetAddressOf()));
-
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"BMWNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"AutoGameLogoNorm.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMap1.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     /////////////////////
 
     // TODO: Initialize device dependent objects here (independent of window size).
@@ -534,6 +532,124 @@ void Game::DrawCar()
 
     DirectX::SimpleMath::Vector3 tailTop = origin;
     tailTop.x -= 1.0f;
+    tailTop.y += 1.0f;
+    tailTop = DirectX::SimpleMath::Vector3::Transform(tailTop, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+    DirectX::SimpleMath::Vector3 tailBase = tailTop;
+    tailBase.y -= 1.0f;
+    tailBase.y = origin.y;
+
+    origin += m_carPos;
+    backLeft += m_carPos;
+    backRight += m_carPos;
+    tailTop += m_carPos;
+    tailBase += m_carPos;
+
+    DirectX::SimpleMath::Vector3 frontTop = origin;
+    frontTop.y += 1.0f;
+
+    DirectX::SimpleMath::Vector3 lineColor = DirectX::Colors::Red;
+    /*
+    DirectX::VertexPositionColor frontVert(origin, lineColor);
+    DirectX::VertexPositionColor backLeftVert(backLeft, lineColor);
+    DirectX::VertexPositionColor backRightVert(backRight, lineColor);
+    */
+    DirectX::VertexPositionNormalColor frontVert(origin, DirectX::SimpleMath::Vector3::UnitY, lineColor);
+    DirectX::VertexPositionNormalColor backLeftVert(backLeft, DirectX::SimpleMath::Vector3::UnitY, lineColor);
+    DirectX::VertexPositionNormalColor backRightVert(backRight, DirectX::SimpleMath::Vector3::UnitY, lineColor);
+    DirectX::VertexPositionNormalColor tailTopVert(tailTop, DirectX::SimpleMath::Vector3::UnitX, lineColor);
+    DirectX::VertexPositionNormalColor tailBaseVert(tailBase, DirectX::SimpleMath::Vector3::UnitX, lineColor);
+    DirectX::VertexPositionNormalColor frontTailVert(origin, DirectX::SimpleMath::Vector3::UnitX, lineColor);
+
+
+    VertexPositionNormalTexture v1(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionNormalTexture v2(backLeft, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalTexture v3(backRight, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
+
+    VertexPositionNormalTexture v4(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionNormalTexture v5(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalTexture v6(tailBase, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
+
+    VertexPositionNormalTexture v7(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionNormalTexture v8(backLeft, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalTexture v9(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
+
+    VertexPositionNormalTexture v10(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionNormalTexture v11(backRight, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalTexture v12(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
+
+
+    /*
+    VertexPositionTexture v1(origin, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionTexture v2(backLeft, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionTexture v3(backRight, DirectX::SimpleMath::Vector2(0, 1));
+    VertexPositionColorTexture v4(origin, lineColor, DirectX::SimpleMath::Vector2(.5f, 0));
+    VertexPositionColorTexture v5(backLeft, lineColor, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionColorTexture v6(backRight, lineColor, DirectX::SimpleMath::Vector2(0, 1));
+    DirectX::VertexPositionColorTexture v7(tailTop, lineColor, DirectX::SimpleMath::Vector2(.5f, 0));
+    DirectX::VertexPositionColorTexture v8(tailBase, lineColor, DirectX::SimpleMath::Vector2(1, 1));
+    DirectX::VertexPositionColorTexture v9(origin, lineColor, DirectX::SimpleMath::Vector2(0, 1));
+    */
+
+    /*
+    m_effect->SetTexture(m_texture.Get());
+    m_batch->DrawTriangle(v1, v3, v2);
+    m_effect->Apply(m_d3dContext.Get());
+    m_batch->End();
+    m_batch->Begin();
+    m_batch->DrawTriangle(v4, v5, v6);
+    //m_effect->SetTexture(m_jiLogoTexture.Get());
+    m_batch->DrawTriangle(v7, v8, v9);
+    m_effect->Apply(m_d3dContext.Get());
+    m_batch->End();
+    m_batch->Begin();
+    
+    //m_effect->SetTexture(m_bmwLogoTexture.Get());
+    m_effect->Apply(m_d3dContext.Get());
+    m_batch->DrawTriangle(v10, v11, v12);
+    */
+
+    VertexPositionNormalTexture topLeft(frontTop, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector2(0, 0));
+    VertexPositionNormalTexture topRight(tailTop, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector2(1, 0));
+    VertexPositionNormalTexture bottomRight(tailBase, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalTexture bottomLeft(origin, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector2(0, 1));
+
+    //m_effect->SetTexture(m_texture.Get());
+    m_batch->DrawQuad(topLeft, topRight, bottomRight, bottomLeft);
+    //m_effect->SetTexture(m_texture.Get());
+    //m_effect->Apply(m_d3dContext.Get());
+    //m_batch->DrawTriangle(frontVert, backLeftVert, backRightVert);
+    //m_batch->DrawTriangle(frontTailVert, tailBaseVert, tailTopVert);
+
+    //m_batch->DrawLine(frontVert, backLeftVert);
+    //m_batch->DrawLine(backLeftVert, backRightVert);
+    //m_batch->DrawLine(backRightVert, frontVert);
+
+}
+
+void Game::DrawCar2()
+{
+    DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
+    //origin += m_carPos;
+    //origin.y += .1;
+    DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::UnitX;
+
+    DirectX::SimpleMath::Vector3 leftFrontBumper = origin;
+    leftFrontBumper.z -= 1.0;
+
+    DirectX::SimpleMath::Vector3 backLeft = origin;
+    backLeft.x -= 1.0f;
+    backLeft.z += -0.2f;
+    DirectX::SimpleMath::Vector3 backRight = origin;
+    backRight.x -= 1.0f;
+    backRight.z += 0.2f;
+
+    origin = DirectX::SimpleMath::Vector3::Transform(origin, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+    backLeft = DirectX::SimpleMath::Vector3::Transform(backLeft, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+    backRight = DirectX::SimpleMath::Vector3::Transform(backRight, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+
+
+    DirectX::SimpleMath::Vector3 tailTop = origin;
+    tailTop.x -= 1.0f;
     tailTop.y += 0.2f;
     tailTop = DirectX::SimpleMath::Vector3::Transform(tailTop, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
     DirectX::SimpleMath::Vector3 tailBase = tailTop;
@@ -575,6 +691,7 @@ void Game::DrawCar()
     VertexPositionNormalTexture v11(backRight, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
     VertexPositionNormalTexture v12(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
 
+
     /*
     VertexPositionTexture v1(origin, DirectX::SimpleMath::Vector2(.5f, 0));
     VertexPositionTexture v2(backLeft, DirectX::SimpleMath::Vector2(1, 1));
@@ -598,7 +715,7 @@ void Game::DrawCar()
     m_effect->Apply(m_d3dContext.Get());
     m_batch->End();
     m_batch->Begin();
-    
+
     m_effect->SetTexture(m_bmwLogoTexture.Get());
     m_effect->Apply(m_d3dContext.Get());
     m_batch->DrawTriangle(v10, v11, v12);
@@ -879,7 +996,7 @@ void Game::DrawStartScreen()
     const std::string author = "By Lehr Jackson";
     const std::string startText = "Press Enter to Start";
     DirectX::XMVECTORF32 logoColor1 = DirectX::Colors::OrangeRed;
-    DirectX::XMVECTORF32 logoColor2 = DirectX::Colors::Orange;
+    DirectX::XMVECTORF32 logoColor2 = DirectX::Colors::White;
     DirectX::XMVECTORF32 logoColor3 = DirectX::Colors::Silver;
 
     float fontTitlePosX = m_fontPos.x;
@@ -896,12 +1013,13 @@ void Game::DrawStartScreen()
 
     //m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(7.f, 7.f), logoColor1, 0.f, titleOrigin);
     //m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(6.f, 6.f), logoColor1, 0.f, titleOrigin);
-
+    /*
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(5.f, 5.f), logoColor1, 0.f, titleOrigin);
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(4.f, 4.f), logoColor1, 0.f, titleOrigin);
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(3.f, 3.f), logoColor1, 0.f, titleOrigin);
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(2.f, 2.f), logoColor1, 0.f, titleOrigin);
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(-1.f, -1.f), logoColor3, 0.f, titleOrigin);
+    */
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos, logoColor2, 0.f, titleOrigin);
 
     m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, Colors::White, 0.f, authorOrigin);
@@ -1224,16 +1342,44 @@ void Game::Render()
 
     Clear();
     
+    /////////////////////////////////////////////////////////
+
+
+    //m_effect->SetLightDirection(0, light);
+    //m_effect2->SetLightDirection(0, light);
+
     auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
     if (ilights)
     {
         ilights->SetLightEnabled(0, true);
 
-        static const XMVECTORF32 light{ 0.f, -1.f, 0.f, 0.f };
+        //static const XMVECTORF32 light{ 0.f, -1.f, 0.f, 0.f };
+        static const XMVECTORF32 light{ 0.2f, 0.01f, -0.3f, 0.f };
+        auto time = static_cast<float>(m_timer.GetTotalSeconds());
+        time = 1.0;
+        float yaw = time * 0.4f;
+        float pitch = time * 0.7f;
+        float roll = time * 1.1f;
+
+        auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, yaw, roll);
+
+        //auto light = XMVector3Rotate(g_XMOne, quat);
+
         ilights->SetLightDirection(0, light);
     }
-    
 
+    /////////////////////////////////////////////////////////
+    /*
+    auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
+    if (ilights)
+    {
+        ilights->SetLightEnabled(0, true);
+
+        //static const XMVECTORF32 light{ 0.f, -1.f, 0.f, 0.f };
+        static const XMVECTORF32 light{ 0.2f, 0.01f, -0.3f, 0.f };
+        ilights->SetLightDirection(0, light);
+    }
+    */
     // TODO: Add your rendering code here.
     // WLJ start
     m_d3dContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
@@ -1248,7 +1394,6 @@ void Game::Render()
     //world start
     m_d3dContext->RSSetState(m_raster.Get()); // WLJ anti-aliasing  RenderTesting
     //m_d3dContext->RSSetState(m_states->CullNone());
-
 
     void const* shaderByteCode;
     size_t byteCodeLength;
@@ -1272,7 +1417,6 @@ void Game::Render()
     //DrawDebugLines();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawWorld();
         DrawCar();
 
         if (pCamera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
@@ -1308,7 +1452,10 @@ void Game::Render()
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
     
     m_batch2->Begin();
-    DrawWorld();
+    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+    {
+        //DrawWorld();
+    }
     m_batch2->End();
     
 
@@ -1381,7 +1528,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
 
     auto time = static_cast<float>(m_timer.GetTotalSeconds());
-    time = 1.0;
+    //time = 1.0;
     float yaw = time * 0.4f;
     float pitch = time * 0.7f;
     float roll = time * 1.1f;

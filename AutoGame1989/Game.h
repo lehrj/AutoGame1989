@@ -56,6 +56,7 @@ private:
     void DrawDebugLines();
     void DrawCameraFocus();
     void DrawCar();
+    void DrawCar2();
     void DrawIntroScreen();
 
     void DrawMenuEnvironmentSelect();
