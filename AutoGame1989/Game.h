@@ -58,7 +58,7 @@ private:
     void DrawCar();
     void DrawCar2();
     void DrawIntroScreen();
-
+    void DrawLightFocus();
     void DrawMenuEnvironmentSelect();
     void DrawMenuMain();
 
@@ -66,7 +66,8 @@ private:
     void DrawTeaserScreen();
 
     void DrawWorld();
-
+    void DrawWorld2();
+    void InitializeWorldGrid();
     void OnDeviceLost();
     void Present();
     void Render();
@@ -225,9 +226,10 @@ private:
 
     const bool                                  m_isInDebugMode = true;
 
-    DirectX::SimpleMath::Vector3                m_carPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3                m_carPos = DirectX::SimpleMath::Vector3(0.3, -0.3, -0.45);
     DirectX::SimpleMath::Vector3                m_carDirection = DirectX::SimpleMath::Vector3::UnitX;
     float                                       m_carAim = 0.0f;
 
-
+    DirectX::SimpleMath::Vector3                m_lightPos = DirectX::SimpleMath::Vector3::Zero;
+    std::vector<std::pair<DirectX::VertexPositionNormalColor,DirectX::VertexPositionNormalColor>>   m_worldGrid;
 };

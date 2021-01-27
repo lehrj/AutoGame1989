@@ -38,6 +38,7 @@ Game::Game() noexcept :
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
 
     m_currentUiState = UiState::UISTATE_SWING;
+    InitializeWorldGrid();
 }
 
 Game::~Game()
@@ -157,9 +158,10 @@ void Game::CreateDevice()
     ///////////////////// blank texture
     //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"title.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
     // Normal map
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"BMWNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMaplogoJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"AutoGameLogoNorm.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMap1.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     /////////////////////
@@ -179,7 +181,7 @@ void Game::CreateDevice()
     m_effect->SetNormalTexture(m_normalMap.Get());
 
     m_effect->EnableDefaultLighting();
-    m_effect->SetLightDiffuseColor(0, Colors::Gray);
+    m_effect->SetLightDiffuseColor(0, Colors::White);
 
     m_effect2 = std::make_unique<BasicEffect>(m_d3dDevice.Get());
     m_effect2->SetVertexColorEnabled(true);
@@ -502,10 +504,10 @@ void Game::DrawCameraFocus()
     VertexPositionColor yOffset(yLine, Colors::Yellow);
     VertexPositionColor xOffset(xLine, Colors::Yellow);
     VertexPositionColor zOffset(zLine, Colors::Yellow);
-    m_batch->DrawLine(origin, yOffset);
-    m_batch->DrawLine(origin, xOffset);
-    m_batch->DrawLine(origin, zOffset);
-    */
+    m_batch2->DrawLine(origin, yOffset);
+    m_batch2->DrawLine(origin, xOffset);
+    m_batch2->DrawLine(origin, zOffset);
+    */   
 }
 
 void Game::DrawCar()
@@ -513,6 +515,7 @@ void Game::DrawCar()
     DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
     //origin += m_carPos;
     //origin.y += .1;
+    
     DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::UnitX;
 
     DirectX::SimpleMath::Vector3 leftFrontBumper = origin;
@@ -525,15 +528,16 @@ void Game::DrawCar()
     backRight.x -= 1.0f;
     backRight.z += 0.2f;
 
-    origin = DirectX::SimpleMath::Vector3::Transform(origin, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
-    backLeft = DirectX::SimpleMath::Vector3::Transform(backLeft, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
-    backRight = DirectX::SimpleMath::Vector3::Transform(backRight, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+    float aim = m_carAim + Utility::ToRadians(90.0);
+    origin = DirectX::SimpleMath::Vector3::Transform(origin, DirectX::SimpleMath::Matrix::CreateRotationY(aim));
+    backLeft = DirectX::SimpleMath::Vector3::Transform(backLeft, DirectX::SimpleMath::Matrix::CreateRotationY(aim));
+    backRight = DirectX::SimpleMath::Vector3::Transform(backRight, DirectX::SimpleMath::Matrix::CreateRotationY(aim));
 
 
     DirectX::SimpleMath::Vector3 tailTop = origin;
     tailTop.x -= 1.0f;
     tailTop.y += 1.0f;
-    tailTop = DirectX::SimpleMath::Vector3::Transform(tailTop, DirectX::SimpleMath::Matrix::CreateRotationY(m_carAim));
+    tailTop = DirectX::SimpleMath::Vector3::Transform(tailTop, DirectX::SimpleMath::Matrix::CreateRotationY(aim));
     DirectX::SimpleMath::Vector3 tailBase = tailTop;
     tailBase.y -= 1.0f;
     tailBase.y = origin.y;
@@ -839,6 +843,40 @@ void Game::DrawIntroScreen()
     }
 }
 
+void Game::DrawLightFocus()
+{
+    const float line = .25f;
+    //DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
+    DirectX::SimpleMath::Vector3 focalPoint = m_lightPos;
+    DirectX::SimpleMath::Vector3 yLine = focalPoint;
+    yLine.y += line;
+    DirectX::SimpleMath::Vector3 yLine2 = focalPoint;
+    yLine2.y -= line;
+    DirectX::SimpleMath::Vector3 xLine = focalPoint;
+    xLine.x += line;
+    DirectX::SimpleMath::Vector3 xLine2 = focalPoint;
+    xLine2.x -= line;
+    DirectX::SimpleMath::Vector3 zLine = focalPoint;
+    zLine.z += line;
+    DirectX::SimpleMath::Vector3 zLine2 = focalPoint;
+    zLine2.z -= line;
+    VertexPositionNormalColor origin(focalPoint, DirectX::SimpleMath::Vector3::UnitX, Colors::Yellow);
+    VertexPositionNormalColor yOffset(yLine, DirectX::SimpleMath::Vector3::UnitX, Colors::Yellow);
+    VertexPositionNormalColor xOffset(xLine, DirectX::SimpleMath::Vector3::UnitZ, Colors::Yellow);
+    VertexPositionNormalColor zOffset(zLine, DirectX::SimpleMath::Vector3::UnitY, Colors::Yellow);
+
+    VertexPositionNormalColor yOffset2(yLine2, DirectX::SimpleMath::Vector3::UnitX, Colors::Yellow);
+    VertexPositionNormalColor xOffset2(xLine2, DirectX::SimpleMath::Vector3::UnitZ, Colors::Yellow);
+    VertexPositionNormalColor zOffset2(zLine2, DirectX::SimpleMath::Vector3::UnitY, Colors::Yellow);
+    m_batch2->DrawLine(origin, yOffset);
+    m_batch2->DrawLine(origin, xOffset);
+    m_batch2->DrawLine(origin, zOffset);
+
+    m_batch2->DrawLine(origin, yOffset2);
+    m_batch2->DrawLine(origin, xOffset2);
+    m_batch2->DrawLine(origin, zOffset2);
+}
+
 void Game::DrawMenuEnvironmentSelect()
 {
 
@@ -1101,7 +1139,65 @@ void Game::DrawTeaserScreen()
 }
 
 void Game::DrawWorld()
-{
+{  
+    for (int i = 0; i < m_worldGrid.size(); ++i)
+    {
+        m_batch2->DrawLine(m_worldGrid[i].first, m_worldGrid[i].second);
+    }
+
+    DirectX::XMVECTORF32 gridColor = DirectX::Colors::Red;
+    DirectX::XMVECTORF32 gridColor1 = DirectX::Colors::LawnGreen;
+    DirectX::XMVECTORF32 gridColor2 = DirectX::Colors::White;
+
+    /*
+    const float maxX = 2.0;
+    const float maxY = 1.0;
+    const float maxZ = 2.0;
+    const float minX = -2.0;
+    const float minY = -1.0;
+    const float minZ = -2.0;
+    const float increment = 0.1;
+    DirectX::SimpleMath::Vector3 p1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 p2 = DirectX::SimpleMath::Vector3::Zero;
+
+
+    // start xlines
+    
+    p1.x = minX;
+    p2.x = minX;
+    p1.z = minZ;
+    p2.z = maxZ;
+    while (p1.x <= maxX)
+    {
+        if (p1.x == 0.0)
+        {
+            VertexPositionNormalColor v1(p1, DirectX::SimpleMath::Vector3::UnitY, gridColor2);
+            VertexPositionNormalColor v2(p2, DirectX::SimpleMath::Vector3::UnitY, gridColor2);
+            m_batch2->DrawLine(v1, v2);
+        }
+        else
+        {
+            VertexPositionNormalColor v1(p1, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            VertexPositionNormalColor v2(p2, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            m_batch2->DrawLine(v1, v2);
+        }
+        p1.x += increment;
+        p2.x += increment;
+    }
+
+    p1.x = minX;
+    p2.x = maxX;
+    p1.z = minZ;
+    p2.z = minZ;
+    while (p1.z <= maxZ)
+    {
+        VertexPositionNormalColor v1(p1, DirectX::SimpleMath::Vector3::UnitY, gridColor2);
+        VertexPositionNormalColor v2(p2, DirectX::SimpleMath::Vector3::UnitY, gridColor2);
+        m_batch2->DrawLine(v1, v2);
+        p1.z += increment;
+        p2.z += increment;
+    }
+    */
     
     // draw world grid
     DirectX::SimpleMath::Vector3 xAxis(2.f, 0.f, 0.f);
@@ -1110,7 +1206,7 @@ void Game::DrawWorld()
     DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
     size_t divisions = 50;
     size_t extention = 50;
-    DirectX::XMVECTORF32 gridColor = DirectX::Colors::White;
+    
     for (size_t i = 0; i <= divisions + extention; ++i)
     {
         float fPercent = float(i) / float(divisions);
@@ -1118,16 +1214,15 @@ void Game::DrawWorld()
         DirectX::SimpleMath::Vector3 scale = xAxis * fPercent + origin;
         if (scale.x == 0.0f)
         {
-            //VertexPositionColor v1(scale - zAxis, gridColor);
-            //VertexPositionColor v2(scale + zAxis, gridColor);
-            VertexPositionColor v1(scale - zAxis, DirectX::Colors::LawnGreen); // Center line
-            VertexPositionColor v2(scale + zAxis, DirectX::Colors::LawnGreen); // Center line
+            VertexPositionNormalColor v1(scale - zAxis, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::LawnGreen); // Center line
+            VertexPositionNormalColor v2(scale + zAxis, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::LawnGreen); // Center line
+
             //m_batch2->DrawLine(v1, v2);
         }
         else
         {
-            VertexPositionColor v1(scale - zAxis, gridColor);
-            VertexPositionColor v2(scale + zAxis, gridColor);
+            VertexPositionNormalColor v1(scale - zAxis, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            VertexPositionNormalColor v2(scale + zAxis, DirectX::SimpleMath::Vector3::UnitY, gridColor);
             //m_batch2->DrawLine(v1, v2);
         }
     }
@@ -1138,30 +1233,86 @@ void Game::DrawWorld()
         DirectX::SimpleMath::Vector3 scale = zAxis * fPercent + origin;
         if (scale.z == 0.0f)
         {
-            //VertexPositionColor v1(scale - xAxis, gridColor); // Center line
-            //VertexPositionColor v2(scale + xFarAxis, gridColor); // Center line
-            VertexPositionColor v1(scale - xAxis, DirectX::Colors::LawnGreen); // Center line
-            VertexPositionColor v2(scale + xFarAxis, DirectX::Colors::LawnGreen); // Center line
+            VertexPositionNormalColor v1(scale - xAxis, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::LawnGreen); // Center line
+            VertexPositionNormalColor v2(scale + xFarAxis, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::LawnGreen); // Center line
             //m_batch2->DrawLine(v1, v2);
         }
         else
         {
-            VertexPositionColor v1(scale - xAxis, gridColor);
-            VertexPositionColor v2(scale + xFarAxis, gridColor);
+            VertexPositionNormalColor v1(scale - xAxis, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            VertexPositionNormalColor v2(scale + xFarAxis, DirectX::SimpleMath::Vector3::UnitY, gridColor);
             //m_batch2->DrawLine(v1, v2);
         }
     }
-    /*
+
+    
     DirectX::SimpleMath::Vector3 p0 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 p1(1.0, 0.5, -1.0);
-    DirectX::SimpleMath::Vector3 p2(1.0, 0.0, 1.0);
-    VertexPositionColor v0(p0, gridColor);
-    VertexPositionColor v1(p1, gridColor);
-    VertexPositionColor v2(p2, gridColor);
+    DirectX::SimpleMath::Vector3 p4(1.0, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3 p5(0.0, 0.0, 1.0);
+    DirectX::SimpleMath::Vector3 p3(0.0, 1.0, 0.0);
+
+    VertexPositionNormalColor v0(p0, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+    VertexPositionNormalColor v1(p4, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+    VertexPositionNormalColor v2(p5, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+    VertexPositionNormalColor v3(p3, -DirectX::SimpleMath::Vector3::UnitX, gridColor);
+
+    VertexPositionNormalColor v4(p5, -DirectX::SimpleMath::Vector3::UnitX, gridColor);
+    VertexPositionNormalColor v5(p0, -DirectX::SimpleMath::Vector3::UnitX, gridColor);
+    VertexPositionNormalColor v6(p3, -DirectX::SimpleMath::Vector3::UnitX, gridColor);
 
     m_batch2->DrawTriangle(v0, v1, v2);
-    */
-    
+    m_batch2->DrawTriangle(v5, v4, v3);
+}
+
+void Game::DrawWorld2()
+{
+    // draw world grid
+    DirectX::SimpleMath::Vector3 xAxis(2.f, 0.f, 0.f);
+    DirectX::SimpleMath::Vector3 xFarAxis(6.f, 0.f, 0.f);
+    DirectX::SimpleMath::Vector3 zAxis(0.f, 0.f, 2.f);
+    DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
+    size_t divisions = 50;
+    size_t extention = 50;
+    DirectX::XMVECTORF32 gridColor = DirectX::Colors::Red;
+    for (size_t i = 0; i <= divisions + extention; ++i)
+    {
+        float fPercent = float(i) / float(divisions);
+        fPercent = (fPercent * 2.0f) - 1.0f;
+        DirectX::SimpleMath::Vector3 scale = xAxis * fPercent + origin;
+        if (scale.x == 0.0f)
+        {
+            VertexPositionNormalColor v1(scale - zAxis, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::LawnGreen); // Center line
+            VertexPositionNormalColor v2(scale + zAxis, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::LawnGreen); // Center line
+
+            m_batch2->DrawLine(v1, v2);
+        }
+        else
+        {
+            VertexPositionNormalColor v1(scale - zAxis, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            VertexPositionNormalColor v2(scale + zAxis, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            m_batch2->DrawLine(v1, v2);
+        }
+    }
+    for (size_t i = 0; i <= divisions; i++)
+    {
+        float fPercent = float(i) / float(divisions);
+        fPercent = (fPercent * 2.0f) - 1.0f;
+        DirectX::SimpleMath::Vector3 scale = zAxis * fPercent + origin;
+        if (scale.z == 0.0f)
+        {
+            VertexPositionNormalColor v1(scale - xAxis, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::LawnGreen); // Center line
+            VertexPositionNormalColor v2(scale + xFarAxis, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::LawnGreen); // Center line
+            m_batch2->DrawLine(v1, v2);
+        }
+        else
+        {
+            VertexPositionNormalColor v1(scale - xAxis, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            VertexPositionNormalColor v2(scale + xFarAxis, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            m_batch2->DrawLine(v1, v2);
+        }
+    }
+
+
     DirectX::SimpleMath::Vector3 p0 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 p1(1.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector3 p2(0.0, 0.0, 1.0);
@@ -1178,6 +1329,10 @@ void Game::DrawWorld()
 
     m_batch2->DrawTriangle(v0, v1, v2);
     m_batch2->DrawTriangle(v5, v4, v3);
+
+    VertexPositionNormalColor v7(DirectX::SimpleMath::Vector3(2.0, 0.0, -.2), DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::White);
+    VertexPositionNormalColor v8(DirectX::SimpleMath::Vector3(-2.0, 0.0, -.2), DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::White);
+    m_batch2->DrawLine(v7, v8);
 }
 
 // Properties
@@ -1208,7 +1363,6 @@ void Game::Initialize(HWND window, int width, int height)
 
     // WLJ add for mouse and keybord interface
     m_keyboard = std::make_unique<DirectX::Keyboard>();
-
     m_mouse = std::make_unique<Mouse>();
     m_mouse->SetWindow(window);
 
@@ -1220,6 +1374,112 @@ void Game::Initialize(HWND window, int width, int height)
     m_audioEngine = std::make_unique<AudioEngine>(eflags);
     m_retryAudio = false;
     m_audioBank = std::make_unique<WaveBank>(m_audioEngine.get(), L"audioBank.xwb");
+}
+
+void Game::InitializeWorldGrid()
+{
+    m_worldGrid.clear();
+
+    const DirectX::SimpleMath::Vector3 gridNorm = DirectX::SimpleMath::Vector3::UnitY;
+    const float maxX = 2.0;
+    const float maxY = 1.0;
+    const float maxZ = 2.0;
+    const float minX = -2.0;
+    const float minY = -1.0;
+    const float minZ = -2.0;
+    const float increment = 0.1;
+    DirectX::SimpleMath::Vector3 p1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 p2 = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::XMVECTORF32 gridColor = DirectX::Colors::Red;
+    DirectX::XMVECTORF32 gridColor1 = DirectX::Colors::LawnGreen;
+    DirectX::XMVECTORF32 gridColor2 = DirectX::Colors::White;
+    DirectX::XMVECTORF32 gridColor3 = DirectX::Colors::Gray;
+    DirectX::XMVECTORF32 gridColor4 = DirectX::Colors::LightGray;
+    DirectX::XMVECTORF32 gridColor5 = DirectX::Colors::Yellow;
+    // start xlines
+    /*
+    p1.x = minX;
+    p2.x = minX;
+    p1.z = minZ;
+    p2.z = maxZ;
+    while (p1.x <= maxX)
+    {
+        if (p1.x == 0.0)
+        {
+            VertexPositionNormalColor v1(p1, DirectX::SimpleMath::Vector3::UnitY, gridColor2);
+            VertexPositionNormalColor v2(p2, DirectX::SimpleMath::Vector3::UnitY, gridColor2);
+            m_worldGrid.push_back(std::pair(v1, v2));
+            //m_batch2->DrawLine(v1, v2);
+        }
+        else
+        {
+            VertexPositionNormalColor v1(p1, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            VertexPositionNormalColor v2(p2, DirectX::SimpleMath::Vector3::UnitY, gridColor);
+            m_worldGrid.push_back(std::pair(v1, v2));
+            //m_batch2->DrawLine(v1, v2);
+        }
+        p1.x += increment;
+        p2.x += increment;
+    }
+
+    p1.x = minX;
+    p2.x = maxX;
+    p1.z = minZ;
+    p2.z = minZ;
+    while (p1.z <= maxZ)
+    {
+        VertexPositionNormalColor v1(p1, DirectX::SimpleMath::Vector3::UnitY, gridColor2);
+        VertexPositionNormalColor v2(p2, DirectX::SimpleMath::Vector3::UnitY, gridColor2);
+        m_worldGrid.push_back(std::pair(v1, v2));
+        //m_batch2->DrawLine(v1, v2);
+        p1.z += increment;
+        p2.z += increment;
+    }
+    */
+
+    const int hightLightIncrement = 10;
+    p1 = DirectX::SimpleMath::Vector3::Zero;
+    p2 = DirectX::SimpleMath::Vector3::Zero;
+    p1.x = minX;
+    p2.x = maxX;
+    VertexPositionNormalColor v1(p1, gridNorm, gridColor2);
+    VertexPositionNormalColor v2(p2, gridNorm, gridColor2);
+    m_worldGrid.push_back(std::pair(v1, v2));
+    int i = 0;
+    while (p1.z <= maxZ)
+    {
+        ++i;
+        if (i % hightLightIncrement == 0)
+        {
+            v1 = VertexPositionNormalColor(DirectX::SimpleMath::Vector3(p1.x, p1.y, p1.z + increment), gridNorm, gridColor2);
+            v2 = VertexPositionNormalColor(DirectX::SimpleMath::Vector3(p2.x, p2.y, p2.z + increment), gridNorm, gridColor2);
+        }
+        else
+        {
+            v1 = VertexPositionNormalColor(DirectX::SimpleMath::Vector3(p1.x, p1.y, p1.z + increment), gridNorm, gridColor1);
+            v2 = VertexPositionNormalColor(DirectX::SimpleMath::Vector3(p2.x, p2.y, p2.z + increment), gridNorm, gridColor1);
+        }
+
+        m_worldGrid.push_back(std::pair(v1, v2));
+        p1.z += increment;
+        p2.z += increment;
+
+    }
+
+    p1.z = 0.0;
+    p2.z = 0.0;
+    p1.y = 0.0;
+    p1.y = 0.0;
+    while (p1.z >= minZ)
+    {
+        v1 = VertexPositionNormalColor(DirectX::SimpleMath::Vector3(p1.x, p1.y, p1.z - increment), gridNorm, gridColor2);
+        v2 = VertexPositionNormalColor(DirectX::SimpleMath::Vector3(p2.x, p2.y, p2.z - increment), gridNorm, gridColor2);
+        m_worldGrid.push_back(std::pair(v1, v2));
+        p1.z -= increment;
+        p2.z -= increment;
+    }
+
 }
 
 // Message handlers
@@ -1354,16 +1614,22 @@ void Game::Render()
         ilights->SetLightEnabled(0, true);
 
         //static const XMVECTORF32 light{ 0.f, -1.f, 0.f, 0.f };
-        static const XMVECTORF32 light{ 0.2f, 0.01f, -0.3f, 0.f };
+        //static const XMVECTORF32 light{ 0.2f, 0.01f, -0.3f, 0.f };
         auto time = static_cast<float>(m_timer.GetTotalSeconds());
-        time = 1.0;
+        //time = 1.0;
+        float yaw = time * 0.0f;
+        float pitch = time * 0.5f;
+        float roll = time * 0.0f;
+        /*
         float yaw = time * 0.4f;
         float pitch = time * 0.7f;
         float roll = time * 1.1f;
-
+        */
         auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, yaw, roll);
 
-        //auto light = XMVector3Rotate(g_XMOne, quat);
+        auto light = XMVector3Rotate(g_XMOne, quat);
+
+        m_lightPos = light;
 
         ilights->SetLightDirection(0, light);
     }
@@ -1454,7 +1720,8 @@ void Game::Render()
     m_batch2->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawWorld();
+        DrawLightFocus();
+        DrawWorld();
     }
     m_batch2->End();
     
@@ -1537,8 +1804,8 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     auto light = XMVector3Rotate(g_XMOne, quat);
 
-    m_effect->SetLightDirection(0, light);
-    m_effect2->SetLightDirection(0, light);
+    //m_effect->SetLightDirection(0, light);
+    //m_effect2->SetLightDirection(0, light);
 
     if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
     {
