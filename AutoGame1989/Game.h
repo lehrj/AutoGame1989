@@ -66,7 +66,6 @@ private:
     void DrawTeaserScreen();
 
     void DrawWorld();
-    void DrawWorld2();
     void InitializeWorldGrid();
     void OnDeviceLost();
     void Present();
