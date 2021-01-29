@@ -59,6 +59,7 @@ private:
     void DrawCar2();
     void DrawIntroScreen();
     void DrawLightFocus();
+    void DrawLightFocus1();
     void DrawMenuEnvironmentSelect();
     void DrawMenuMain();
 
@@ -66,6 +67,7 @@ private:
     void DrawTeaserScreen();
 
     void DrawWorld();
+    void DrawWorldCube();
     void InitializeWorldGrid();
     void OnDeviceLost();
     void Present();
@@ -103,7 +105,8 @@ private:
     //using VertexType = DirectX::VertexPositionNormalColor;
     //using VertexType = DirectX::VertexPositionTexture;
     //using VertexType = DirectX::VertexPositionColorTexture;
-    using VertexType = DirectX::VertexPositionNormalTexture;
+    using VertexType = DirectX::VertexPositionNormalColorTexture;
+    
     using VertexType2 = DirectX::VertexPositionNormalColor;
 
     std::unique_ptr<DirectX::CommonStates>          m_states;   
@@ -229,6 +232,11 @@ private:
     DirectX::SimpleMath::Vector3                m_carDirection = DirectX::SimpleMath::Vector3::UnitX;
     float                                       m_carAim = 0.0f;
 
-    DirectX::SimpleMath::Vector3                m_lightPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3                m_cameraFocusPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3                m_lightPos1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3                m_lightPos2 = DirectX::SimpleMath::Vector3::Zero;
     std::vector<std::pair<DirectX::VertexPositionNormalColor,DirectX::VertexPositionNormalColor>>   m_worldGrid;
+
+    bool                                        m_moveLightWithCameraFocus1 = false;
+    bool                                        m_moveLightWithCameraFocus2 = false;
 };
