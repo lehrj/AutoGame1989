@@ -169,8 +169,12 @@ void Game::CreateDevice()
     m_world = DirectX::SimpleMath::Matrix::Identity;
     m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
 
-    //m_lightEffect = std::shared_ptr<DirectX::BasicEffect>(m_d3dDevice.Get());
-    //m_lightEffect = std::make_unique<DirectX::IEffect>;// (m_d3dDevice.Get());
+    /*
+    m_lightEffect = std::make_unique<DirectX::BasicEffect>(m_d3dDevice.Get());
+    m_lightEffect = std::shared_ptr<DirectX::BasicEffect>(m_d3dDevice.Get());
+    m_lightEffect = std::make_unique<DirectX::IEffect>;// (m_d3dDevice.Get());
+    m_lightEffect = std::make_unique<DirectX::IEffect>(m_d3dDevice.Get());
+    */
 
     m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
     
@@ -182,44 +186,10 @@ void Game::CreateDevice()
     m_effect->SetLightDiffuseColor(0, Colors::White);
 
     m_effect2 = std::make_unique<BasicEffect>(m_d3dDevice.Get());
+    //m_effect2 = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
     m_effect2->SetVertexColorEnabled(true);
     m_effect2->EnableDefaultLighting();
     m_effect2->SetLightDiffuseColor(0, Colors::Gray);
-
-
-    /*
-
-
-    m_effect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
-    m_effect->SetTextureEnabled(true);
-    // Make sure you called CreateWICTextureFromFile before this point!
-    m_effect->SetTexture(m_texture.Get());
-    */
-
-    /*
-    m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
-    // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
-    m_effect->SetTexture(m_texture.Get());
-    m_effect->SetNormalTexture(m_normalMap.Get());
-    m_effect->EnableDefaultLighting();
-    m_effect->SetLightDiffuseColor(0, Colors::Gray);
-    */
-
-
-
-    /// <summary>
-    /*
-    m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
-    //m_effect->SetVertexColorEnabled(true);
-    // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
-    //m_effect->SetTexture(m_texture.Get());
-    m_effect->SetNormalTexture(m_normalMap.Get());
-    m_effect->EnableDefaultLighting();
-    m_effect->SetLightDiffuseColor(0, Colors::Gray);
-    /// </summary>
-    void const* shaderByteCode;
-    size_t byteCodeLength;
-    */
 
 
     void const* shaderByteCode2;
@@ -1307,8 +1277,6 @@ void Game::DrawWorld()
     VertexPositionNormalColor vSe(se, planeNorm, planeColor);
     VertexPositionNormalColor vSw(sw, planeNorm, planeColor);
     //m_batch2->DrawQuad(vNw, vNe, vSe, vSw);
-
-
 }
 
 void Game::DrawWorldCube()
@@ -1331,7 +1299,10 @@ void Game::DrawWorldCube()
     DirectX::SimpleMath::Vector3 normY = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 normZ = DirectX::SimpleMath::Vector3::UnitZ;
     
-
+    DirectX::SimpleMath::Vector3 testNorm = DirectX::SimpleMath::Vector3::UnitX;
+    //normX = testNorm;
+    //normY = testNorm;
+    //normZ = testNorm;
 
     // Top
     VertexPositionNormalColor vTopFrontLeft(topFrontLeft, -normY, planeColor1);
@@ -1375,7 +1346,75 @@ void Game::DrawWorldCube()
     m_batch2->DrawQuad(vRightSideFrontBottom, vRightSideBackBottom, vRightSideBackTop, vRightSideFrontTop);
     m_batch2->DrawQuad(vBackLeftBottom, vBackRightBottom, vBackRightTop, vBackLeftTop);
     m_batch2->DrawQuad(vFrontLeftBottom, vFrontRightBottom, vFrontRightTop, vFrontLeftTop);
+}
 
+void Game::DrawWorldCubeTextured()
+{
+    DirectX::XMVECTORF32 planeColor0 = DirectX::Colors::White;
+    DirectX::XMVECTORF32 planeColor1 = DirectX::Colors::White;
+    DirectX::XMVECTORF32 planeColor2 = DirectX::Colors::Red;
+    const float halfLength = 2.0;
+
+    DirectX::SimpleMath::Vector3 topFrontLeft(-halfLength, halfLength, -halfLength);
+    DirectX::SimpleMath::Vector3 topFrontRight(-halfLength, halfLength, halfLength);
+    DirectX::SimpleMath::Vector3 topBackLeft(halfLength, halfLength, -halfLength);
+    DirectX::SimpleMath::Vector3 topBackRight(halfLength, halfLength, halfLength);
+    DirectX::SimpleMath::Vector3 bottomFrontLeft(-halfLength, -halfLength, -halfLength);
+    DirectX::SimpleMath::Vector3 bottomFrontRight(-halfLength, -halfLength, halfLength);
+    DirectX::SimpleMath::Vector3 bottomBackLeft(halfLength, -halfLength, -halfLength);
+    DirectX::SimpleMath::Vector3 bottomBackRight(halfLength, -halfLength, halfLength);
+
+    DirectX::SimpleMath::Vector3 normX = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 normY = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 normZ = DirectX::SimpleMath::Vector3::UnitZ;
+
+    DirectX::SimpleMath::Vector3 testNorm = DirectX::SimpleMath::Vector3::UnitX;
+    //normX = testNorm;
+    //normY = testNorm;
+    //normZ = testNorm;
+
+    // Top
+    VertexPositionNormalColorTexture vTopFrontLeft(topFrontLeft, -normY, planeColor1, DirectX::SimpleMath::Vector2(0, 0));
+    VertexPositionNormalColorTexture vTopFrontRight(topFrontRight, -normY, planeColor1, DirectX::SimpleMath::Vector2(1, 0));
+    VertexPositionNormalColorTexture vTopBackLeft(topBackLeft, -normY, planeColor1, DirectX::SimpleMath::Vector2(0, 1));
+    VertexPositionNormalColorTexture vTopBackRight(topBackRight, -normY, planeColor1, DirectX::SimpleMath::Vector2(1, 1));
+    
+    // Bottom
+    VertexPositionNormalColorTexture vBottomFrontLeft(bottomFrontLeft, normY, planeColor1, DirectX::SimpleMath::Vector2(0, 1));
+    VertexPositionNormalColorTexture vBottomFrontRight(bottomFrontRight, normY, planeColor1, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalColorTexture vBottomBackLeft(bottomBackLeft, normY, planeColor1, DirectX::SimpleMath::Vector2(0, 0));
+    VertexPositionNormalColorTexture vBottomBackRight(bottomBackRight, normY, planeColor1, DirectX::SimpleMath::Vector2(1, 0));
+
+    // Left Side
+    VertexPositionNormalColorTexture vLeftSideFrontBottom(bottomFrontLeft, normX, planeColor1, DirectX::SimpleMath::Vector2(0, 1));
+    VertexPositionNormalColorTexture vLeftSideBackBottom(bottomBackLeft, normX, planeColor1, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalColorTexture vLeftSideBackTop(topBackLeft, normX, planeColor1, DirectX::SimpleMath::Vector2(1, 0));
+    VertexPositionNormalColorTexture vLeftSideFrontTop(topFrontLeft, normX, planeColor1, DirectX::SimpleMath::Vector2(0, 0));
+
+    // Right Side
+    VertexPositionNormalColorTexture vRightSideFrontBottom(bottomFrontRight, -normZ, planeColor1, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalColorTexture vRightSideBackBottom(bottomBackRight, -normZ, planeColor1, DirectX::SimpleMath::Vector2(0, 1));
+    VertexPositionNormalColorTexture vRightSideBackTop(topBackRight, -normZ, planeColor1, DirectX::SimpleMath::Vector2(0, 0));
+    VertexPositionNormalColorTexture vRightSideFrontTop(topFrontRight, -normZ, planeColor1, DirectX::SimpleMath::Vector2(1, 0));
+
+    // Back
+    VertexPositionNormalColorTexture vBackLeftBottom(bottomBackLeft, -normZ, planeColor1, DirectX::SimpleMath::Vector2(0, 1));
+    VertexPositionNormalColorTexture vBackRightBottom(bottomBackRight, -normZ, planeColor1, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalColorTexture vBackRightTop(topBackRight, -normZ, planeColor1, DirectX::SimpleMath::Vector2(1, 0));
+    VertexPositionNormalColorTexture vBackLeftTop(topBackLeft, -normZ, planeColor1, DirectX::SimpleMath::Vector2(0, 0));
+
+    // Front
+    VertexPositionNormalColorTexture vFrontLeftBottom(bottomFrontLeft, normX, planeColor1, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalColorTexture vFrontRightBottom(bottomFrontRight, normX, planeColor1, DirectX::SimpleMath::Vector2(0, 1));
+    VertexPositionNormalColorTexture vFrontRightTop(topFrontRight, normX, planeColor1, DirectX::SimpleMath::Vector2(0, 0));
+    VertexPositionNormalColorTexture vFrontLeftTop(topFrontLeft, normX, planeColor1, DirectX::SimpleMath::Vector2(1, 0));
+    
+    m_batch->DrawQuad(vTopFrontLeft, vTopFrontRight, vTopBackRight, vTopBackLeft);   
+    m_batch->DrawQuad(vBottomFrontLeft, vBottomFrontRight, vBottomBackRight, vBottomBackLeft);
+    m_batch->DrawQuad(vLeftSideFrontBottom, vLeftSideBackBottom, vLeftSideBackTop, vLeftSideFrontTop);
+    m_batch->DrawQuad(vRightSideFrontBottom, vRightSideBackBottom, vRightSideBackTop, vRightSideFrontTop);
+    m_batch->DrawQuad(vBackLeftBottom, vBackRightBottom, vBackRightTop, vBackLeftTop);
+    m_batch->DrawQuad(vFrontLeftBottom, vFrontRightBottom, vFrontRightTop, vFrontLeftTop);   
 }
 
 // Properties
@@ -1757,6 +1796,8 @@ void Game::Render()
         //m_lightPos = light;
         light2 = m_lightPos2;
         ilights2->SetLightDirection(0, light2);
+
+        
     }
 
     /////////////////////////////////////////////////////////
@@ -1809,7 +1850,7 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         DrawCar();
-
+        DrawWorldCubeTextured();
         if (pCamera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
         {
 
@@ -1849,7 +1890,7 @@ void Game::Render()
         DrawLightFocus();
         DrawLightFocus1();
         DrawWorld();
-        DrawWorldCube();
+        //DrawWorldCube();
     }
     m_batch2->End();
     
