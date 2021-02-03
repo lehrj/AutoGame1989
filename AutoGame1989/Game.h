@@ -62,7 +62,7 @@ private:
     void DrawLightFocus1();
     void DrawMenuEnvironmentSelect();
     void DrawMenuMain();
-
+    void DrawShape();
     void DrawStartScreen();
     void DrawTeaserScreen();
 
@@ -125,6 +125,8 @@ private:
 
     std::shared_ptr<DirectX::IEffect>               m_lightEffect;
     //std::unique_ptr<DirectX::IEffect>               m_lightEffect;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    m_shape;
 
     //world start 
     DirectX::SimpleMath::Matrix                     m_world;
