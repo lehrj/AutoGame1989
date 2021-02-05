@@ -154,16 +154,24 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(device.As(&m_d3dDevice));
     DX::ThrowIfFailed(context.As(&m_d3dContext));
 
+
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
     ///////////////////// blank texture
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"title.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
     // Normal map
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"WikiNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"WikiNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMaplogoJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"AutoGameLogoNorm.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMap1.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
     /////////////////////
 
     // TODO: Initialize device dependent objects here (independent of window size).
@@ -182,12 +190,12 @@ void Game::CreateDevice()
     // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
     m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
-    m_effect->EnableDefaultLighting();
+    //m_effect->EnableDefaultLighting();
     m_effect->SetLightDiffuseColor(0, Colors::White);
     //m_effect->SetEmissiveColor(DirectX::Colors::Red);
     m_effect->SetAlpha(1.0);
     //m_effect->SetAmbientLightColor(DirectX::Colors::White);
-    m_effect->SetSpecularColor(DirectX::Colors::Red);
+    //m_effect->SetSpecularColor(DirectX::Colors::Red);
     //m_effect->SetProjection(DirectX::SimpleMath::Matrix::Identity);
 
     m_effect->SetFogEnabled(false);
@@ -216,7 +224,7 @@ void Game::CreateDevice()
 
     //CreateSphere(std::vector<VertexType>&vertices, std::vector<uint16_t>&indices, float diameter = 1, size_t tessellation = 16, bool rhcoords = true, bool invertn = false);
     m_shape = GeometricPrimitive::CreateSphere(m_d3dContext.Get());
-    m_shape = GeometricPrimitive::CreateSphere
+    
 
     CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
         D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
@@ -796,6 +804,97 @@ void Game::DrawDebugLines()
         m_batch->DrawLine(debugLines[i].first, debugLines[i].second);
     }
     */
+}
+
+void Game::DrawIntroScene()
+{
+    const float fadeDuration = 1.5f;
+    const float logoDisplayDuration = 5.f;
+    const float logoDisplayGap = 1.f;
+    const float startDelay = 4.2f;
+    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+
+    const float fadeInStart1 = startDelay;
+    const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd1 = startDelay + fadeDuration;
+    const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
+    const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
+    const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    const float fadeOutEnd1 = startDelay + logoDisplayDuration;
+    const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+
+    const float height = .5f;
+    const float width = .888888888f;
+    const float distance = 1.1f;
+    const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
+    const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+    //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    
+    //m_effect->EnableDefaultLighting();
+    m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(0.05333332, 0.09882354, 0.1819608));
+    m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
+    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
+
+    //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
+    //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
+
+    DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
+    DirectX::SimpleMath::Vector3 topRight(distance, height, width);
+    DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
+    DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
+
+    if (timeStamp < 5.0)
+    {
+        //  "../AutoGame1989/Art/logoJI.png"
+        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+        m_effect->SetTexture(m_texture.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        //m_effect->Apply(m_d3dContext.Get());
+    }
+    else if (timeStamp < 9.0)
+    {
+        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+        m_effect->SetTexture(m_texture.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        //m_effect->Apply(m_d3dContext.Get());
+    }
+    else
+    {
+        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+        m_effect->SetTexture(m_texture.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        //m_effect->Apply(m_d3dContext.Get());
+    }
+
+    
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    m_effect->SetTexture(m_texture.Get());
+    m_effect->SetNormalTexture(m_normalMap.Get());
+    
+    //m_effect->EnableDefaultLighting();
+    m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
+    /*
+    //m_effect->SetDiffuseColor(DirectX::SimpleMath::Vector3::Zero);
+    m_effect->SetEmissiveColor(DirectX::SimpleMath::Vector3::Zero);
+    m_effect->SetLightDiffuseColor(0, DirectX::SimpleMath::Vector3::Zero);
+    m_effect->SetLightSpecularColor(0, DirectX::SimpleMath::Vector3::Zero);
+    m_effect->SetSpecularColor(DirectX::SimpleMath::Vector3::Zero);
+    */
+
+    VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
+    VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
+    VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
+
+    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);    
 }
 
 void Game::DrawIntroScreen()
@@ -1892,9 +1991,10 @@ void Game::Render()
     //DrawDebugLines();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
+        DrawIntroScene();
         //DrawShape();
         //DrawCar();
-        DrawWorldCubeTextured();
+        //DrawWorldCubeTextured();
         if (pCamera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
         {
 
@@ -1926,7 +2026,7 @@ void Game::Render()
     //m_d3dContext->PSSetSamplers(0, 1, &sampler);
     ////
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
-    DrawShape();
+    //DrawShape();
     m_batch2->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {

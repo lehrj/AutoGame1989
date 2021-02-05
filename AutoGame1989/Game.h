@@ -58,6 +58,7 @@ private:
     void DrawCar();
     void DrawCar2();
     void DrawIntroScreen();
+    void DrawIntroScene();
     void DrawLightFocus();
     void DrawLightFocus1();
     void DrawMenuEnvironmentSelect();

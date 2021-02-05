@@ -93,6 +93,24 @@
     <Image Include="NormalMap.dds">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\logoAutoGame.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\logoBMW.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\logoJI.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMapAutoGame.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMapBMW.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMapJI.dds">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">
