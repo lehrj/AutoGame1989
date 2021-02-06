@@ -111,6 +111,12 @@
     <Image Include="Art\NormalMapJI.dds">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\NormalMapTeaser.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\logoTeaser.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

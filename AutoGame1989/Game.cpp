@@ -36,7 +36,7 @@ Game::Game() noexcept :
         m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
-
+    
     m_currentUiState = UiState::UISTATE_SWING;
     InitializeWorldGrid();
 }
@@ -866,21 +866,31 @@ void Game::DrawIntroScene()
     {
         DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
         DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
+        
         m_effect->SetTexture(m_texture.Get());
         m_effect->SetNormalTexture(m_normalMap.Get());
         //m_effect->Apply(m_d3dContext.Get());
     }
 
     
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
 
     m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
     
-    //m_effect->EnableDefaultLighting();
-    m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
+    m_effect->EnableDefaultLighting();
+    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
     /*
     //m_effect->SetDiffuseColor(DirectX::SimpleMath::Vector3::Zero);
     m_effect->SetEmissiveColor(DirectX::SimpleMath::Vector3::Zero);
@@ -889,12 +899,20 @@ void Game::DrawIntroScene()
     m_effect->SetSpecularColor(DirectX::SimpleMath::Vector3::Zero);
     */
 
+    /*
+    m_effect->SetFogEnabled(true);
+    m_effect->SetFogStart(cosf(timeStamp) + 1.0);
+    m_effect->SetFogEnd(cosf(timeStamp) + 2.0);
+    */
+
     VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
     VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
     VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
     VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
 
-    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);    
+    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);    
+    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+    m_batch->DrawQuad(vertTopLeft, vertBottomLeft, vertBottomRight, vertTopRight);
 }
 
 void Game::DrawIntroScreen()
