@@ -154,23 +154,21 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(device.As(&m_d3dDevice));
     DX::ThrowIfFailed(context.As(&m_d3dContext));
 
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"WikiNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
 
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
 
-    ///////////////////// blank texture
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"title.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    // Normal map
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
 
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"WikiNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMaplogoJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"AutoGameLogoNorm.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"NormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Texture.jpg", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
 
     /////////////////////
 
@@ -806,7 +804,7 @@ void Game::DrawDebugLines()
     */
 }
 
-void Game::DrawIntroScene()
+void Game::DrawIntroScene2()
 {
     const float fadeDuration = 1.5f;
     const float logoDisplayDuration = 5.f;
@@ -829,7 +827,7 @@ void Game::DrawIntroScene()
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
     //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-    
+
     //m_effect->EnableDefaultLighting();
     m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(0.05333332, 0.09882354, 0.1819608));
     m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
@@ -843,6 +841,316 @@ void Game::DrawIntroScene()
     DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
     DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
 
+    /*
+    if (timeStamp < 5.0)
+    {
+        //  "../AutoGame1989/Art/logoJI.png"
+        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+        m_effect->SetTexture(m_texture.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        //m_effect->Apply(m_d3dContext.Get());
+    }
+    else if (timeStamp < 9.0)
+    {
+        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+        m_effect->SetTexture(m_texture.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        //m_effect->Apply(m_d3dContext.Get());
+    }
+    else
+    {
+        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+        m_effect->SetTexture(m_texture.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        //m_effect->Apply(m_d3dContext.Get());
+    }
+    */
+
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+
+    m_effect->SetTexture(m_texture.Get());
+    m_effect->SetNormalTexture(m_normalMap.Get());
+
+    m_effect->EnableDefaultLighting();
+    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
+    /*
+    //m_effect->SetDiffuseColor(DirectX::SimpleMath::Vector3::Zero);
+    m_effect->SetEmissiveColor(DirectX::SimpleMath::Vector3::Zero);
+    m_effect->SetLightDiffuseColor(0, DirectX::SimpleMath::Vector3::Zero);
+    m_effect->SetLightSpecularColor(0, DirectX::SimpleMath::Vector3::Zero);
+    m_effect->SetSpecularColor(DirectX::SimpleMath::Vector3::Zero);
+    */
+
+    /*
+    m_effect->SetFogEnabled(true);
+    m_effect->SetFogStart(cosf(timeStamp) + 1.0);
+    m_effect->SetFogEnd(cosf(timeStamp) + 2.0);
+    */
+
+    VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
+    VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
+    VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
+
+    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);    
+    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+    m_batch->DrawQuad(vertTopLeft, vertBottomLeft, vertBottomRight, vertTopRight);
+}
+
+void Game::DrawIntroScene()
+{
+    
+    const float fadeDuration = 1.5f;
+    const float logoDisplayDuration = 19.0f;
+    const float logoDisplayGap = 1.0f;
+    const float startDelay = 4.2f;
+    
+    /*
+    const float fadeDuration = 21.501f;
+    const float logoDisplayDuration = 5000.0001f;
+    const float logoDisplayGap = 100.01f;
+    const float startDelay = 4.2f;
+    */
+    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+
+    /*
+    const float fadeInStart1 = startDelay;
+    const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart3 = fadeInStart2 + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart4 = fadeInStart3 + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd1 = startDelay + fadeDuration;
+    const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
+    const float fadeInEnd3 = fadeInEnd2 + logoDisplayDuration + logoDisplayGap + fadeDuration;
+    const float fadeInEnd4 = fadeInEnd3 + logoDisplayDuration + logoDisplayGap + fadeDuration;
+    const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
+    const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    const float fadeOutStart3 = fadeOutStart2 + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    const float fadeOutStart4 = fadeOutStart3 + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    const float fadeOutEnd1 = startDelay + logoDisplayDuration;
+    const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd3 = fadeOutEnd2 + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd4 = fadeOutEnd3 + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    */
+
+    const float fadeInStart1 = startDelay;
+    const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+
+    const float fadeInEnd1 = startDelay + fadeDuration;
+    const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
+    const float fadeInEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+
+    const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
+    const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    const float fadeOutStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    const float fadeOutStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+
+    const float fadeOutEnd1 = startDelay + logoDisplayDuration;
+    const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+
+    float fadeInStartX1 = fadeInStart2 - fadeInStart1;
+    float fadeInStartX2 = fadeInStart3 - fadeInStart2;
+    float fadeInStartX3 = fadeInStart4 - fadeInStart3;
+
+    float fadeInEndX1 = fadeInEnd2 - fadeInEnd1;
+    float fadeInEndX2 = fadeInEnd3 - fadeInEnd2;
+    float fadeInEndX3 = fadeInEnd4 - fadeInEnd3;
+
+    float fadeOutStartX1 = fadeOutStart2 - fadeOutStart1;
+    float fadeOutStartX2 = fadeOutStart3- fadeOutStart2;
+    float fadeOutStartX3 = fadeOutStart4 - fadeOutStart3;
+
+    float fadeOutEndX1 = fadeOutEnd2 - fadeOutEnd1;
+    float fadeOutEndX2 = fadeOutEnd3 - fadeOutEnd2;
+    float fadeOutEndX3 = fadeOutEnd4 - fadeOutEnd3;
+
+
+    const float height = .5f;
+    const float width = .888888888f;
+    //const float distance = 1.1f;
+    const float distance = 1.1f;
+    const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
+    const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+    //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    
+    //m_effect->EnableDefaultLighting();
+    m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(0.05333332, 0.09882354, 0.1819608));
+    m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
+    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
+
+    m_effect->SetFogEnabled(true);
+    m_effect->SetFogStart(0.0);
+    m_effect->SetFogEnd(1.0);
+
+    pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
+    pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
+
+    DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
+    DirectX::SimpleMath::Vector3 topRight(distance, height, width);
+    DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
+    DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
+
+
+
+    if (timeStamp < fadeInStart1)
+    {
+        m_projectileTimer = 0.0;
+        // Render nothing
+    }
+    else if (timeStamp < fadeOutEnd1)
+    {
+        m_effect->SetTexture(m_textureJI.Get());
+        m_effect->SetNormalTexture(m_normalMapJI.Get());
+        if (timeStamp < fadeInEnd1)  // fade in
+        {
+            float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
+            float fogStart = colorIntensity;
+            float fogEnd = colorIntensity + 1.1;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+        }
+        else if (timeStamp > fadeOutStart1) // fade out
+        {
+            float colorIntensity = (fadeOutEnd1 - timeStamp) / (fadeDuration);
+            float fogStart = colorIntensity;
+            float fogEnd = colorIntensity + 1.1;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+
+        }
+        else // display at full intesity
+        {
+            m_effect->SetFogEnabled(false);
+        }
+    }
+    else if (timeStamp < fadeInStart2)
+    {
+        // render nothing
+    }
+    else if (timeStamp < fadeOutEnd2)
+    {
+        m_effect->SetTexture(m_textureBMW.Get());
+        m_effect->SetNormalTexture(m_normalMapBMW.Get());
+        if (timeStamp < fadeInEnd2)  // fade in
+        {
+            float colorIntensity = (timeStamp - fadeInStart2) / (fadeDuration);
+            float fogStart = colorIntensity;
+            float fogEnd = colorIntensity + 1.1;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+        }
+        else if (timeStamp > fadeOutStart2) // fade out
+        {
+            float colorIntensity = (fadeOutEnd2 - timeStamp) / (fadeDuration);
+            float fogStart = colorIntensity;
+            float fogEnd = colorIntensity + 1.1;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+        }
+        else
+        {
+            m_effect->SetFogEnabled(false);
+            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
+            //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
+            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+    }
+    else if (timeStamp < fadeInStart3)
+    {
+        // render nothing
+    }
+    else if (timeStamp < fadeOutEnd3)
+    {
+        m_effect->SetTexture(m_textureAutoGame.Get());
+        m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
+        if (timeStamp < fadeInEnd3)  // fade in
+        {
+            float colorIntensity = (timeStamp - fadeInStart3) / (fadeDuration);
+            float fogStart = colorIntensity;
+            float fogEnd = colorIntensity + 1.1;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+        }
+        else if (timeStamp > fadeOutStart3) // fade out
+        {
+            float colorIntensity = (fadeOutEnd3 - timeStamp) / (fadeDuration);
+            float fogStart = colorIntensity;
+            float fogEnd = colorIntensity + 1.1;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+        }
+        else
+        {
+            m_effect->SetFogEnabled(false);
+            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
+            //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
+            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+    }
+    else if (timeStamp < fadeInStart4)
+    {
+        // render nothing
+    }
+    else if (timeStamp < fadeOutEnd4)
+    {
+        m_effect->SetTexture(m_textureTeaser.Get());
+        m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+        if (timeStamp < fadeInEnd4)  // fade in
+        {
+            float colorIntensity = (timeStamp - fadeInStart4) / (fadeDuration);
+            float fogStart = colorIntensity;
+            float fogEnd = colorIntensity + 1.1;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+        }
+        else if (timeStamp > fadeOutStart4) // fade out
+        {
+            float colorIntensity = (fadeOutEnd4 - timeStamp) / (fadeDuration);
+            float fogStart = colorIntensity;
+            float fogEnd = colorIntensity + 1.1;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+        }
+        else
+        {
+            m_effect->SetFogEnabled(false);
+            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
+            //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
+            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+    }
+    if (timeStamp > fadeOutEnd4 + logoDisplayGap)
+    {
+        float time = m_projectileTimer;
+
+        int x = 0;
+        //m_projectileTimer = 0.0;
+        //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_MUSIC01);
+        //m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
+    }
+
+    /*
     if (timeStamp < 5.0)
     {
         //  "../AutoGame1989/Art/logoJI.png"
@@ -871,23 +1179,14 @@ void Game::DrawIntroScene()
         m_effect->SetNormalTexture(m_normalMap.Get());
         //m_effect->Apply(m_d3dContext.Get());
     }
-
+    */
     
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
 
     //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
 
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-    m_effect->SetTexture(m_texture.Get());
-    m_effect->SetNormalTexture(m_normalMap.Get());
+    //m_effect->SetTexture(m_textureJI.Get());
+    //m_effect->SetNormalTexture(m_normalMapJI.Get());
     
     m_effect->EnableDefaultLighting();
     //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
@@ -1394,6 +1693,19 @@ void Game::DrawTeaserScreen()
     }
 }
 
+void Game::DrawTimer()
+{
+    // m_flightStepTimer
+    // m_projectileTimer
+    std::string textLine = "Timer = " + std::to_string(m_projectileTimer);
+    float textLinePosX = m_bitwiseFontPos.x;
+    float textLinePosY = m_bitwiseFontPos.y;
+    //float textLinePosY = m_bitwiseFontPos.y + 100;
+    DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), m_fontPosDebug, Colors::White, 0.f, textLineOrigin);
+}
+
 void Game::DrawWorld()
 {  
     for (int i = 0; i < m_worldGrid.size(); ++i)
@@ -1801,6 +2113,16 @@ void Game::OnDeviceLost()
     m_shape.reset();
     m_normalMap.Reset();
     m_texture.Reset();
+
+    m_normalMapJI.Reset();
+    m_textureJI.Reset();
+    m_normalMapBMW.Reset();
+    m_textureBMW.Reset();
+    m_normalMapAutoGame.Reset();
+    m_textureAutoGame.Reset();
+    m_normalMapTeaser.Reset();
+    m_textureTeaser.Reset();
+
     m_inputLayout.Reset();
     m_font.reset();
     m_titleFont.reset();
@@ -2059,7 +2381,7 @@ void Game::Render()
     
 
     m_spriteBatch->Begin();
-    //DrawShotTimerUI();
+    DrawTimer();
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {

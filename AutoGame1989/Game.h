@@ -59,6 +59,7 @@ private:
     void DrawCar2();
     void DrawIntroScreen();
     void DrawIntroScene();
+    void DrawIntroScene2();
     void DrawLightFocus();
     void DrawLightFocus1();
     void DrawMenuEnvironmentSelect();
@@ -66,7 +67,7 @@ private:
     void DrawShape();
     void DrawStartScreen();
     void DrawTeaserScreen();
-
+    void DrawTimer();
     void DrawWorld();
     void DrawWorldCube();
     void DrawWorldCubeTextured();
@@ -121,6 +122,16 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMap;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapBMW;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureBMW;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapAutoGame;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureAutoGame;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTeaser;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTeaser;
+
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
     // End
 
