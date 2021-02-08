@@ -18,6 +18,7 @@
     <ClInclude Include="AnimatedTexture.h" />
     <ClInclude Include="Auto.h" />
     <ClInclude Include="Vehicle.h" />
+    <ClInclude Include="ScrollingBackground.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -115,6 +116,9 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="Art\logoTeaser.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\road.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>

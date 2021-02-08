@@ -165,6 +165,7 @@
     <ClInclude Include="Environment.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ScrollingBackground.h" />
     <ClInclude Include="sounds.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="StepTimer.h" />
@@ -198,6 +199,7 @@
     <Image Include="Art\NormalMapBMW.dds" />
     <Image Include="Art\NormalMapJI.dds" />
     <Image Include="Art\NormalMapTeaser.dds" />
+    <Image Include="Art\road.png" />
     <Image Include="BlankTexture.png" />
     <Image Include="Chacter0SpriteSheet.png" />
     <Image Include="Chacter1SpriteSheet.png" />

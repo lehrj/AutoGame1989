@@ -6,6 +6,7 @@
 #include "Keyboard.h"
 #include "AnimatedTexture.h"
 #include "SpriteSheet.h"
+#include "ScrollingBackground.h"
 #include "WICTextureLoader.h"
 #include "Auto.h"
 #include "Camera.h"
@@ -255,4 +256,7 @@ private:
 
     bool                                        m_moveLightWithCameraFocus1 = false;
     bool                                        m_moveLightWithCameraFocus2 = false;
+
+    std::unique_ptr<ScrollingBackground>             m_road;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_backgroundTex;
 };
