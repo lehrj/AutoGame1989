@@ -60,9 +60,10 @@ private:
     void DrawCar2();
     void DrawIntroScreen();
     void DrawIntroScene();
-    void DrawIntroScene2();
-    void DrawLightFocus();
+    void DrawLightBar();
+    void DrawLightFocus2();
     void DrawLightFocus1();
+    void DrawLightFocus3();
     void DrawMenuEnvironmentSelect();
     void DrawMenuMain();
     void DrawShape();
@@ -250,12 +251,17 @@ private:
     float                                       m_carAim = 0.0f;
 
     DirectX::SimpleMath::Vector3                m_cameraFocusPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3                m_lightPos1 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3                m_lightPos2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3                m_lightPos1 = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3                m_lightPos2 = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3                m_lightPos3 = DirectX::SimpleMath::Vector3::UnitX;
+
     std::vector<std::pair<DirectX::VertexPositionNormalColor,DirectX::VertexPositionNormalColor>>   m_worldGrid;
 
     bool                                        m_moveLightWithCameraFocus1 = false;
     bool                                        m_moveLightWithCameraFocus2 = false;
+    bool                                        m_moveLightWithCameraFocus3 = false;
+
+    const float                                 m_lightMovementSpeed = 0.4;
 
     std::unique_ptr<ScrollingBackground>             m_road;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_backgroundTex;

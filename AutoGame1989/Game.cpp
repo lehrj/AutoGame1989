@@ -483,15 +483,26 @@ void Game::DrawCameraFocus()
     DirectX::XMVECTORF32 lineColor = DirectX::Colors::Yellow;
     DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
     m_cameraFocusPos = focalPoint;
+    if (m_moveLightWithCameraFocus3 == true)
+    {
+        lineColor = DirectX::Colors::White;
+        DirectX::SimpleMath::Vector3 posNormalized = m_cameraFocusPos;
+        posNormalized.Normalize();
+        m_lightPos3 = posNormalized;
+    }
     if (m_moveLightWithCameraFocus2 == true)
     {
         lineColor = DirectX::Colors::White;
-        m_lightPos2 = m_cameraFocusPos;
+        DirectX::SimpleMath::Vector3 posNormalized = m_cameraFocusPos;
+        posNormalized.Normalize();
+        m_lightPos2 = posNormalized;
     }
     if (m_moveLightWithCameraFocus1 == true)
     {
         lineColor = DirectX::Colors::White;
-        m_lightPos1 = m_cameraFocusPos;
+        DirectX::SimpleMath::Vector3 posNormalized = m_cameraFocusPos;
+        posNormalized.Normalize();
+        m_lightPos1 = posNormalized;
     }
     DirectX::SimpleMath::Vector3 yLine = focalPoint;
     yLine.y += line;
@@ -807,116 +818,6 @@ void Game::DrawDebugLines()
     */
 }
 
-void Game::DrawIntroScene2()
-{
-    const float fadeDuration = 1.5f;
-    const float logoDisplayDuration = 5.f;
-    const float logoDisplayGap = 1.f;
-    const float startDelay = 4.2f;
-    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-
-    const float fadeInStart1 = startDelay;
-    const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd1 = startDelay + fadeDuration;
-    const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
-    const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
-    const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
-    const float fadeOutEnd1 = startDelay + logoDisplayDuration;
-    const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-
-    const float height = .5f;
-    const float width = .888888888f;
-    const float distance = 1.1f;
-    const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
-    const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
-    //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-
-    //m_effect->EnableDefaultLighting();
-    m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(0.05333332, 0.09882354, 0.1819608));
-    m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
-    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
-
-    //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
-    //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
-
-    DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
-    DirectX::SimpleMath::Vector3 topRight(distance, height, width);
-    DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
-    DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
-
-    /*
-    if (timeStamp < 5.0)
-    {
-        //  "../AutoGame1989/Art/logoJI.png"
-        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-        m_effect->SetTexture(m_texture.Get());
-        m_effect->SetNormalTexture(m_normalMap.Get());
-        //m_effect->Apply(m_d3dContext.Get());
-    }
-    else if (timeStamp < 9.0)
-    {
-        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-        m_effect->SetTexture(m_texture.Get());
-        m_effect->SetNormalTexture(m_normalMap.Get());
-        //m_effect->Apply(m_d3dContext.Get());
-    }
-    else
-    {
-        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-        m_effect->SetTexture(m_texture.Get());
-        m_effect->SetNormalTexture(m_normalMap.Get());
-        //m_effect->Apply(m_d3dContext.Get());
-    }
-    */
-
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-    m_effect->SetTexture(m_texture.Get());
-    m_effect->SetNormalTexture(m_normalMap.Get());
-
-    m_effect->EnableDefaultLighting();
-    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
-    /*
-    //m_effect->SetDiffuseColor(DirectX::SimpleMath::Vector3::Zero);
-    m_effect->SetEmissiveColor(DirectX::SimpleMath::Vector3::Zero);
-    m_effect->SetLightDiffuseColor(0, DirectX::SimpleMath::Vector3::Zero);
-    m_effect->SetLightSpecularColor(0, DirectX::SimpleMath::Vector3::Zero);
-    m_effect->SetSpecularColor(DirectX::SimpleMath::Vector3::Zero);
-    */
-
-    /*
-    m_effect->SetFogEnabled(true);
-    m_effect->SetFogStart(cosf(timeStamp) + 1.0);
-    m_effect->SetFogEnd(cosf(timeStamp) + 2.0);
-    */
-
-    VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
-    VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
-    VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
-    VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
-
-    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);    
-    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
-    m_batch->DrawQuad(vertTopLeft, vertBottomLeft, vertBottomRight, vertTopRight);
-}
-
 void Game::DrawIntroScene()
 {  
     const float fadeDuration = 1.5f;
@@ -946,6 +847,7 @@ void Game::DrawIntroScene()
     const float fadeOutEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
     const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
 
+    /*
     float fadeInStartX1 = fadeInStart2 - fadeInStart1;
     float fadeInStartX2 = fadeInStart3 - fadeInStart2;
     float fadeInStartX3 = fadeInStart4 - fadeInStart3;
@@ -961,18 +863,7 @@ void Game::DrawIntroScene()
     float fadeOutEndX1 = fadeOutEnd2 - fadeOutEnd1;
     float fadeOutEndX2 = fadeOutEnd3 - fadeOutEnd2;
     float fadeOutEndX3 = fadeOutEnd4 - fadeOutEnd3;
-
-
-    const float height = .5f;
-    const float width = .888888888f;
-    const float distance = 1.1f;
-    const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
-    const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
-    
-    //m_effect->EnableDefaultLighting();
-    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(0.05333332, 0.09882354, 0.1819608));
-    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
-    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
+    */
 
     m_effect->SetFogEnabled(true);
     m_effect->SetFogStart(0.0);
@@ -980,13 +871,6 @@ void Game::DrawIntroScene()
 
     //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
     //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
-
-    DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
-    DirectX::SimpleMath::Vector3 topRight(distance, height, width);
-    DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
-    DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
-
-
 
     if (timeStamp < fadeInStart1)
     {
@@ -1012,7 +896,6 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + 1.1;
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
-
         }
         else // display at full intesity
         {
@@ -1125,92 +1008,68 @@ void Game::DrawIntroScene()
         //m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
 
-    /*
-    if (timeStamp < 5.0)
-    {
-        //  "../AutoGame1989/Art/logoJI.png"
-        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-        m_effect->SetTexture(m_texture.Get());
-        m_effect->SetNormalTexture(m_normalMap.Get());
-        //m_effect->Apply(m_d3dContext.Get());
-    }
-    else if (timeStamp < 9.0)
-    {
-        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-        m_effect->SetTexture(m_texture.Get());
-        m_effect->SetNormalTexture(m_normalMap.Get());
-        //m_effect->Apply(m_d3dContext.Get());
-    }
-    else
-    {
-        DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-        DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-        
-        m_effect->SetTexture(m_texture.Get());
-        m_effect->SetNormalTexture(m_normalMap.Get());
-        //m_effect->Apply(m_d3dContext.Get());
-    }
-    */
+    m_effect->SetFogEnabled(false);
+    m_effect->EnableDefaultLighting();
+    m_effect->SetLightEnabled(0, true);
+    m_effect->SetLightEnabled(1, false);
+    m_effect->SetLightEnabled(2, false);
+    m_effect->SetLightDirection(0, m_lightPos1);
+    m_effect->SetLightDirection(1, m_lightPos2);
+    m_effect->SetLightDirection(2, m_lightPos3);
+    //m_effect->SetSpecularColor(DirectX::Colors::Black);
+    m_effect->SetLightSpecularColor(0, DirectX::Colors::Green);
+    //m_effect->SetEmissiveColor(DirectX::Colors::Red);
+    //m_effect->SetDiffuseColor(DirectX::Colors::Red);
+    //m_effect->SetLightDiffuseColor(0, DirectX::Colors::Green);
+    m_effect->SetAmbientLightColor(DirectX::Colors::Red);
+    //m_effect->SetColorAndAlpha(DirectX::Colors::Red);
+   
+    //m_effect->SetLightDirection(1, DirectX::SimpleMath::Vector3::Zero);
+    //m_effect->SetLightDirection(2, DirectX::SimpleMath::Vector3::Zero);
+    //m_effect->SetLightDirection(0, DirectX::SimpleMath::Vector3::Zero);
     
-
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
-
-    //m_effect->SetTexture(m_textureJI.Get());
-    //m_effect->SetNormalTexture(m_normalMapJI.Get());
-    
-    
-    //m_effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3::Zero);
-    /*
-    //m_effect->SetDiffuseColor(DirectX::SimpleMath::Vector3::Zero);
-    m_effect->SetEmissiveColor(DirectX::SimpleMath::Vector3::Zero);
-    m_effect->SetLightDiffuseColor(0, DirectX::SimpleMath::Vector3::Zero);
-    m_effect->SetLightSpecularColor(0, DirectX::SimpleMath::Vector3::Zero);
-    m_effect->SetSpecularColor(DirectX::SimpleMath::Vector3::Zero);
-    */
-
-    /*
-    m_effect->SetFogEnabled(true);
-    m_effect->SetFogStart(cosf(timeStamp) + 1.0);
-    m_effect->SetFogEnd(cosf(timeStamp) + 2.0);
-    */
-    /*
     m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
     m_effect->SetTexture(m_textureTeaser.Get());
-    m_effect->SetNormalTexture(m_normalMapTeaser.Get());
-    */
+    //m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+    //m_effect->SetSpecularTexture(m_normalMapTeaser.Get());
+    m_effect->Apply(m_d3dContext.Get());
 
-    m_effect->SetFogEnabled(false);
-    /*
-    m_effect->SetFogEnabled(false);
-    m_effect->SetLightEnabled(0, true);
-    m_effect->SetLightEnabled(1, true);
-    m_effect->SetLightEnabled(2, true);
-    m_effect->SetSpecularColor(DirectX::Colors::Yellow);
-    //m_effect->SetLightSpecularColor(0, DirectX::Colors::Red);
-    //m_effect->SetEmissiveColor(DirectX::Colors::White);
-    //m_effect->SetDiffuseColor(DirectX::Colors::Red);
-    //m_effect->SetLightDiffuseColor(0, DirectX::Colors::Green);
-    //m_effect->SetAmbientLightColor(DirectX::Colors::Red);
-    //m_effect->SetColorAndAlpha(DirectX::Colors::Red);
+    const float height = .5f;
+    const float width = .888888888f;
+    const float distance = 1.1f;
+    const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
+    const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
 
-    m_effect->SetLightDirection(1, m_lightPos2);
-    */
-
+    DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
+    DirectX::SimpleMath::Vector3 topRight(distance, height, width);
+    DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
+    DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
 
     VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
     VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
     VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
     VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
+    
+    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+    
+    //m_effect->SetTexture(m_textureTeaser.Get());
+    //m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+    //m_effect->Apply(m_d3dContext.Get());
+    
+    DirectX::SimpleMath::Vector3 topLeft2(distance, height * 3, -width);
+    DirectX::SimpleMath::Vector3 topRight2(distance, height * 3, width);
+    DirectX::SimpleMath::Vector3 bottomRight2(distance, height, width);
+    DirectX::SimpleMath::Vector3 bottomLeft2(distance, height, -width);
 
-    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);    
-    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
-    m_batch->DrawQuad(vertTopLeft, vertBottomLeft, vertBottomRight, vertTopRight);
+    VertexPositionNormalColorTexture vertTopLeft2(topLeft2, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
+    VertexPositionNormalColorTexture vertTopRight2(topRight2, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
+    VertexPositionNormalColorTexture vertBottomRight2(bottomRight2, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalColorTexture vertBottomLeft2(bottomLeft2, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
+
+    m_batch->DrawQuad(vertTopLeft2, vertTopRight2, vertBottomRight2, vertBottomLeft2);
+
+    
 }
 
 void Game::DrawIntroScreen()
@@ -1311,6 +1170,37 @@ void Game::DrawIntroScreen()
     }
 }
 
+void Game::DrawLightBar()
+{
+    DirectX::XMVECTORF32 color1 = DirectX::Colors::Red;
+    DirectX::XMVECTORF32 color2 = DirectX::Colors::Black;
+    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    float focusPoint = cosf(timeStamp * 3.);
+    DirectX::SimpleMath::Vector3 normal = -DirectX::SimpleMath::Vector3::UnitX;
+    float x = 1.2;
+    float y = 0.0;
+    float z = 1.5;
+    DirectX::SimpleMath::Vector3 left(x, y,-z);
+    DirectX::SimpleMath::Vector3 right(x, y, z);
+    DirectX::SimpleMath::Vector3 focus(x, y, focusPoint);
+
+    float spacing = .002;
+    for (int i = 0; i < 10; ++i)
+    {
+        left.y += spacing;
+        right.y += spacing;
+        focus.y += spacing;
+        VertexPositionNormalColor v0(left, normal, color2);
+        VertexPositionNormalColor v1(right, normal, color2);
+        VertexPositionNormalColor v2(focus, normal, color1);
+        m_batch2->DrawLine(v0, v2);
+        m_batch2->DrawLine(v2, v1);
+
+    }
+    
+
+}
+
 void Game::DrawLightFocus1()
 {
     const float line = .25f;
@@ -1368,7 +1258,7 @@ void Game::DrawLightFocus1()
     m_batch2->DrawLine(origin, zOffset2);
 }
 
-void Game::DrawLightFocus()
+void Game::DrawLightFocus2()
 {
     const float line = .25f;
     //DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
@@ -1385,6 +1275,64 @@ void Game::DrawLightFocus()
     zLine.z += line;
     DirectX::SimpleMath::Vector3 zLine2 = focalPoint;
     zLine2.z -= line;
+    VertexPositionNormalColor origin(focalPoint, DirectX::SimpleMath::Vector3::UnitX, Colors::Yellow);
+    VertexPositionNormalColor yOffset(yLine, DirectX::SimpleMath::Vector3::UnitX, Colors::Yellow);
+    VertexPositionNormalColor xOffset(xLine, DirectX::SimpleMath::Vector3::UnitZ, Colors::Yellow);
+    VertexPositionNormalColor zOffset(zLine, DirectX::SimpleMath::Vector3::UnitY, Colors::Yellow);
+
+    VertexPositionNormalColor yOffset2(yLine2, DirectX::SimpleMath::Vector3::UnitX, Colors::Yellow);
+    VertexPositionNormalColor xOffset2(xLine2, DirectX::SimpleMath::Vector3::UnitZ, Colors::Yellow);
+    VertexPositionNormalColor zOffset2(zLine2, DirectX::SimpleMath::Vector3::UnitY, Colors::Yellow);
+    m_batch2->DrawLine(origin, yOffset);
+    m_batch2->DrawLine(origin, xOffset);
+    m_batch2->DrawLine(origin, zOffset);
+
+    m_batch2->DrawLine(origin, yOffset2);
+    m_batch2->DrawLine(origin, xOffset2);
+    m_batch2->DrawLine(origin, zOffset2);
+}
+
+
+void Game::DrawLightFocus3()
+{
+    const float line = .25f;
+    //DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
+    //DirectX::SimpleMath::Vector3 focalPoint = m_lightPos1;
+    DirectX::SimpleMath::Vector3 focalPoint = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 yLine = focalPoint;
+    yLine.y += line;
+    DirectX::SimpleMath::Vector3 yLine2 = focalPoint;
+    yLine2.y -= line;
+    DirectX::SimpleMath::Vector3 xLine = focalPoint;
+    xLine.x += line;
+    DirectX::SimpleMath::Vector3 xLine2 = focalPoint;
+    xLine2.x -= line;
+    DirectX::SimpleMath::Vector3 zLine = focalPoint;
+    zLine.z += line;
+    DirectX::SimpleMath::Vector3 zLine2 = focalPoint;
+    zLine2.z -= line;
+
+    DirectX::SimpleMath::Matrix rotMatrix1 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0));
+    DirectX::SimpleMath::Matrix rotMatrix2 = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(45.0));
+    //rotMatrix += DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(45.0));
+    DirectX::SimpleMath::Matrix rotMatrix = rotMatrix1 * rotMatrix2;
+    //rotMatrix = DirectX::SimpleMath::Matrix::T
+
+    DirectX::SimpleMath::Vector3::Transform(yLine, rotMatrix, yLine);
+    DirectX::SimpleMath::Vector3::Transform(xLine, rotMatrix, xLine);
+    DirectX::SimpleMath::Vector3::Transform(zLine, rotMatrix, zLine);
+    DirectX::SimpleMath::Vector3::Transform(yLine2, rotMatrix, yLine2);
+    DirectX::SimpleMath::Vector3::Transform(xLine2, rotMatrix, xLine2);
+    DirectX::SimpleMath::Vector3::Transform(zLine2, rotMatrix, zLine2);
+
+    focalPoint = m_lightPos3;
+    yLine += focalPoint;
+    xLine += focalPoint;
+    zLine += focalPoint;
+    yLine2 += focalPoint;
+    xLine2 += focalPoint;
+    zLine2 += focalPoint;
+
     VertexPositionNormalColor origin(focalPoint, DirectX::SimpleMath::Vector3::UnitX, Colors::Yellow);
     VertexPositionNormalColor yOffset(yLine, DirectX::SimpleMath::Vector3::UnitX, Colors::Yellow);
     VertexPositionNormalColor xOffset(xLine, DirectX::SimpleMath::Vector3::UnitZ, Colors::Yellow);
@@ -1574,12 +1522,10 @@ void Game::DrawShape()
     //proj += transMat;
 
    // world = SimpleMath::Matrix::Transform(
-
-    m_shape->Draw(m_world, m_view, m_proj);
-    //m_shape->Draw(m_world, m_view, m_proj);
-    //m_shape->Draw(transWorld, testMatrix, testMatrix);
     
-
+    m_shape->Draw(m_world, m_view, m_proj);
+    //m_shape->Draw(m_world, m_view, m_proj, Colors::White, m_textureBMW.Get());
+    //m_shape->Draw(transWorld, testMatrix, testMatrix);
 }
 
 void Game::DrawStartScreen()
@@ -2253,7 +2199,7 @@ void Game::Render()
         
         DirectX::SimpleMath::Vector3 lightNorm = m_lightPos1;
         lightNorm.Normalize();
-        //light = lightNorm;
+        light = lightNorm;
         ilights->SetLightDirection(0, light);      
         
         ///////////////////////////////
@@ -2265,6 +2211,9 @@ void Game::Render()
         roll = time * 1.2f + 4.;
         quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, yaw, roll);
         light = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
+        lightNorm = m_lightPos2;
+        lightNorm.Normalize();
+        light = lightNorm;
         ilights->SetLightDirection(1, light);
         ///////////
         yaw = time * 0.2f;
@@ -2275,9 +2224,10 @@ void Game::Render()
         roll = time * 1.2f + 8.;
         quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, yaw, roll);
         light = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
+        lightNorm = m_lightPos3;
+        lightNorm.Normalize();
+        light = lightNorm;
         ilights->SetLightDirection(2, light);
-
- 
     }
     /////////////////////////////////////////////////////////
     auto ilights2 = dynamic_cast<IEffectLights*>(m_effect2.get());
@@ -2303,7 +2253,7 @@ void Game::Render()
 
         
     }
-
+    m_effect2->SetLightDirection(0, DirectX::SimpleMath::Vector3::UnitY);
     /////////////////////////////////////////////////////////
     /*
     auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
@@ -2393,10 +2343,11 @@ void Game::Render()
     m_batch2->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        
+        DrawLightBar();
         DrawCameraFocus();
-        DrawLightFocus();
         DrawLightFocus1();
+        DrawLightFocus2();
+        DrawLightFocus3();
         DrawWorld();
         //DrawWorldCube();
     }
@@ -2727,13 +2678,16 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_moveLightWithCameraFocus2 = true;
         }
     }
-    if (m_kbStateTracker.released.Z)
+    if (m_kbStateTracker.pressed.D3)
     {
-
-    }
-    if (m_kbStateTracker.released.H)
-    {
-
+        if (m_moveLightWithCameraFocus3 == true)
+        {
+            m_moveLightWithCameraFocus3 = false;
+        }
+        else
+        {
+            m_moveLightWithCameraFocus3 = true;
+        }
     }
     if (m_kbStateTracker.pressed.T)
     {
@@ -2743,27 +2697,16 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         pCamera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
     }
-    if (m_kbStateTracker.pressed.U)
-    {
-        pCamera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
-    }
     if (m_kbStateTracker.pressed.F1)
     {
         pCamera->SetCameraState(CameraState::CAMERASTATE_SWINGVIEW);
-    }
-    if (kb.OemPeriod)
-    {
-
-    }
-    if (kb.OemComma)
-    {
-
     }
     if (kb.NumPad8)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_carPos.x += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.1f;
+            m_lightPos2.x += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.NumPad2)
@@ -2771,6 +2714,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_carPos.x -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.1f;
+            m_lightPos2.x -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.NumPad6)
@@ -2778,6 +2722,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_carPos.z += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.1f;
+            m_lightPos2.z += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.NumPad4)
@@ -2785,6 +2730,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_carPos.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.1f;
+            m_lightPos2.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.NumPad7)
@@ -2792,6 +2738,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_carAim += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.11f;
+            m_lightPos2.y -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.NumPad9)
@@ -2799,51 +2746,94 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_carAim -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.11f;
+            m_lightPos2.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.Up)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_carPos.x += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.1f;
-            m_lightPos1.x += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.2f;
+            m_lightPos1.x += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.Down)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.x -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.2f;
+            m_lightPos1.x -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.Left)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.2f;
+            m_lightPos1.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.Right)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.z += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.2f;
+            m_lightPos1.z += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.NumPad1)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.y += static_cast<float>(aTimer.GetElapsedSeconds()) * 0.2f;
+            m_lightPos1.y -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.NumPad3)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.y -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.2f;
+            m_lightPos1.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
+    if (kb.I)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_lightPos3.x += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+        }
+    }
+    if (kb.K)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_lightPos3.x -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+        }
+    }
+    if (kb.J)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_lightPos3.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+        }
+    }
+    if (kb.L)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_lightPos3.z += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+        }
+    }
+    if (kb.U)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_lightPos3.y -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+        }
+    }
+    if (kb.O)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_lightPos3.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+        }
+    }
+
     auto mouse = m_mouse->GetState();
 
     if (pCamera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
