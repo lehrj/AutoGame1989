@@ -174,6 +174,10 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_characterTexture;
     DirectX::SimpleMath::Vector2                    m_characterPos;
 
+    std::unique_ptr<AnimatedTexture>                m_pacSprite;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pacTexture;
+    DirectX::SimpleMath::Vector2                    m_pacPos;
+
     std::unique_ptr<AnimatedTexture>                m_character0;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_character0Texture;
     DirectX::SimpleMath::Vector2                    m_character0Pos;

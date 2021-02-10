@@ -199,6 +199,7 @@
     <Image Include="Art\NormalMapBMW.dds" />
     <Image Include="Art\NormalMapJI.dds" />
     <Image Include="Art\NormalMapTeaser.dds" />
+    <Image Include="Art\PacSprite.png" />
     <Image Include="Art\road.png" />
     <Image Include="BlankTexture.png" />
     <Image Include="Chacter0SpriteSheet.png" />

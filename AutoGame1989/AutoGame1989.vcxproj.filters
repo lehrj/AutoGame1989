@@ -121,6 +121,9 @@
     <Image Include="Art\road.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\PacSprite.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

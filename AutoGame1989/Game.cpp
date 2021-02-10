@@ -247,6 +247,11 @@ void Game::CreateDevice()
     ComPtr<ID3D11Resource> resource;
 
     // Character Select Textures
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/PacSprite.png", nullptr, m_pacTexture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Chacter2SpriteSheet.png", nullptr, m_pacTexture.ReleaseAndGetAddressOf()));
+    m_pacSprite = std::make_unique<AnimatedTexture>();
+    m_pacSprite->Load(m_pacTexture.Get(), 4, 6);
+
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"ChacterSpriteSheet.png", nullptr, m_characterTexture.ReleaseAndGetAddressOf()));
     m_character = std::make_unique<AnimatedTexture>();
     m_character->Load(m_characterTexture.Get(), 4, 6);
@@ -446,6 +451,10 @@ void Game::CreateResources()
     m_road->SetWindow(backBufferWidth, backBufferHeight);
 
     // Character textures  
+
+    m_pacPos.x = backBufferWidth / 2.f;
+    m_pacPos.y = backBufferHeight / 2.f - 55.f;
+
     m_characterPos.x = backBufferWidth / 2.f;
     m_characterPos.y = backBufferHeight / 2.f;
     m_character0Pos.x = backBufferWidth / 2.f;
@@ -869,9 +878,6 @@ void Game::DrawIntroScene()
     m_effect->SetFogStart(0.0);
     m_effect->SetFogEnd(1.0);
 
-    //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
-    //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
-
     if (timeStamp < fadeInStart1)
     {
         m_projectileTimer = 0.0;
@@ -1027,12 +1033,20 @@ void Game::DrawIntroScene()
     //m_effect->SetLightDirection(1, DirectX::SimpleMath::Vector3::Zero);
     //m_effect->SetLightDirection(2, DirectX::SimpleMath::Vector3::Zero);
     //m_effect->SetLightDirection(0, DirectX::SimpleMath::Vector3::Zero);
+    m_effect->EnableDefaultLighting();
+    DirectX::SimpleMath::Vector3 camPos = DirectX::SimpleMath::Vector3::UnitX;
+    camPos.z = cosf(timeStamp * 3.);
+    camPos.Normalize();
+    m_effect->SetLightDirection(0, camPos);
+    m_effect->SetLightDirection(1, camPos);
+    m_effect->SetLightDirection(2, camPos);
     
+
     m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
     m_effect->SetTexture(m_textureTeaser.Get());
-    //m_effect->SetNormalTexture(m_normalMapTeaser.Get());
-    //m_effect->SetSpecularTexture(m_normalMapTeaser.Get());
+    m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+    m_effect->SetSpecularTexture(m_normalMapTeaser.Get());
     m_effect->Apply(m_d3dContext.Get());
 
     const float height = .5f;
@@ -1040,6 +1054,9 @@ void Game::DrawIntroScene()
     const float distance = 1.1f;
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+
+    //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
+    //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
@@ -1175,11 +1192,11 @@ void Game::DrawLightBar()
     DirectX::XMVECTORF32 color1 = DirectX::Colors::Red;
     DirectX::XMVECTORF32 color2 = DirectX::Colors::Black;
     const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-    float focusPoint = cosf(timeStamp * 3.);
+    float focusPoint = cosf(timeStamp * 3.) / 2.0;
     DirectX::SimpleMath::Vector3 normal = -DirectX::SimpleMath::Vector3::UnitX;
-    float x = 1.2;
-    float y = 0.0;
-    float z = 1.5;
+    float x = 1.09;
+    float y = -0.1;
+    float z = .7;
     DirectX::SimpleMath::Vector3 left(x, y,-z);
     DirectX::SimpleMath::Vector3 right(x, y, z);
     DirectX::SimpleMath::Vector3 focus(x, y, focusPoint);
@@ -2075,7 +2092,10 @@ void Game::OnDeviceLost()
     m_spriteBatch.reset();
     m_kbStateTracker.Reset();
 
-    // Charcter Select
+    // Charcters
+    m_pacSprite.reset();
+    m_pacTexture.Reset();
+
     m_character.reset();
     m_characterTexture.Reset();
     m_character0.reset();
@@ -2304,7 +2324,7 @@ void Game::Render()
     //DrawDebugLines();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawIntroScene();
+        //DrawIntroScene();
         //DrawShape();
         //DrawCar();
         //DrawWorldCubeTextured();
@@ -2343,11 +2363,11 @@ void Game::Render()
     m_batch2->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawLightBar();
-        DrawCameraFocus();
-        DrawLightFocus1();
-        DrawLightFocus2();
-        DrawLightFocus3();
+        //DrawLightBar();
+        //DrawCameraFocus();
+        //DrawLightFocus1();
+        //DrawLightFocus2();
+        //DrawLightFocus3();
         DrawWorld();
         //DrawWorldCube();
     }
@@ -2358,6 +2378,7 @@ void Game::Render()
     m_spriteBatch->Begin();
     //DrawTimer();
     //m_road->Draw(m_spriteBatch.get());
+    m_pacSprite->Draw(m_spriteBatch.get(), m_pacPos);
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
@@ -2386,7 +2407,7 @@ void Game::Render()
     }
     if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
-        DrawTeaserScreen();
+        //DrawTeaserScreen();
     }
 
     m_spriteBatch->End();
@@ -2426,6 +2447,8 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_projectileTimer += elapsedTime;
     // TODO: Add your game logic here.
     m_road->Update(elapsedTime * 500);
+    m_pacSprite->Update(elapsedTime);
+
     if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
     {
         if (m_menuSelect == 0)
