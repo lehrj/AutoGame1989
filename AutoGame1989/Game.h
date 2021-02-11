@@ -60,6 +60,7 @@ private:
     void DrawCar2();
     void DrawIntroScreen();
     void DrawIntroScene();
+    void DrawIntroScene2();
     void DrawLightBar();
     void DrawLightFocus2();
     void DrawLightFocus1();
@@ -128,6 +129,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapBMW;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapBMW2;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureBMW;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureAutoGame;
