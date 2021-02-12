@@ -201,6 +201,7 @@
     <Image Include="Art\NormalMapTeaser.dds" />
     <Image Include="Art\PacSprite.png" />
     <Image Include="Art\road.png" />
+    <Image Include="Art\specularTeaser.png" />
     <Image Include="BlankTexture.png" />
     <Image Include="Chacter0SpriteSheet.png" />
     <Image Include="Chacter1SpriteSheet.png" />

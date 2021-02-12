@@ -127,13 +127,18 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularJI;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI;
+
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapBMW;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapBMW2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularBMW;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureBMW;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapAutoGame;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTeaser;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTeaser;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTeaser;
 
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;

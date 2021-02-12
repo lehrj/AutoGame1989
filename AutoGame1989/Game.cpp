@@ -154,11 +154,14 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(device.As(&m_d3dDevice));
     DX::ThrowIfFailed(context.As(&m_d3dContext));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture3.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMWSpec.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"WikiNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI1.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularJI.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
 
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
@@ -170,6 +173,7 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Texture.jpg", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
 
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/road.png", nullptr, m_backgroundTex.ReleaseAndGetAddressOf()));
     m_road = std::make_unique<ScrollingBackground>();
@@ -1018,8 +1022,8 @@ void Game::DrawIntroScene()
     m_effect->SetFogEnabled(false);
     m_effect->EnableDefaultLighting();
     m_effect->SetLightEnabled(0, true);
-    m_effect->SetLightEnabled(1, false);
-    m_effect->SetLightEnabled(2, false);
+    m_effect->SetLightEnabled(1, true);
+    m_effect->SetLightEnabled(2, true);
     m_effect->SetLightDirection(0, m_lightPos1);
     m_effect->SetLightDirection(1, m_lightPos2);
     m_effect->SetLightDirection(2, m_lightPos3);
@@ -1036,32 +1040,88 @@ void Game::DrawIntroScene()
     //m_effect->SetLightDirection(0, DirectX::SimpleMath::Vector3::Zero);
     m_effect->EnableDefaultLighting();
     DirectX::SimpleMath::Vector3 camPos = DirectX::SimpleMath::Vector3::UnitX;
-    camPos.z = cosf(timeStamp * 3.);
+    //camPos.x = .6;
+    //camPos.y = .1;
+    //camPos.x = cosf(timeStamp * 3.);
+    //camPos.y = cosf(timeStamp * 3.);
+    camPos.z = - cosf(timeStamp * 3.);
     camPos.Normalize();
-    /*
+    
     m_effect->SetLightDirection(0, camPos);
     m_effect->SetLightDirection(1, camPos);
     m_effect->SetLightDirection(2, camPos);
+    
+
+    //m_effect->SetTexture(m_textureJI.Get());
+    //m_effect->SetNormalTexture(m_normalMapJI.Get());
+    //m_effect->SetSpecularTexture(m_specularJI.Get());
+
+    /*
+    m_effect->SetSpecularColor(DirectX::Colors::Red);
+    
+    m_effect->SetLightSpecularColor(0, DirectX::Colors::White);
+    m_effect->SetLightSpecularColor(1, DirectX::Colors::White);
+    m_effect->SetLightSpecularColor(2, DirectX::Colors::White);
+    m_effect->SetColorAndAlpha(DirectX::Colors::White);
+    m_effect->SetEmissiveColor(DirectX::Colors::Red);
     */
+    //m_effect->SetEmissiveColor(DirectX::Colors::White);
+    //m_effect->SetColorAndAlpha(DirectX::Colors::White);
 
-    m_effect->SetTexture(m_textureBMW.Get());
-    m_effect->SetNormalTexture(m_normalMapBMW2.Get());
-    //m_effect->SetSpecularTexture(m_textureAutoGame.Get());
 
+    m_effect->SetTexture(m_textureTeaser.Get());
+    m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+    m_effect->SetSpecularTexture(m_specularTeaser.Get());
    
     int timeInt = static_cast<int>(timeStamp) / 2;
     if (timeInt % 2 == 0)
     {
 
-        m_effect->SetSpecularTexture(m_textureBMW.Get());
+        //m_effect->SetSpecularTexture(m_textureBMW.Get());
     }
     else
     {
 
-        m_effect->SetSpecularTexture(m_normalMapBMW2.Get());
+        //m_effect->SetSpecularTexture(m_normalMapBMW2.Get());
     }
     
+    //  Teaser effects
+    auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
+    if (ilights)
+    {
+        ilights->SetLightEnabled(0, false);
+        ilights->SetLightEnabled(1, false);
+        ilights->SetLightEnabled(2, true);
 
+        auto time = static_cast<float>(m_timer.GetTotalSeconds());
+
+        float yaw = time * 0.4f;
+        float pitch = time * 0.7f;
+        float roll = time * 1.1f;
+
+        roll = cosf(-timeStamp * 3.);
+
+        auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-roll + 3.14 , 0.0, 0.0);
+        auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+        auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+
+        auto light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
+        auto light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
+        auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
+
+        //light1 = light0;
+        //light2 = light0;
+
+        ilights->SetLightDirection(0, light0);
+        ilights->SetLightDirection(1, light1);
+        ilights->SetLightDirection(2, light2);
+
+        m_lightPos1 = light0;
+        m_lightPos2 = light1;
+        m_lightPos3 = light2;
+    }
+
+    /* // BMW effects
     auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
     if (ilights)
     {
@@ -1106,7 +1166,6 @@ void Game::DrawIntroScene()
         light1 = light;
         light2 = light;
         
-
         ilights->SetLightDirection(0, light0);
         ilights->SetLightDirection(1, light1);
         ilights->SetLightDirection(2, light2);
@@ -1114,10 +1173,10 @@ void Game::DrawIntroScene()
         m_lightPos1 = light0;
         m_lightPos2 = light1;
         m_lightPos3 = light2;
-     
     }
+    */
 
-    /* /// JI effect
+     /*/// JI effect
     auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
     if (ilights)
     {
@@ -1147,7 +1206,6 @@ void Game::DrawIntroScene()
         ilights->SetLightDirection(1, light1);
         ilights->SetLightDirection(2, light2);
 
-
         m_lightPos1 = light0;
         m_lightPos2 = light1;
         m_lightPos3 = light2;
@@ -1161,10 +1219,11 @@ void Game::DrawIntroScene()
     ////////////////////////////////////////////////////////////////////////////////////
     const float height = .5f;
     const float width = .888888888f;
-    const float distance = 0.0f;
     //const float distance = 1.1f;
+    const float distance = 0.0f;
+
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
-    const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+    const DirectX::SimpleMath::Vector3 vertexNormal =  - DirectX::SimpleMath::Vector3::UnitX;
 
     //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
     //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
@@ -1583,10 +1642,7 @@ void Game::DrawLightBar()
         VertexPositionNormalColor v2(focus, normal, color1);
         m_batch2->DrawLine(v0, v2);
         m_batch2->DrawLine(v2, v1);
-
     }
-    
-
 }
 
 void Game::DrawLightFocus1()
@@ -2448,13 +2504,17 @@ void Game::OnDeviceLost()
     m_texture.Reset();
 
     m_normalMapJI.Reset();
+    m_specularJI.Reset();
     m_textureJI.Reset();
     m_normalMapBMW.Reset();
     m_normalMapBMW2.Reset();
+    m_specularBMW.Reset();
     m_textureBMW.Reset();
     m_normalMapAutoGame.Reset();
+    m_specularAutoGame.Reset();
     m_textureAutoGame.Reset();
     m_normalMapTeaser.Reset();
+    m_specularTeaser.Reset();
     m_textureTeaser.Reset();
 
     m_inputLayout.Reset();
@@ -2733,7 +2793,7 @@ void Game::Render()
     m_batch2->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawLightBar();
+        DrawLightBar();
         DrawCameraFocus();
         DrawLightFocus1();
         DrawLightFocus2();
