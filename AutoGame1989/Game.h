@@ -61,6 +61,7 @@ private:
     void DrawIntroScreen();
     void DrawIntroScene();
     void DrawIntroScene2();
+    void DrawIntroScene3();
     void DrawLightBar();
     void DrawLightFocus2();
     void DrawLightFocus1();
@@ -125,6 +126,11 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMap;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specular;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTest;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTest;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTest;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularJI;

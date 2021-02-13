@@ -127,6 +127,18 @@
     <Image Include="Art\specularTeaser.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\NormalMapTest.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\logoTest.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\specularTest.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\specularAutoGame.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

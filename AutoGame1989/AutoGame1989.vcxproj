@@ -195,13 +195,17 @@
     <Image Include="Art\logoBMW.png" />
     <Image Include="Art\logoJI.png" />
     <Image Include="Art\logoTeaser.png" />
+    <Image Include="Art\logoTest.png" />
     <Image Include="Art\NormalMapAutoGame.dds" />
     <Image Include="Art\NormalMapBMW.dds" />
     <Image Include="Art\NormalMapJI.dds" />
     <Image Include="Art\NormalMapTeaser.dds" />
+    <Image Include="Art\NormalMapTest.dds" />
     <Image Include="Art\PacSprite.png" />
     <Image Include="Art\road.png" />
+    <Image Include="Art\specularAutoGame.png" />
     <Image Include="Art\specularTeaser.png" />
+    <Image Include="Art\specularTest.png" />
     <Image Include="BlankTexture.png" />
     <Image Include="Chacter0SpriteSheet.png" />
     <Image Include="Chacter1SpriteSheet.png" />
