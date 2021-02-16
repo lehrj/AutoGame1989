@@ -157,18 +157,25 @@ void Game::CreateDevice()
 
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture3.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMWSpec.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"WikiNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"WikiNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm8.png", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularJI.png", nullptr, m_specular.ReleaseAndGetAddressOf()));
+    
 
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTest.png", nullptr, m_textureTest.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTest.dds", nullptr, m_normalMapTest.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTest.dds", nullptr, m_normalMapTest.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm7.png", nullptr, m_normalMapTest.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTest.png", nullptr, m_specularTest.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTest.png", nullptr, m_normalMapTest.ReleaseAndGetAddressOf()));
 
+    /*
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI1.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularJI.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
+    */
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/TextureJI.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/NormJI.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/SpecJi.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
 
     /*
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
@@ -177,16 +184,22 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularBMW.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
     */
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI1.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestLogo.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW00.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/BMWnormTest.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/BMWnormTest2.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/BMWnormTest6.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/BMWnormTest6.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
+   // DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTeaser.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm2.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularBMW.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTest4.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTest5.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestSpec.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
+
 
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame.dds", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame2.dds", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularAutoGame.png", nullptr, m_specularAutoGame.ReleaseAndGetAddressOf()));
 
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
@@ -1044,9 +1057,9 @@ void Game::DrawIntroScene()
     camPos.z = -cosf(timeStamp * 3.);
     camPos.Normalize();
 
-    m_effect->SetLightDirection(0, camPos);
-    m_effect->SetLightDirection(1, camPos);
-    m_effect->SetLightDirection(2, camPos);
+    //m_effect->SetLightDirection(0, camPos);
+    //m_effect->SetLightDirection(1, camPos);
+    //m_effect->SetLightDirection(2, camPos);
 
     DirectX::XMVECTORF32 colorTest = DirectX::Colors::Red;
 
@@ -1065,10 +1078,6 @@ void Game::DrawIntroScene()
     //m_effect->SetLightSpecularColor(2, colorTest);
 
 
-    m_effect->SetTexture(m_textureBMW.Get());
-    m_effect->SetNormalTexture(m_normalMapBMW.Get());
-    m_effect->SetSpecularTexture(m_specularBMW.Get());
-
     /*
 
     m_effect->SetTexture(m_textureJI.Get());
@@ -1080,6 +1089,7 @@ void Game::DrawIntroScene()
     m_effect->SetSpecularTexture(m_specularBMW.Get());
     */
 
+    
     
     int timeInt = static_cast<int>(timeStamp) / 2;
     if (timeInt % 2 == 0)
@@ -1095,7 +1105,34 @@ void Game::DrawIntroScene()
         m_effect->SetSpecularTexture(m_specularBMW.Get());
     }
     
+    if (m_testDisplayCount == 0)
+    {
+        m_effect->SetTexture(m_textureBMW.Get());
+        m_effect->SetNormalTexture(m_normalMapBMW.Get());
+        m_effect->SetSpecularTexture(m_specularBMW.Get());
+    }
+    else if (m_testDisplayCount == 1)
+    {
+        m_effect->SetTexture(m_textureBMW.Get());
+        m_effect->SetNormalTexture(m_normalMapBMW2.Get());
+        m_effect->SetSpecularTexture(m_specularBMW.Get());
+    }
+    else if (m_testDisplayCount == 2)
+    {
+        m_effect->SetTexture(m_textureBMW.Get());
+        m_effect->SetNormalTexture(m_normalMapTest.Get());
+        m_effect->SetSpecularTexture(m_specularBMW.Get());
+    }
+    else if (m_testDisplayCount == 3)
+    {
+        m_effect->SetTexture(m_textureBMW.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        m_effect->SetSpecularTexture(m_specularBMW.Get());
+    }
 
+    m_effect->SetTexture(m_textureAutoGame.Get());
+    m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
+    m_effect->SetSpecularTexture(m_specularAutoGame.Get());
 
     // AutoGameEffect
     /*
@@ -1200,11 +1237,11 @@ void Game::DrawIntroScene()
         auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, yaw, 0.0);
         auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
 
-        auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
+        auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -roll, 0.0);
         //quat0 = quat;
         //quat1 = quat;
         //quat2 = quat;
-        DirectX::SimpleMath::Vector3 axis = -DirectX::SimpleMath::Vector3::UnitZ;
+        DirectX::SimpleMath::Vector3 axis = - DirectX::SimpleMath::Vector3::UnitZ;
         //auto light0 = XMVector3Rotate(axis, quat0);
         //auto light1 = XMVector3Rotate(axis, quat1);
         //auto light2 = XMVector3Rotate(axis, quat2);
@@ -1232,7 +1269,7 @@ void Game::DrawIntroScene()
         light0 = light;
         light1 = light;
         light2 = light;
-
+        
         ilights->SetLightDirection(0, light0);
         ilights->SetLightDirection(1, light1);
         ilights->SetLightDirection(2, light2);
@@ -1240,6 +1277,7 @@ void Game::DrawIntroScene()
         m_lightPos1 = light0;
         m_lightPos2 = light1;
         m_lightPos3 = light2;
+        
     }
 
     /// JI effect
@@ -1301,21 +1339,11 @@ void Game::DrawIntroScene()
 
 
 
-
-
-
-
-
-
-
-
-
-
     //DirectX::SimpleMath::Vector3 vertexNormal = testNorm;
     const DirectX::SimpleMath::Vector3 vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
 
-    //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
-    //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
+    pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
+    pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
@@ -1339,7 +1367,7 @@ void Game::DrawIntroScene()
     VertexPositionNormalColorTexture vertBottomRight2(bottomRight2, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
     VertexPositionNormalColorTexture vertBottomLeft2(bottomLeft2, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
 
-    m_batch->DrawQuad(vertTopLeft2, vertTopRight2, vertBottomRight2, vertBottomLeft2);
+    //m_batch->DrawQuad(vertTopLeft2, vertTopRight2, vertBottomRight2, vertBottomLeft2);
 }
 
 void Game::DrawIntroScene2()
@@ -2457,7 +2485,7 @@ void Game::DrawShape()
     //m_shape->Draw(transWorld, testMatrix, testMatrix);
 }
 
-void Game::DrawStartScreen()
+void Game::DrawStartScreenOld()
 {
     const std::string title = "AutoGame1989";
     const std::string author = "By Lehr Jackson";
@@ -3283,10 +3311,10 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         //DrawLightBar();
-        DrawCameraFocus();
-        DrawLightFocus1();
-        DrawLightFocus2();
-        DrawLightFocus3();
+        //DrawCameraFocus();
+        //DrawLightFocus1();
+        //DrawLightFocus2();
+        //DrawLightFocus3();
         //DrawWorld();
         //DrawWorldCube();
     }
@@ -3769,6 +3797,18 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_lightPos3.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
+    if (m_kbStateTracker.pressed.N)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            ++m_testDisplayCount;
+            if (m_testDisplayCount > m_testDisplayCountMax)
+            {
+                m_testDisplayCount = 0;
+            }
+        }
+    }
+
 
     auto mouse = m_mouse->GetState();
 

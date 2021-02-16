@@ -70,6 +70,7 @@ private:
     void DrawMenuMain();
     void DrawShape();
     void DrawStartScreen();
+    void DrawStartScreenOld();
     void DrawTeaserScreen();
     void DrawTimer();
     void DrawWorld();
@@ -282,4 +283,8 @@ private:
 
     std::unique_ptr<ScrollingBackground>             m_road;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_backgroundTex;
+
+
+    int                                         m_testDisplayCount = 0;
+    const int                                   m_testDisplayCountMax = 3;
 };
