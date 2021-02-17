@@ -81,7 +81,7 @@ void Game::AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK aSFX)
 void Game::Clear()
 {
     // Clear the views.
-    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::Black);
+    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::White);
     m_d3dContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 
@@ -154,54 +154,27 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(device.As(&m_d3dDevice));
     DX::ThrowIfFailed(context.As(&m_d3dContext));
 
-
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture3.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMWSpec.png", nullptr, m_texture.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"WikiNormalMap.dds", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm8.png", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularJI.png", nullptr, m_specular.ReleaseAndGetAddressOf()));
-    
-
+    // test textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTest.png", nullptr, m_textureTest.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTest.dds", nullptr, m_normalMapTest.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm7.png", nullptr, m_normalMapTest.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTest.png", nullptr, m_specularTest.ReleaseAndGetAddressOf()));
-
-
-    /*
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI1.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapJI.dds", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularJI.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-    */
+    // Jackson Industry textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/TextureJI.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/NormJI.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/SpecJi.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-
-    /*
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW00.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularBMW.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
-    */
-
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI1.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
+    // BMW textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestLogo.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW.dds", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapBMW00.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/BMWnormTest6.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/BMWnormTest6.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
-   // DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTeaser.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm2.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularBMW.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTest5.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestSpec.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
-
-
+    // Start screen textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame2.dds", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularAutoGame.png", nullptr, m_specularAutoGame.ReleaseAndGetAddressOf()));
-
+    // Textures for teaser trailer
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTeaser.png", nullptr, m_specularTeaser.ReleaseAndGetAddressOf()));
@@ -209,31 +182,17 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/road.png", nullptr, m_backgroundTex.ReleaseAndGetAddressOf()));
     m_road = std::make_unique<ScrollingBackground>();
     m_road->Load(m_backgroundTex.Get());
-    /////////////////////
 
     // TODO: Initialize device dependent objects here (independent of window size).
     m_world = DirectX::SimpleMath::Matrix::Identity;
     m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
-
-    /*
-    m_lightEffect = std::make_unique<DirectX::BasicEffect>(m_d3dDevice.Get());
-    m_lightEffect = std::shared_ptr<DirectX::BasicEffect>(m_d3dDevice.Get());
-    m_lightEffect = std::make_unique<DirectX::IEffect>;// (m_d3dDevice.Get());
-    m_lightEffect = std::make_unique<DirectX::IEffect>(m_d3dDevice.Get());
-    */
-
     m_effect = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
 
     // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
     m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
-    //m_effect->EnableDefaultLighting();
     m_effect->SetLightDiffuseColor(0, Colors::White);
-    //m_effect->SetEmissiveColor(DirectX::Colors::Red);
     m_effect->SetAlpha(1.0);
-    //m_effect->SetAmbientLightColor(DirectX::Colors::White);
-    //m_effect->SetSpecularColor(DirectX::Colors::Red);
-    //m_effect->SetProjection(DirectX::SimpleMath::Matrix::Identity);
 
     m_effect->SetFogEnabled(false);
     m_effect->SetFogColor(DirectX::Colors::Black);
@@ -241,11 +200,12 @@ void Game::CreateDevice()
     m_effect->SetFogEnd(4.0);
 
     m_effect2 = std::make_unique<BasicEffect>(m_d3dDevice.Get());
-    //m_effect2 = std::make_unique<NormalMapEffect>(m_d3dDevice.Get());
     m_effect2->SetVertexColorEnabled(true);
     m_effect2->EnableDefaultLighting();
     m_effect2->SetLightDiffuseColor(0, Colors::Gray);
 
+    m_effect3 = std::make_unique<BasicEffect>(m_d3dDevice.Get());
+    m_effect3->SetVertexColorEnabled(true);
 
     void const* shaderByteCode2;
     size_t byteCodeLength2;
@@ -259,9 +219,14 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType::InputElements, VertexType::InputElementCount, shaderByteCode, byteCodeLength, m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch = std::make_unique<PrimitiveBatch<VertexType>>(m_d3dContext.Get());
 
+    void const* shaderByteCode3;
+    size_t byteCodeLength3;
+    m_effect3->GetVertexShaderBytecode(&shaderByteCode3, &byteCodeLength3);
+    DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType3::InputElements, VertexType3::InputElementCount, shaderByteCode3, byteCodeLength3, m_inputLayout.ReleaseAndGetAddressOf()));
+    m_batch3 = std::make_unique<PrimitiveBatch<VertexType3>>(m_d3dContext.Get());
+
     //CreateSphere(std::vector<VertexType>&vertices, std::vector<uint16_t>&indices, float diameter = 1, size_t tessellation = 16, bool rhcoords = true, bool invertn = false);
     m_shape = GeometricPrimitive::CreateSphere(m_d3dContext.Get());
-
 
     CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
         D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
@@ -470,6 +435,8 @@ void Game::CreateResources()
     m_effect->SetProjection(m_proj);
     m_effect2->SetView(m_view);
     m_effect2->SetProjection(m_proj);
+    m_effect3->SetView(m_view);
+    m_effect3->SetProjection(m_proj);
     // world end
 
     // UI font positions
@@ -856,6 +823,118 @@ void Game::DrawDebugLines()
     */
 }
 
+void Game::DrawGridForStartScreen()
+{
+    DirectX::XMVECTORF32 gridColor = DirectX::Colors::Green;
+    const float xBase = 1.0;
+    const float yBase = - 0.0;
+    const float zBase = -4.0;
+    const float xLength = 4.0;
+    const float zSpacing = 0.1;
+    const int verticleLineCount = 80;
+    DirectX::SimpleMath::Vector3 verticleStart(xBase, yBase, zBase);
+    for (int i = 0; i <= verticleLineCount; ++i)
+    {
+        DirectX::SimpleMath::Vector3 verticleEnd = verticleStart;
+        verticleEnd.x -= xLength;
+        DirectX::VertexPositionColor vertexStart(verticleStart, gridColor);
+        DirectX::VertexPositionColor vertexEnd(verticleEnd, gridColor);
+        m_batch3->DrawLine(vertexStart, vertexEnd);
+        verticleStart.z += zSpacing;
+    }
+
+    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    const float zLength = zSpacing * verticleLineCount;
+    const float xSpacing = 0.1;
+    const int horizontalLineCount = 200;
+    DirectX::SimpleMath::Vector3 horizontalStart(xBase, yBase, zBase);
+
+    /*
+    float test = fmod(timeStamp, xLength);
+    horizontalStart.x -= test;
+
+    DirectX::SimpleMath::Vector3 horizontalEnd = horizontalStart;
+    horizontalEnd.z += zLength;
+    */
+    
+    float test = fmod(timeStamp, xLength) * .2;
+    for (int i = 0; i < horizontalLineCount; ++i)
+    {
+        if (horizontalStart.x < (xBase - xLength))
+        {
+            float testX = horizontalStart.x;
+            float testC = xBase - xLength;
+
+            //horizontalStart.x += 2.;
+            //horizontalStart.x = xBase;
+            //horizontalStart.x += -test + (xSpacing * i);
+            //horizontalStart.x = fmod(horizontalStart.x, xLength);
+        }
+        else
+        {
+            //horizontalStart.x = -test + (xSpacing * i);
+        }
+
+        horizontalStart.x = -test + (xSpacing * i);
+
+        DirectX::SimpleMath::Vector3 horizontalEnd = horizontalStart;
+        horizontalEnd.z += zLength;
+        DirectX::VertexPositionColor vertexStart(horizontalStart, gridColor);
+        DirectX::VertexPositionColor vertexEnd(horizontalEnd, gridColor);
+
+        if (horizontalStart.x < xBase && horizontalStart.x > xBase - xLength)
+        {
+            m_batch3->DrawLine(vertexStart, vertexEnd);
+        }
+        //float test = fmod(timeStamp, xLength) + xSpacing;
+    }
+
+
+    DirectX::SimpleMath::Vector3 nw(xBase, yBase, zBase);
+    DirectX::SimpleMath::Vector3 ne = nw;
+    ne.z += zLength;
+    DirectX::VertexPositionColor v1(nw, gridColor);
+    DirectX::VertexPositionColor v2(ne, gridColor);
+    m_batch3->DrawLine(v1, v2);
+
+    v1.position.x -= xLength;
+    v2.position.x -= xLength;
+    m_batch3->DrawLine(v1, v2);
+    /*
+    std::vector<float> hVec;
+    hVec.clear();
+
+    float xIn = xBase;
+    for (int i = 0; i < horizontalLineCount; ++i)
+    {
+        xIn += xSpacing;
+        hVec.push_back(xIn);
+    }
+
+    for (int i = 0; i < hVec.size(); ++i)
+    {
+        hVec[i] += fmod(timeStamp, hVec[i]);
+
+    }
+
+    std::sort(hVec.begin(), hVec.end());
+
+    for (int i = 0; i < horizontalLineCount; ++i)
+    {
+
+        
+
+        DirectX::SimpleMath::Vector3 horizontalEnd = horizontalStart;
+        horizontalEnd.z += zLength;
+        DirectX::VertexPositionColor vertexStart(horizontalStart, gridColor);
+        DirectX::VertexPositionColor vertexEnd(horizontalEnd, gridColor);
+        m_batch3->DrawLine(vertexStart, vertexEnd);
+        horizontalStart.x = hVec[i];
+
+    }
+    */
+}
+
 void Game::DrawIntroScene()
 {
     const float fadeDuration = 1.5f;
@@ -1130,9 +1209,14 @@ void Game::DrawIntroScene()
         m_effect->SetSpecularTexture(m_specularBMW.Get());
     }
 
+    
     m_effect->SetTexture(m_textureAutoGame.Get());
     m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
     m_effect->SetSpecularTexture(m_specularAutoGame.Get());
+    
+    m_effect->SetFogEnabled(true);
+    m_effect->SetFogStart(1.0);
+    m_effect->SetFogEnd(0.5);
 
     // AutoGameEffect
     /*
@@ -1342,8 +1426,8 @@ void Game::DrawIntroScene()
     //DirectX::SimpleMath::Vector3 vertexNormal = testNorm;
     const DirectX::SimpleMath::Vector3 vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
 
-    pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
-    pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
+    //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
+    //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
@@ -3010,8 +3094,10 @@ void Game::OnDeviceLost()
     m_states.reset();
     m_effect.reset();
     m_effect2.reset();
+    m_effect3.reset();
     m_batch.reset();
     m_batch2.reset();
+    m_batch3.reset();
     m_shape.reset();
     m_normalMap.Reset();
     m_texture.Reset();
@@ -3104,6 +3190,7 @@ void Game::OnWindowSizeChanged(int width, int height)
     m_proj = pCamera->GetProjectionMatrix();
     m_effect->SetProjection(m_proj);
     m_effect2->SetProjection(m_proj);
+    m_effect3->SetProjection(m_proj);
 }
 
 // Presents the back buffer contents to the screen.
@@ -3136,26 +3223,12 @@ void Game::Render()
 
     Clear();
 
-    /////////////////////////////////////////////////////////
-
-    //m_effect->SetLightDirection(0, light);
-    //m_effect2->SetLightDirection(0, light);
     m_effect->EnableDefaultLighting();
-    //auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
     auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
     if (ilights)
     {
         ilights->SetLightEnabled(0, true);
-
-        //static const XMVECTORF32 light{ 0.f, -1.f, 0.f, 0.f };
-        //static const XMVECTORF32 light{ 0.2f, 0.01f, -0.3f, 0.f };
         auto time = static_cast<float>(m_timer.GetTotalSeconds());
-        //time *= .3;
-        /*
-        float yaw = time * 0.0f;
-        float pitch = time * 0.7f;
-        float roll = time * 0.0f;
-        */
 
         float yaw = time * 0.4f;
         float pitch = time * 0.7f;
@@ -3216,12 +3289,8 @@ void Game::Render()
         //auto light = XMVector3Rotate(g_XMOne, quat);
         auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
 
-        //light = DirectX::SimpleMath::Vector3(-.5, 0.1, 0.0f);
-        //m_lightPos = light;
         light2 = m_lightPos2;
         ilights2->SetLightDirection(0, light2);
-
-
     }
     m_effect2->SetLightDirection(0, DirectX::SimpleMath::Vector3::UnitY);
     /////////////////////////////////////////////////////////
@@ -3235,6 +3304,7 @@ void Game::Render()
         ilights->SetLightDirection(0, light);
     }
     */
+
     // TODO: Add your rendering code here.
     // WLJ start
     m_d3dContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
@@ -3242,7 +3312,6 @@ void Game::Render()
     m_d3dContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
     //m_d3dContext->RSSetState(m_states->CullNone());
     //m_d3dContext->RSSetState(m_states->CullClockwise());
-
     //10  m_d3dContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
     //11  m_d3dContext->RSSetState(m_states->CullCounterClockwise());
 
@@ -3255,10 +3324,9 @@ void Game::Render()
     m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
     DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType::InputElements, VertexType::InputElementCount, shaderByteCode, byteCodeLength, m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch = std::make_unique<PrimitiveBatch<VertexType>>(m_d3dContext.Get());
-
     m_effect->SetWorld(m_world);
     //world end
-
+    
     m_effect->Apply(m_d3dContext.Get());
 
     ///   
@@ -3292,13 +3360,13 @@ void Game::Render()
         }
     }
     m_batch->End();
-
+    
     void const* shaderByteCode2;
     size_t byteCodeLength2;
     m_effect2->GetVertexShaderBytecode(&shaderByteCode2, &byteCodeLength2);
     DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType2::InputElements, VertexType2::InputElementCount, shaderByteCode2, byteCodeLength2, m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(m_d3dContext.Get());
-
+    
     //m_effect2->SetWorld(m_world);
     m_effect2->Apply(m_d3dContext.Get());
     ///   
@@ -3320,6 +3388,19 @@ void Game::Render()
     }
     m_batch2->End();
 
+    void const* shaderByteCode3;
+    size_t byteCodeLength3;
+    m_effect3->GetVertexShaderBytecode(&shaderByteCode3, &byteCodeLength3);
+    DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType3::InputElements, VertexType3::InputElementCount, shaderByteCode3, byteCodeLength3, m_inputLayout.ReleaseAndGetAddressOf()));
+    m_batch3 = std::make_unique<PrimitiveBatch<VertexType3>>(m_d3dContext.Get());
+    m_d3dContext->IASetInputLayout(m_inputLayout.Get());
+    //m_effect3->SetWorld(m_world);
+    m_effect3->Apply(m_d3dContext.Get());
+
+    m_batch3->Begin();
+        DrawGridForStartScreen();
+    m_batch3->End();
+
     m_spriteBatch->Begin();
     //DrawTimer();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
@@ -3328,7 +3409,7 @@ void Game::Render()
     }
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
-        DrawStartScreen();
+        DrawStartScreenOld();
     }
     if (m_currentGameState == GameState::GAMESTATE_MAINMENU)
     {
@@ -3438,10 +3519,9 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     pCamera->UpdateCamera(aTimer);
     DirectX::SimpleMath::Matrix viewMatrix = pCamera->GetViewMatrix();
-    //m_effect->SetView(pCamera->GetViewMatrix());
-    //m_effect2->SetView(pCamera->GetViewMatrix());
     m_effect->SetView(viewMatrix);
     m_effect2->SetView(viewMatrix);
+    m_effect3->SetView(viewMatrix);
     UpdateInput(aTimer);
 }
 

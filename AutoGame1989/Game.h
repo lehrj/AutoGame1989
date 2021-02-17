@@ -53,11 +53,12 @@ private:
     void Clear();
     void CreateDevice();
     void CreateResources();
-
-    void DrawDebugLines();
+  
     void DrawCameraFocus();
     void DrawCar();
     void DrawCar2();
+    void DrawDebugLines();
+    void DrawGridForStartScreen();
     void DrawIntroScreen();
     void DrawIntroScene();
     void DrawIntroScene2();
@@ -109,21 +110,18 @@ private:
     double                                          m_projectileTimer = 0.0;
 
     // WLJ add start
-    //using VertexType = DirectX::VertexPositionColor;
-    //using VertexType = DirectX::VertexPositionNormalColor;
-    //using VertexType = DirectX::VertexPositionTexture;
-    //using VertexType = DirectX::VertexPositionColorTexture;
-    using VertexType = DirectX::VertexPositionNormalColorTexture;
-    
+    using VertexType = DirectX::VertexPositionNormalColorTexture;   
     using VertexType2 = DirectX::VertexPositionNormalColor;
+    using VertexType3 = DirectX::VertexPositionColor;
 
     std::unique_ptr<DirectX::CommonStates>          m_states;   
     std::unique_ptr<DirectX::NormalMapEffect>       m_effect;
     std::unique_ptr<DirectX::BasicEffect>           m_effect2;
-    //std::unique_ptr<DirectX::NormalMapEffect>           m_effect2;
+    std::unique_ptr<DirectX::BasicEffect>           m_effect3;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType2>> m_batch2;
-    //std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionNormalColor>> m_batchNormal;
+    std::unique_ptr<DirectX::PrimitiveBatch<VertexType3>> m_batch3;
+
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMap;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
