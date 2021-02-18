@@ -106,6 +106,7 @@ public:
     DirectX::SimpleMath::Vector3 GetTeePosition() const { return m_currentEnviron.teePosition; };
 
     std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
+    std::vector<DirectX::VertexPositionNormalColor> GetTerrainPositionNormalColorVertex();
 
     double GetWindDirection() const;
     DirectX::SimpleMath::Vector3 GetWindVector() const { return m_currentEnviron.wind; };

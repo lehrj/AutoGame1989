@@ -253,6 +253,22 @@ std::vector<DirectX::VertexPositionColor> Environment::GetTerrainColorVertex()
 
     return vertPosColor;
 }
+std::vector<DirectX::VertexPositionNormalColor> Environment::GetTerrainPositionNormalColorVertex()
+{
+    std::vector<DirectX::VertexPositionNormalColor> vertPosNormColor;
+    vertPosNormColor.clear();
+    vertPosNormColor.resize(m_terrainModel.size());
+    DirectX::XMFLOAT4 terrainColor(1.0, 1.0, 1.0, 1.0); // ToDo: for testing, implement color control
+
+    for (int i = 0; i < vertPosNormColor.size(); ++i)
+    {
+        vertPosNormColor[i].position = m_terrainModel[i].position;
+        vertPosNormColor[i].color = terrainColor;
+        vertPosNormColor[i].normal = m_terrainModel[i].normal;
+    }
+
+    return vertPosNormColor;
+}
 
 // While this could be done once per environment update, future updates could have moment to moment wind changes
 double Environment::GetWindDirection() const

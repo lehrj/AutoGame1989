@@ -75,6 +75,7 @@ private:
     void DrawStartScreenOld();
     void DrawTeaserScreen();
     void DrawTerrain();
+    void DrawTerrain2();
     void DrawTimer();
     void DrawWorld();
     void DrawWorldCube();
@@ -288,7 +289,7 @@ private:
     int                                         m_testDisplayCount = 0;
     const int                                   m_testDisplayCountMax = 3;
 
-
+    // for height map
     std::vector<DirectX::VertexPositionColor>   m_terrainVector;
 
     DirectX::VertexPositionColor*               m_terrainVertexArray;
@@ -296,5 +297,15 @@ private:
     int                                         m_terrainVertexCount;
     
     bool InitializeTerrainArray();
+
+    /////////////////////////////
+
+    std::vector<DirectX::VertexPositionNormalColor>   m_terrainVector2;
+
+    DirectX::VertexPositionNormalColor* m_terrainVertexArray2;
+    DirectX::VertexPositionNormalColor* m_terrainVertexArrayBase2;
+    int                                         m_terrainVertexCount2;
+
+    bool InitializeTerrainArray2();
 
 };
