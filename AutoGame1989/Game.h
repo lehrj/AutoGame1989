@@ -10,6 +10,7 @@
 #include "WICTextureLoader.h"
 #include "Auto.h"
 #include "Camera.h"
+#include "Environment.h"
 #include "sounds.h"
 #include "Vehicle.h"
 
@@ -73,6 +74,7 @@ private:
     void DrawStartScreen();
     void DrawStartScreenOld();
     void DrawTeaserScreen();
+    void DrawTerrain();
     void DrawTimer();
     void DrawWorld();
     void DrawWorldCube();
@@ -86,10 +88,10 @@ private:
     void Update(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
 
-    Camera* pCamera;
-    Auto* pAuto;
+    Auto* m_auto;
+    Camera* m_camera;
     Vehicle* m_vehicle;
-
+    Environment* m_environment;
 
     // Device resources.
     HWND                                            m_window;
@@ -285,4 +287,14 @@ private:
 
     int                                         m_testDisplayCount = 0;
     const int                                   m_testDisplayCountMax = 3;
+
+
+    std::vector<DirectX::VertexPositionColor>   m_terrainVector;
+
+    DirectX::VertexPositionColor*               m_terrainVertexArray;
+    DirectX::VertexPositionColor*               m_terrainVertexArrayBase;
+    int                                         m_terrainVertexCount;
+    
+    bool InitializeTerrainArray();
+
 };

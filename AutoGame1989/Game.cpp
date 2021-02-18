@@ -19,11 +19,11 @@ Game::Game() noexcept :
     m_featureLevel(D3D_FEATURE_LEVEL_9_1)
 {
     srand(time(NULL));
-    pAuto = new Auto();
-    //pPlay = new AutoPlay();
+    m_auto = new Auto();
+    m_environment = new Environment();
 
-    pCamera = new Camera(m_outputWidth, m_outputHeight);
-    pCamera->InintializePreSwingCamera(DirectX::SimpleMath::Vector3::Zero, 0.0);
+    m_camera = new Camera(m_outputWidth, m_outputHeight);
+    m_camera->InintializePreSwingCamera(DirectX::SimpleMath::Vector3::Zero, 0.0);
 
     m_vehicle = new Vehicle();
 
@@ -50,10 +50,15 @@ Game::~Game()
     m_audioMusicStream.reset();
     m_audioEffectStream.reset();
 
-    delete pAuto;
-    //delete pPlay;
-    delete pCamera;
+    delete m_auto;
+    delete m_camera;
+    delete m_environment;
     delete m_vehicle;
+
+    delete[] m_terrainVertexArray;
+    m_terrainVertexArray = 0;
+    delete[] m_terrainVertexArrayBase;
+    m_terrainVertexArrayBase = 0;
 }
 
 void Game::AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK aSFX)
@@ -493,7 +498,7 @@ void Game::DrawCameraFocus()
 {
     const float line = .25f;
     DirectX::XMVECTORF32 lineColor = DirectX::Colors::Yellow;
-    DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
+    DirectX::SimpleMath::Vector3 focalPoint = m_camera->GetTargetPos();
     m_cameraFocusPos = focalPoint;
     if (m_moveLightWithCameraFocus3 == true)
     {
@@ -540,7 +545,7 @@ void Game::DrawCameraFocus()
 
     /*
     const float line = .25f;
-    DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
+    DirectX::SimpleMath::Vector3 focalPoint = m_camera->GetTargetPos();
     //pGolf->SetPosToTerrain(focalPoint);
     float height = pGolf->GetTerrainHeight(focalPoint);
     //height += .1;
@@ -825,13 +830,19 @@ void Game::DrawDebugLines()
 
 void Game::DrawGridForStartScreen()
 {
-    DirectX::XMVECTORF32 gridColor = DirectX::Colors::Green;
+    DirectX::XMVECTORF32 gridColor = DirectX::Colors::LawnGreen;
+    DirectX::XMVECTORF32 baseColor = DirectX::Colors::Black;
     const float xBase = 1.0;
     const float yBase = - 0.0;
     const float zBase = -4.0;
     const float xLength = 4.0;
-    const float zSpacing = 0.1;
+    const float zSpacing = 0.2;
     const int verticleLineCount = 80;
+    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    const float zLength = zSpacing * verticleLineCount;
+    const float xSpacing = 0.2;
+    const int horizontalLineCount = 20;
+    const float baseOffset = -0.01;
     DirectX::SimpleMath::Vector3 verticleStart(xBase, yBase, zBase);
     for (int i = 0; i <= verticleLineCount; ++i)
     {
@@ -843,96 +854,63 @@ void Game::DrawGridForStartScreen()
         verticleStart.z += zSpacing;
     }
 
-    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-    const float zLength = zSpacing * verticleLineCount;
-    const float xSpacing = 0.1;
-    const int horizontalLineCount = 200;
     DirectX::SimpleMath::Vector3 horizontalStart(xBase, yBase, zBase);
-
-    /*
-    float test = fmod(timeStamp, xLength);
-    horizontalStart.x -= test;
-
-    DirectX::SimpleMath::Vector3 horizontalEnd = horizontalStart;
-    horizontalEnd.z += zLength;
-    */
     
-    float test = fmod(timeStamp, xLength) * .2;
+    float horizontalLinePos = fmod(timeStamp, xLength) * .2;
+    //horizontalLinePos = 0;
     for (int i = 0; i < horizontalLineCount; ++i)
     {
-        if (horizontalStart.x < (xBase - xLength))
-        {
-            float testX = horizontalStart.x;
-            float testC = xBase - xLength;
-
-            //horizontalStart.x += 2.;
-            //horizontalStart.x = xBase;
-            //horizontalStart.x += -test + (xSpacing * i);
-            //horizontalStart.x = fmod(horizontalStart.x, xLength);
-        }
-        else
-        {
-            //horizontalStart.x = -test + (xSpacing * i);
-        }
-
-        horizontalStart.x = -test + (xSpacing * i);
+        horizontalStart.x = - horizontalLinePos + (xSpacing * i);
 
         DirectX::SimpleMath::Vector3 horizontalEnd = horizontalStart;
         horizontalEnd.z += zLength;
         DirectX::VertexPositionColor vertexStart(horizontalStart, gridColor);
         DirectX::VertexPositionColor vertexEnd(horizontalEnd, gridColor);
+
+        m_batch3->DrawLine(vertexStart, vertexEnd);
 
         if (horizontalStart.x < xBase && horizontalStart.x > xBase - xLength)
         {
-            m_batch3->DrawLine(vertexStart, vertexEnd);
+            //m_batch3->DrawLine(vertexStart, vertexEnd);
         }
-        //float test = fmod(timeStamp, xLength) + xSpacing;
     }
-
-
-    DirectX::SimpleMath::Vector3 nw(xBase, yBase, zBase);
+   
+    DirectX::SimpleMath::Vector3 nw(xBase, yBase + baseOffset, zBase);
     DirectX::SimpleMath::Vector3 ne = nw;
     ne.z += zLength;
-    DirectX::VertexPositionColor v1(nw, gridColor);
-    DirectX::VertexPositionColor v2(ne, gridColor);
+
+    DirectX::SimpleMath::Vector3 sw = nw;
+    sw.x -= xLength;
+    DirectX::SimpleMath::Vector3 se = nw;
+    se.z += zLength;
+    se.x -= xLength;
+    
+    nw.y -= baseOffset;
+    ne.y -= baseOffset;
+    DirectX::VertexPositionColor v1(nw, baseColor);
+    DirectX::VertexPositionColor v2(ne, baseColor);   
+    DirectX::VertexPositionColor v3(se, baseColor);
+    DirectX::VertexPositionColor v4(sw, baseColor);
+    m_batch3->DrawQuad(v1, v2, v3, v4);
+
+    nw.y += baseOffset;
+    ne.y += baseOffset;
+
+    // draw scrolling grid outline
+    nw.y -= baseOffset;
+    ne.y -= baseOffset;
+    se.y -= baseOffset;
+    sw.y -= baseOffset;
+
+    v1 = DirectX::VertexPositionColor(nw, gridColor);
+    v2 = DirectX::VertexPositionColor(ne, gridColor);
+    v3 = DirectX::VertexPositionColor(se, gridColor);
+    v4 = DirectX::VertexPositionColor(sw, gridColor);
+
     m_batch3->DrawLine(v1, v2);
-
-    v1.position.x -= xLength;
-    v2.position.x -= xLength;
-    m_batch3->DrawLine(v1, v2);
-    /*
-    std::vector<float> hVec;
-    hVec.clear();
-
-    float xIn = xBase;
-    for (int i = 0; i < horizontalLineCount; ++i)
-    {
-        xIn += xSpacing;
-        hVec.push_back(xIn);
-    }
-
-    for (int i = 0; i < hVec.size(); ++i)
-    {
-        hVec[i] += fmod(timeStamp, hVec[i]);
-
-    }
-
-    std::sort(hVec.begin(), hVec.end());
-
-    for (int i = 0; i < horizontalLineCount; ++i)
-    {
-
-        
-
-        DirectX::SimpleMath::Vector3 horizontalEnd = horizontalStart;
-        horizontalEnd.z += zLength;
-        DirectX::VertexPositionColor vertexStart(horizontalStart, gridColor);
-        DirectX::VertexPositionColor vertexEnd(horizontalEnd, gridColor);
-        m_batch3->DrawLine(vertexStart, vertexEnd);
-        horizontalStart.x = hVec[i];
-
-    }
-    */
+    m_batch3->DrawLine(v2, v3);
+    m_batch3->DrawLine(v3, v4);
+    m_batch3->DrawLine(v4, v1);
 }
 
 void Game::DrawIntroScene()
@@ -1419,15 +1397,11 @@ void Game::DrawIntroScene()
     testNorm = norm01;
 
 
-
-
-
-
     //DirectX::SimpleMath::Vector3 vertexNormal = testNorm;
     const DirectX::SimpleMath::Vector3 vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
 
-    //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
-    //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
+    //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
+    //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
@@ -1679,8 +1653,8 @@ void Game::DrawIntroScene2()
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
 
-    //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
-    //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
+    //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
+    //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
@@ -2085,8 +2059,8 @@ void Game::DrawIntroScene3()
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
 
-    //pCamera->SetPos(DirectX::SimpleMath::Vector3::Zero);
-    //pCamera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
+    //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
+    //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
@@ -2246,7 +2220,7 @@ void Game::DrawLightBar()
 void Game::DrawLightFocus1()
 {
     const float line = .25f;
-    //DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
+    //DirectX::SimpleMath::Vector3 focalPoint = m_camera->GetTargetPos();
     //DirectX::SimpleMath::Vector3 focalPoint = m_lightPos1;
     DirectX::SimpleMath::Vector3 focalPoint = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 yLine = focalPoint;
@@ -2303,7 +2277,7 @@ void Game::DrawLightFocus1()
 void Game::DrawLightFocus2()
 {
     const float line = .25f;
-    //DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
+    //DirectX::SimpleMath::Vector3 focalPoint = m_camera->GetTargetPos();
     DirectX::SimpleMath::Vector3 focalPoint = m_lightPos2;
     DirectX::SimpleMath::Vector3 yLine = focalPoint;
     yLine.y += line;
@@ -2337,7 +2311,7 @@ void Game::DrawLightFocus2()
 void Game::DrawLightFocus3()
 {
     const float line = .25f;
-    //DirectX::SimpleMath::Vector3 focalPoint = pCamera->GetTargetPos();
+    //DirectX::SimpleMath::Vector3 focalPoint = m_camera->GetTargetPos();
     //DirectX::SimpleMath::Vector3 focalPoint = m_lightPos1;
     DirectX::SimpleMath::Vector3 focalPoint = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 yLine = focalPoint;
@@ -2679,6 +2653,12 @@ void Game::DrawTeaserScreen()
     }
 }
 
+void Game::DrawTerrain()
+{
+    m_batch3->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, m_terrainVertexArrayBase, m_terrainVertexCount);
+    m_batch3->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray, m_terrainVertexCount);
+}
+
 void Game::DrawTimer()
 {
     // m_flightStepTimer
@@ -2911,7 +2891,81 @@ void Game::Initialize(HWND window, int width, int height)
     m_audioEngine = std::make_unique<AudioEngine>(eflags);
     m_retryAudio = false;
     m_audioBank = std::make_unique<WaveBank>(m_audioEngine.get(), L"audioBank.xwb");
+
+    // height map intit
+    bool result;
+    bool isInitSuccessTrue = true;
+    result = InitializeTerrainArray();
+    if (!result)
+    {
+        isInitSuccessTrue = false;
+    }
+    if (!isInitSuccessTrue)
+    {
+        // add initialization failure testing  here;
+        int errorBreak = 0;
+        errorBreak++;
+    }
+
+    // testing new terrain map
+    m_terrainVector.clear();
 }
+
+// Testing Terrain Vertex
+bool Game::InitializeTerrainArray()
+{
+    //std::vector<DirectX::VertexPositionColor> vertexPC = pGolf->GetTerrainVertex();
+    std::vector<DirectX::VertexPositionColor> vertexPC = m_environment->GetTerrainColorVertex();
+
+    m_terrainVertexCount = vertexPC.size();
+    m_terrainVertexArray = new DirectX::VertexPositionColor[m_terrainVertexCount];
+    m_terrainVertexArrayBase = new DirectX::VertexPositionColor[m_terrainVertexCount];
+
+    //lawngreen = { { { 0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f } } };
+    //DirectX::XMFLOAT4 lineColor(0.0, 0.501960814f, 0.0, 1.0);
+    DirectX::XMFLOAT4 lineColor(.486274540f, .988235354f, 0.0, 1.0);
+    DirectX::XMFLOAT4 baseColor(0.0, 0.0, 0.0, 1.0);
+    //DirectX::XMFLOAT4 baseColor2(0.3, 0.3, 0.3, 1.0);
+    //DirectX::XMFLOAT4 baseColor2(1.0, 1.0, 1.0, 1.0);
+    DirectX::XMFLOAT4 baseColor2(0.0, 0.0, 0.0, 1.0);
+
+    DirectX::XMFLOAT4 sandColor1(0.956862807f, 0.643137276f, 0.376470625f, 1.0);
+    DirectX::XMFLOAT4 sandColor2(0.960784376f, 0.960784376f, 0.862745166f, 1.0);
+    DirectX::XMFLOAT4 greenColor1 = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
+    DirectX::XMFLOAT4 greenColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
+
+    DirectX::XMFLOAT4 grassColor1 = DirectX::XMFLOAT4(0.133333340f, 0.545098066f, 0.133333340f, 1.0);
+    DirectX::XMFLOAT4 grassColor2 = DirectX::XMFLOAT4(0.000000000f, 0.392156899f, 0.0, 1.0);
+
+    DirectX::Colors::ForestGreen;
+    DirectX::Colors::DarkGreen;
+    //baseColor = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
+    //baseColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
+    //XMGLOBALCONST XMVECTORF32 SandyBrown = { { { 0.956862807f, 0.643137276f, 0.376470625f, 1.000000000f } } };
+    //XMGLOBALCONST XMVECTORF32 Beige = { { { 0.960784376f, 0.960784376f, 0.862745166f, 1.000000000f } } };
+    //XMGLOBALCONST XMVECTORF32 Green = { { { 0.000000000f, 0.501960814f, 0.000000000f, 1.000000000f } } };
+    //XMGLOBALCONST XMVECTORF32 LawnGreen = { { { 0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f } } };
+    //XMGLOBALCONST XMVECTORF32 ForestGreen          = { { { 0.133333340f, 0.545098066f, 0.133333340f, 1.000000000f } } };
+    //XMGLOBALCONST XMVECTORF32 DarkGreen            = { { { 0.000000000f, 0.392156899f, 0.000000000f, 1.000000000f } } };
+    for (int i = 0; i < m_terrainVertexCount; ++i)
+    {
+        m_terrainVertexArray[i].position = vertexPC[i].position;
+        m_terrainVertexArray[i].color = lineColor;
+        m_terrainVertexArrayBase[i].position = vertexPC[i].position;
+
+        if (i % 2 == 0)
+        {
+            m_terrainVertexArrayBase[i].color = baseColor;
+        }
+        else
+        {
+            m_terrainVertexArrayBase[i].color = baseColor2;
+        }
+    }
+
+    return true;
+}
+
 
 void Game::InitializeWorldGrid()
 {
@@ -3186,8 +3240,8 @@ void Game::OnWindowSizeChanged(int width, int height)
     CreateResources();
 
     // TODO: Game window is being resized.
-    pCamera->OnResize(m_outputWidth, m_outputHeight);
-    m_proj = pCamera->GetProjectionMatrix();
+    m_camera->OnResize(m_outputWidth, m_outputHeight);
+    m_proj = m_camera->GetProjectionMatrix();
     m_effect->SetProjection(m_proj);
     m_effect2->SetProjection(m_proj);
     m_effect3->SetProjection(m_proj);
@@ -3345,11 +3399,11 @@ void Game::Render()
         //DrawShape();
         //DrawCar();
         //DrawWorldCubeTextured();
-        if (pCamera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
+        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
         {
 
         }
-        if (pCamera->GetCameraState() == CameraState::CAMERASTATE_PRESWINGVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW || pCamera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_PRESWINGVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
         {
             m_flightStepTimer.ResetElapsedTime();
         }
@@ -3399,6 +3453,8 @@ void Game::Render()
 
     m_batch3->Begin();
         DrawGridForStartScreen();
+        DrawTerrain();
+
     m_batch3->End();
 
     m_spriteBatch->Begin();
@@ -3517,8 +3573,8 @@ void Game::Update(DX::StepTimer const& aTimer)
         }
     }
 
-    pCamera->UpdateCamera(aTimer);
-    DirectX::SimpleMath::Matrix viewMatrix = pCamera->GetViewMatrix();
+    m_camera->UpdateCamera(aTimer);
+    DirectX::SimpleMath::Matrix viewMatrix = m_camera->GetViewMatrix();
     m_effect->SetView(viewMatrix);
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
@@ -3535,7 +3591,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            pCamera->SetCameraState(CameraState::CAMERASTATE_PRESWINGVIEW);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_PRESWINGVIEW);
             ResetGamePlay();
         }
         m_currentGameState = GameState::GAMESTATE_MAINMENU;
@@ -3662,43 +3718,35 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (kb.D)
     {
-        pCamera->UpdatePos(0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f, 0.0f);
+        m_camera->UpdatePos(0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f, 0.0f);
     }
     if (kb.S)
     {
-        pCamera->UpdatePos(0.0f, 0.0f, 0.0f - static_cast<float>(aTimer.GetElapsedSeconds()));
+        m_camera->UpdatePos(0.0f, 0.0f, 0.0f - static_cast<float>(aTimer.GetElapsedSeconds()));
     }
     if (kb.A)
     {
-        pCamera->UpdatePos(0.0f - static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f, 0.0f);
+        m_camera->UpdatePos(0.0f - static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f, 0.0f);
     }
     if (kb.W)
     {
-        pCamera->UpdatePos(0.0f, 0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()));
+        m_camera->UpdatePos(0.0f, 0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()));
     }
     if (kb.Q)
     {
-        pCamera->UpdatePitchYaw(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()));
+        m_camera->UpdatePitchYaw(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()));
     }
     if (kb.E)
     {
-        pCamera->UpdatePitchYaw(0.0f, 0.0f - static_cast<float>(aTimer.GetElapsedSeconds()));
+        m_camera->UpdatePitchYaw(0.0f, 0.0f - static_cast<float>(aTimer.GetElapsedSeconds()));
     }
     if (kb.F)
     {
-        pCamera->UpdatePos(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
+        m_camera->UpdatePos(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
     }
     if (kb.C)
     {
-        pCamera->UpdatePos(0.0f, 0.0f - static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
-    }
-    if (m_kbStateTracker.pressed.V) // reset ball to tee position and prep for new shot
-    {
-
-    }
-    if (m_kbStateTracker.pressed.B) // move cameras to new ball position and prep for next shot
-    {
-
+        m_camera->UpdatePos(0.0f, 0.0f - static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
     }
     if (m_kbStateTracker.pressed.D1)
     {
@@ -3735,15 +3783,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.T)
     {
-        pCamera->SetCameraState(CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW);
+        m_camera->SetCameraState(CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW);
     }
     if (m_kbStateTracker.pressed.Y)
     {
-        pCamera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
+        m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
     }
     if (m_kbStateTracker.pressed.F1)
     {
-        pCamera->SetCameraState(CameraState::CAMERASTATE_SWINGVIEW);
+        m_camera->SetCameraState(CameraState::CAMERASTATE_SWINGVIEW);
     }
     if (kb.NumPad8)
     {
@@ -3892,7 +3940,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
     auto mouse = m_mouse->GetState();
 
-    if (pCamera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+    if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
     {
         if (mouse.positionMode == Mouse::MODE_RELATIVE)
         {
@@ -3902,7 +3950,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             float pitch = -delta.y;
             float yaw = -delta.x;
 
-            pCamera->UpdatePitchYaw(pitch, yaw);
+            m_camera->UpdatePitchYaw(pitch, yaw);
         }
 
         m_mouse->SetMode(mouse.leftButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);

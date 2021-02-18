@@ -1,5 +1,30 @@
 #pragma once
+#include <fstream>
 #include "Utility.h"
+
+typedef struct tagBITMAPINFOHEADER {
+    DWORD biSize;
+    LONG  biWidth;
+    LONG  biHeight;
+    WORD  biPlanes;
+    WORD  biBitCount;
+    DWORD biCompression;
+    DWORD biSizeImage;
+    LONG  biXPelsPerMeter;
+    LONG  biYPelsPerMeter;
+    DWORD biClrUsed;
+    DWORD biClrImportant;
+} BITMAPINFOHEADER, * LPBITMAPINFOHEADER, * PBITMAPINFOHEADER;
+
+#pragma pack(2) 
+typedef struct tagBITMAPFILEHEADER {
+    WORD  bfType;
+    DWORD bfSize;
+    WORD  bfReserved1;
+    WORD  bfReserved2;
+    DWORD bfOffBits;
+} BITMAPFILEHEADER, * LPBITMAPFILEHEADER, * PBITMAPFILEHEADER;
+#pragma pack() 
 
 struct Environ
 {
@@ -78,8 +103,10 @@ public:
     int GetPar() const { return m_currentEnviron.par; };
     float GetScale() const { return m_currentEnviron.scale; };
     float GetTeeDirectionDegrees() const { return m_currentEnviron.teeDirection; };
-
     DirectX::SimpleMath::Vector3 GetTeePosition() const { return m_currentEnviron.teePosition; };
+
+    std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
+
     double GetWindDirection() const;
     DirectX::SimpleMath::Vector3 GetWindVector() const { return m_currentEnviron.wind; };
     double GetWindX() const { return m_currentEnviron.wind.x; };
@@ -88,6 +115,8 @@ public:
     std::string GetWindYString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].windYStr; };
     double GetWindZ() const { return m_currentEnviron.wind.z; };
     std::string GetWindZString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].windZStr; };    
+
+    bool InitializeTerrain();
 
     void SortFixtureBucketByDistance();
     void UpdateEnvironment(const int aIndex);
@@ -99,13 +128,20 @@ private:
     void BuildFlagVertex(DirectX::SimpleMath::Vector3 aPos);
     void BuildHoleVertex(DirectX::SimpleMath::Vector3 aPos);
 
+    bool BuildTerrainModel();
+    bool CalculateTerrainNormals();
+
     void CreateDataStrings();
     void LoadEnvironmentData();
     void LoadFixtureBucket();
     void LoadFixtureBucket12th();
+
+    bool LoadHeightMap();
+
     void SetLandingHeight(double aLandingHeight);
     void SetLauchHeight(double aLaunchHeight);
 
+    void ScaleTerrain();
     
     Environ                             m_currentEnviron;
     std::vector<Environ>                m_environs;
@@ -137,5 +173,13 @@ private:
     const double                        m_minMaxHeight = 450.0; // Launch & Landing min/max heights is just above the largest elevation change (>400 meters) of any real golf course which is the Extreme 19 in Limpopo Province South Africa
     const double                        m_minMaxWind = 667.0;   // highest know wind speed on Neptune
 
+
+
+    std::vector<DirectX::VertexPositionNormal> m_heightMap;
+    const float                         m_heightScale = 0.015;
+    int                                 m_terrainHeight = 0;
+    int                                 m_terrainLength = 0;
+    int                                 m_terrainWidth = 0;
+    std::vector<DirectX::VertexPositionNormal> m_terrainModel;
 };
 

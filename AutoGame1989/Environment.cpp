@@ -9,13 +9,15 @@
 
 Environment::Environment()
 {
+    bool result = InitializeTerrain();
+
     LoadEnvironmentData();
     CreateDataStrings();
     const int startEnviron = 0;  // ToDo: add error checking 
     m_currentEnviron = m_environs[startEnviron];
-    BuildFlagVertex(m_environs[startEnviron].holePosition);
-    BuildHoleVertex(m_environs[startEnviron].holePosition);
-    LoadFixtureBucket12th();
+    //BuildFlagVertex(m_environs[startEnviron].holePosition);
+    //BuildHoleVertex(m_environs[startEnviron].holePosition);
+    //LoadFixtureBucket12th(); 
 }
 
 void Environment::BuildFlagVertex(DirectX::SimpleMath::Vector3 aPos)
@@ -65,6 +67,140 @@ void Environment::BuildHoleVertex(DirectX::SimpleMath::Vector3 aPos)
     }
 }
 
+bool Environment::BuildTerrainModel()
+{
+    m_terrainModel.clear();
+    m_terrainModel.resize((m_terrainHeight - 1) * (m_terrainWidth - 1) * 6);
+    if (m_terrainModel.size() < 1)
+    {
+        return false;
+    }
+
+    int index = 0;
+
+    for (int j = 0; j < (m_terrainHeight - 1); ++j)
+    {
+        for (int i = 0; i < (m_terrainWidth - 1); ++i)
+        {
+            // Get the indexes to the four points of the quad
+            int index1 = (m_terrainWidth * j) + i;          // Upper left.
+            int index2 = (m_terrainWidth * j) + (i + 1);      // Upper right.
+            int index3 = (m_terrainWidth * (j + 1)) + i;      // Bottom left.
+            int index4 = (m_terrainWidth * (j + 1)) + (i + 1);  // Bottom right.
+
+            // Now create two triangles for that quad
+            // Triangle 1 - Upper left
+            m_terrainModel[index].position = m_heightMap[index1].position;
+            m_terrainModel[index].normal = m_heightMap[index1].normal;
+            ++index;
+
+            // Triangle 1 - Upper right
+            m_terrainModel[index].position = m_heightMap[index2].position;
+            m_terrainModel[index].normal = m_heightMap[index2].normal;
+            ++index;
+
+            // Triangle 1 - Bottom left
+            m_terrainModel[index].position = m_heightMap[index3].position;
+            m_terrainModel[index].normal = m_heightMap[index3].normal;
+            ++index;
+
+            // Triangle 2 - Bottom left
+            m_terrainModel[index].position = m_heightMap[index3].position;
+            m_terrainModel[index].normal = m_heightMap[index3].normal;
+            ++index;
+
+            // Triangle 2 - Upper right.
+            m_terrainModel[index].position = m_heightMap[index2].position;
+            m_terrainModel[index].normal = m_heightMap[index2].normal;
+            ++index;
+
+            // Triangle 2 - Bottom right.
+            m_terrainModel[index].position = m_heightMap[index4].position;
+            m_terrainModel[index].normal = m_heightMap[index4].normal;
+            ++index;
+        }
+    }
+
+    // to do: m_heightMap.clear(); once testing is complete
+    return true;
+}
+
+bool Environment::CalculateTerrainNormals()
+{
+    std::vector<DirectX::SimpleMath::Vector3> normals;
+    normals.clear();
+    normals.resize((m_terrainHeight - 1) * (m_terrainWidth - 1));
+    if (normals.size() < 1)
+    {
+        return false;
+    }
+
+    for (int j = 0; j < (m_terrainHeight - 1); ++j)
+    {
+        for (int i = 0; i < (m_terrainWidth - 1); ++i)
+        {
+            int index1 = ((j + 1) * m_terrainWidth) + i;      // Bottom left vertex.
+            int index2 = ((j + 1) * m_terrainWidth) + (i + 1);  // Bottom right vertex.
+            int index3 = (j * m_terrainWidth) + i;          // Upper left vertex.
+
+            // Get three vertices from the face.
+            DirectX::SimpleMath::Vector3 vertex1 = m_heightMap[index1].position;
+            DirectX::SimpleMath::Vector3 vertex2 = m_heightMap[index2].position;
+            DirectX::SimpleMath::Vector3 vertex3 = m_heightMap[index3].position;
+
+            // Calculate the two vectors for this face.
+            DirectX::SimpleMath::Vector3 vector1 = vertex1 - vertex3;
+            DirectX::SimpleMath::Vector3 vector2 = vertex3 - vertex2;
+
+            int index = (j * (m_terrainWidth - 1)) + i;
+
+            normals[index] = DirectX::XMVector3Cross(vector1, vector2);
+            normals[index].Normalize();
+        }
+    }
+
+    // Now go through all the vertices and take a sum of the face normals that touch this vertex.
+    for (int j = 0; j < m_terrainHeight; j++)
+    {
+        for (int i = 0; i < m_terrainWidth; i++)
+        {
+            DirectX::SimpleMath::Vector3 sum = DirectX::SimpleMath::Vector3::Zero;
+
+            // Bottom left face.
+            if (((i - 1) >= 0) && ((j - 1) >= 0))
+            {
+                int index = ((j - 1) * (m_terrainWidth - 1)) + (i - 1);
+                sum += normals[index];
+            }
+            // Bottom right face.
+            if ((i < (m_terrainWidth - 1)) && ((j - 1) >= 0))
+            {
+                int index = ((j - 1) * (m_terrainWidth - 1)) + i;
+                sum += normals[index];
+            }
+            // Upper left face.
+            if (((i - 1) >= 0) && (j < (m_terrainHeight - 1)))
+            {
+                int index = (j * (m_terrainWidth - 1)) + (i - 1);
+                sum += normals[index];
+            }
+            // Upper right face.
+            if ((i < (m_terrainWidth - 1)) && (j < (m_terrainHeight - 1)))
+            {
+                int index = (j * (m_terrainWidth - 1)) + i;
+                sum += normals[index];
+            }
+
+            int index = (j * m_terrainWidth) + i;
+
+            sum.Normalize();
+            m_heightMap[index].normal = sum;
+        }
+    }
+
+    return true;
+}
+
 void Environment::CreateDataStrings()
 {
     std::stringstream inVal;
@@ -102,6 +238,22 @@ void Environment::CreateDataStrings()
     }
 }
 
+std::vector<DirectX::VertexPositionColor> Environment::GetTerrainColorVertex()
+{
+    std::vector<DirectX::VertexPositionColor> vertPosColor;
+    vertPosColor.clear();
+    vertPosColor.resize(m_terrainModel.size());
+    DirectX::XMFLOAT4 terrainColor(1.0, 1.0, 1.0, 1.0); // ToDo: for testing, implement color control
+
+    for (int i = 0; i < vertPosColor.size(); ++i)
+    {
+        vertPosColor[i].position = m_terrainModel[i].position;
+        vertPosColor[i].color = terrainColor;
+    }
+
+    return vertPosColor;
+}
+
 // While this could be done once per environment update, future updates could have moment to moment wind changes
 double Environment::GetWindDirection() const
 { 
@@ -114,6 +266,31 @@ double Environment::GetWindDirection() const
     }
 
     return direction;
+}
+
+bool Environment::InitializeTerrain()
+{
+    bool result = LoadHeightMap();
+    if (!result)
+    {
+        return false;
+    }
+
+    result = CalculateTerrainNormals();
+    if (!result)
+    {
+        return false;
+    }
+
+    result = BuildTerrainModel();
+    if (!result)
+    {
+        return false;
+    }
+
+    ScaleTerrain();
+
+    return true;
 }
 
 void Environment::LoadEnvironmentData()
@@ -634,6 +811,151 @@ void Environment::LoadFixtureBucket12th()
     fixt.distanceToCamera = DirectX::SimpleMath::Vector3::Distance(fixt.position, m_currentEnviron.teePosition);
     m_fixtureBucket.push_back(fixt);
 }
+
+bool Environment::LoadHeightMap()
+{
+    FILE* filePtr;
+    //char* filename = "heightmapTest.bmp";
+    // L"../AutoGame1989/Art/Test/TestNorm7.png"
+    char* filename = "../AutoGame1989/Art/HeightMaps/heightmapTest.bmp";
+
+    // Open the height map file 
+    int error = fopen_s(&filePtr, filename, "rb");
+    if (error != 0)
+    {
+        return false;
+    }
+
+    // Read in the file header
+    BITMAPFILEHEADER bitmapFileHeader;
+    size_t count = fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
+    if (count != 1)
+    {
+        return false;
+    }
+
+    // Read in the bitmap info header.
+    BITMAPINFOHEADER bitmapInfoHeader;
+    count = fread(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
+    if (count != 1)
+    {
+        return false;
+    }
+
+    // Save the dimensions of the terrain.
+    m_terrainWidth = bitmapInfoHeader.biWidth;
+    m_terrainHeight = bitmapInfoHeader.biHeight;
+
+    // Calculate the size of the bitmap image data.
+    int imageSize = m_terrainWidth * m_terrainHeight * 3 + m_terrainWidth;
+
+    // Allocate memory for the bitmap image data.
+    unsigned char* bitmapImage = new unsigned char[imageSize];
+    if (!bitmapImage)
+    {
+        return false;
+    }
+
+    // Move to the beginning of the bitmap data.
+    fseek(filePtr, bitmapFileHeader.bfOffBits, SEEK_SET);
+
+    UINT pitch = m_terrainWidth * 3;
+    UINT excessPitch = 0;
+    while (double(pitch / 4) != double(pitch) / 4.0)
+    {
+        pitch++;
+        excessPitch++;
+    }
+
+    // Read in the bitmap image data.
+    count = fread(bitmapImage, 1, pitch * m_terrainHeight, filePtr);
+    if (count != imageSize)
+    {
+        return false;
+    }
+
+    std::vector<char> testMap;
+    testMap.clear();
+    for (int i = 0; i < imageSize; ++i)
+    {
+        testMap.push_back(bitmapImage[i]);
+    }
+
+    // Close the file.
+    error = fclose(filePtr);
+    if (error != 0)
+    {
+        return false;
+    }
+
+    // Create the structure to hold the height map data.
+    m_heightMap.clear();
+    m_heightMap.resize(m_terrainWidth * m_terrainHeight);
+
+    // Initialize the position in the image data buffer.
+    int k = 0;
+    int index;
+    unsigned char height;
+
+    // Read the image data into the height map.
+    for (int j = 0; j < m_terrainWidth; j++)
+    {
+        for (int i = 0; i < m_terrainHeight; i++)
+        {
+            height = bitmapImage[k];
+
+            // To read values in backwards since bitmap read in is fliped
+            index = (m_terrainWidth * (m_terrainHeight - 1 - j)) + i;
+
+            m_heightMap[index].position.x = (float)j;
+            m_heightMap[index].position.y = (float)height * m_heightScale; // scale height during input
+            m_heightMap[index].position.z = (float)i;
+
+            k += 3;
+        }
+        k += excessPitch;
+    }
+
+    // Release the bitmap image data.
+    delete[] bitmapImage;
+    bitmapImage = 0;
+
+    return true;
+}
+
+void Environment::ScaleTerrain()
+{
+    const float scale = .2;
+    //const float scale = 10.0;
+    //const float xTransform = -1.4f;
+    const float xTransform = -2.101f;
+    const float yTransform = -0.02f;
+    //const float zTransform = -3.2f;
+    const float zTransform = -1.6f;
+
+    for (int i = 0; i < m_heightMap.size(); ++i)
+    {
+        m_heightMap[i].position.x *= scale;
+        m_heightMap[i].position.y *= scale;
+        m_heightMap[i].position.z *= scale;
+
+        m_heightMap[i].position.x += xTransform;
+        m_heightMap[i].position.y += yTransform;
+        m_heightMap[i].position.z += zTransform;
+    }
+
+    for (int i = 0; i < m_terrainModel.size(); ++i)
+    {
+        m_terrainModel[i].position.x *= scale;
+        m_terrainModel[i].position.y *= scale;
+        m_terrainModel[i].position.z *= scale;
+
+        m_terrainModel[i].position.x += xTransform;
+        m_terrainModel[i].position.y += yTransform;
+        m_terrainModel[i].position.z += zTransform;
+    }
+}
+
 
 void Environment::SetLandingHeight(double aLandingHeight)
 {
