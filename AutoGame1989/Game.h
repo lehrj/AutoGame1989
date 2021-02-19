@@ -86,6 +86,9 @@ private:
     void Render();
     void ResetGamePlay();
 
+
+
+
     void Update(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
 
@@ -254,6 +257,19 @@ private:
     };
     UiState                                     m_currentUiState;
 
+    enum class LightingState
+    {
+        LIGHTINGSTATE_JI,
+        LIGHTINGSTATE_BMW,
+        LIGHTINGSTATE_STARTSCREEN,
+        LIGHTINGSTATE_TEASERSCREEN,
+        LIGHTINGSTATE_MANUAL,
+        LIGHTINGSTATE_NULL,
+        LIGHTINGSTATE_STARTUP,
+        LIGHTINGSTATE_,
+    };
+    LightingState                               m_currentLightingState;
+
     // audio 
     std::unique_ptr<DirectX::AudioEngine>       m_audioEngine;
     bool                                        m_retryAudio;
@@ -307,5 +323,6 @@ private:
     int                                         m_terrainVertexCount2;
 
     bool InitializeTerrainArray2();
-
+    void SetLighting(LightingState aLightState);
+    void UpdateLighting();
 };
