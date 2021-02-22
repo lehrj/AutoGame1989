@@ -177,7 +177,7 @@ private:
 
 
     std::vector<DirectX::VertexPositionNormal> m_heightMap;
-    const float                         m_heightScale = 0.00915;
+    const float                         m_heightScale = 0.007;
     int                                 m_terrainHeight = 0;
     int                                 m_terrainLength = 0;
     int                                 m_terrainWidth = 0;

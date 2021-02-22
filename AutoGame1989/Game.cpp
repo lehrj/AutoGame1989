@@ -92,7 +92,7 @@ void Game::AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK aSFX)
 void Game::Clear()
 {
     // Clear the views.
-    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::White);
+    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::Black);
     m_d3dContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 
@@ -934,6 +934,8 @@ void Game::DrawGridForStartScreen()
     m_batch3->DrawLine(v2, v3);
     m_batch3->DrawLine(v3, v4);
     m_batch3->DrawLine(v4, v1);
+
+    m_batch3->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray, m_terrainVertexCount);
 }
 
 void Game::DrawIntroScene()
@@ -2002,7 +2004,7 @@ void Game::DrawStartScreen()
 
     // start background drawing
     const float distance = 1.1f;
-    const float height = 1.0f;
+    const float height = 1.5f;
     const float width = 1.77777777;
     const float heightBase = 0.0f;
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
@@ -2012,7 +2014,7 @@ void Game::DrawStartScreen()
 
     float uStart = 0.0;
     float uStop = 1.0;
-    float vStart = 0.5;
+    float vStart = 0.25;
     float vStop = 1.0;
     /////////////////////////////
     DirectX::SimpleMath::Vector3 holdNorm = vertexNormal;
@@ -2023,7 +2025,7 @@ void Game::DrawStartScreen()
     VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
     VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
 
-    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
 
     vertexNormal = holdNorm;
 
@@ -2211,7 +2213,7 @@ void Game::DrawTerrain()
 void Game::DrawTerrain2()
 {
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, m_terrainVertexArrayBase2, m_terrainVertexCount2);
-    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
+    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
 }
 
 void Game::DrawTimer()
@@ -2510,6 +2512,7 @@ bool Game::InitializeTerrainArray()
     for (int i = 0; i < m_terrainVertexCount; ++i)
     {
         m_terrainVertexArray[i].position = vertexPC[i].position;
+        m_terrainVertexArray[i].position.y += 0.0005; // Move up the lines so they don't get hidden by terrain
         m_terrainVertexArray[i].color = lineColor;
         m_terrainVertexArrayBase[i].position = vertexPC[i].position;
 
@@ -2549,9 +2552,11 @@ bool Game::InitializeTerrainArray2()
 
     DirectX::XMFLOAT4 grassColor1 = DirectX::XMFLOAT4(0.133333340f, 0.545098066f, 0.133333340f, 1.0);
     DirectX::XMFLOAT4 grassColor2 = DirectX::XMFLOAT4(0.000000000f, 0.392156899f, 0.0, 1.0);
+    DirectX::XMFLOAT4 testRed = DirectX::XMFLOAT4(1.000000000f, 0.000000000f, 0.0, 1.0);
+    DirectX::XMFLOAT4 testBlue = DirectX::XMFLOAT4(0.000000000f, 0.000000000f, 1.0, 1.0);
+    DirectX::XMFLOAT4 testGray = DirectX::XMFLOAT4(0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f);
 
-    DirectX::Colors::ForestGreen;
-    DirectX::Colors::DarkGreen;
+    DirectX::Colors::DarkGray;
     //baseColor = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
     //baseColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
     //XMGLOBALCONST XMVECTORF32 SandyBrown = { { { 0.956862807f, 0.643137276f, 0.376470625f, 1.000000000f } } };
@@ -2574,7 +2579,25 @@ bool Game::InitializeTerrainArray2()
         }
         else
         {
-            m_terrainVertexArrayBase2[i].color = baseColor2;
+            m_terrainVertexArrayBase2[i].color = baseColor;
+        }
+
+        if (i == i)
+        //if (i < 96)
+        //if (i % 96 == 0)
+        {
+            if ((i + 5) % 6 == 0)
+            {
+                m_terrainVertexArrayBase2[i].color = baseColor;
+            }
+            if ((i + 2) % 6 == 0)
+            {
+                m_terrainVertexArrayBase2[i].color = testGray;
+            }
+            if (i % 6 == 0)
+            {
+                m_terrainVertexArrayBase2[i].color = testGray;
+            }
         }
     }
 
@@ -2962,8 +2985,15 @@ void Game::Render()
         //auto light = XMVector3Rotate(g_XMOne, quat);
         auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
 
+
+        m_effect2->SetFogEnabled(true);
+        m_effect2->SetFogStart(.4);
+        m_effect2->SetFogEnd(1.9);
         light2 = m_lightPos2;
+        light2 = DirectX::SimpleMath::Vector3::UnitY;
         ilights2->SetLightDirection(0, light2);
+        //ilights2->SetLightDirection(1, light2);
+        ilights2->SetLightDirection(2, light2);
     }
     //m_effect2->SetLightDirection(0, DirectX::SimpleMath::Vector3::UnitY);
     /////////////////////////////////////////////////////////

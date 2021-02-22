@@ -945,7 +945,7 @@ void Environment::ScaleTerrain()
     //const float scale = 10.0;
     //const float xTransform = -1.4f;
     const float xTransform = -2.101f;
-    const float yTransform = -0.02f;
+    const float yTransform = - 0.02f;
     //const float zTransform = -3.2f;
     const float zTransform = -1.6f;
 
