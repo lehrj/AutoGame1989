@@ -92,7 +92,7 @@ void Game::AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK aSFX)
 void Game::Clear()
 {
     // Clear the views.
-    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::Black);
+    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::White);
     m_d3dContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 
@@ -194,9 +194,9 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/MoonSpec.png", nullptr, m_specularAutoGame.ReleaseAndGetAddressOf()));
     */
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/AutoGameLogo0.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/AutoGameNorm0.png", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/AutoGameSpec0.png", nullptr, m_specularAutoGame.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/textureUV.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/normalUV.png", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/specularUV.png", nullptr, m_specularAutoGame.ReleaseAndGetAddressOf()));
 
 
     // Textures for teaser trailer
@@ -207,6 +207,8 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/road.png", nullptr, m_backgroundTex.ReleaseAndGetAddressOf()));
     m_road = std::make_unique<ScrollingBackground>();
     m_road->Load(m_backgroundTex.Get());
+
+   
 
     // TODO: Initialize device dependent objects here (independent of window size).
     m_world = DirectX::SimpleMath::Matrix::Identity;
@@ -1972,18 +1974,11 @@ void Game::DrawStartScreen()
     m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
     m_effect->SetSpecularTexture(m_specularAutoGame.Get());
 
+    /*
     m_effect->SetTexture(m_textureTest.Get());
     m_effect->SetNormalTexture(m_normalMapTest.Get());
     m_effect->SetSpecularTexture(m_specularTest.Get());
-
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    //const float height = .5f;
-    //const float width = .888888888f;
-
-    const float height = .5f;
-    const float width = .5f;
-    const float distance = 1.1f;
+    */
 
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     DirectX::SimpleMath::Vector3 testNorm(0.0, 0.0, 1.0);
@@ -1994,38 +1989,105 @@ void Game::DrawStartScreen()
     float pitch = time * 0.7f;
     float roll = time * 1.1f;
     auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
-    quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+    //quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
     auto norm01 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
 
     testNorm = norm01;
 
     //DirectX::SimpleMath::Vector3 vertexNormal = testNorm;
-    const DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
 
     //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
     //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
-    /*
+    // start background drawing
+    const float distance = 1.1f;
+    const float height = 1.0f;
+    const float width = 1.77777777;
+    const float heightBase = 0.0f;
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
-    DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
-    DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
-    */
+    DirectX::SimpleMath::Vector3 bottomRight(distance, heightBase, width);
+    DirectX::SimpleMath::Vector3 bottomLeft(distance, heightBase, -width);
 
-    const float height2 = 1.0f;
-    //const float width2 = .888888888f;
-    const float width2 = 1.77777777;
-    const float height3 = 0.0f;
-    const float distance2 = 1.0f;
-    DirectX::SimpleMath::Vector3 topLeft(distance2, height2, -width2);
-    DirectX::SimpleMath::Vector3 topRight(distance2, height2, width2);
-    DirectX::SimpleMath::Vector3 bottomRight(distance2, height3, width2);
-    DirectX::SimpleMath::Vector3 bottomLeft(distance2, height3, -width2);
+    float uStart = 0.0;
+    float uStop = 1.0;
+    float vStart = 0.5;
+    float vStop = 1.0;
+    /////////////////////////////
+    DirectX::SimpleMath::Vector3 holdNorm = vertexNormal;
+    vertexNormal = -m_lightPos1 + testNorm;
+    /////////////////////////////
+    VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
+    VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
+    VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
+    VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
 
-    VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
-    VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
-    VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
-    VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
+    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+
+    vertexNormal = holdNorm;
+
+
+    // Start moon drawing
+    const float moonHeight = 0.2;
+    const float moonWidth = 0.2;
+    const float moonSize = 0.2;
+    const float moonOriginY = 0.8;
+    const float moonOriginZ = -0.7;
+    const float moonDepth = -0.01;
+    DirectX::SimpleMath::Vector3 moonOrigin(distance, moonOriginY, moonOriginZ);
+    topLeft = DirectX::SimpleMath::Vector3(moonDepth + distance, moonOriginY, moonOriginZ);
+    topRight = DirectX::SimpleMath::Vector3(moonDepth, 0.0, moonSize);
+    bottomRight = DirectX::SimpleMath::Vector3(moonDepth, -moonSize, moonSize);
+    bottomLeft = DirectX::SimpleMath::Vector3(moonDepth, -moonSize, 0.0);
+
+    topRight += moonOrigin;
+    bottomRight += moonOrigin;
+    bottomLeft += moonOrigin;
+
+    uStart = 0.0;
+    uStop = 0.1588541666666667;
+    vStart = 0.0;
+    vStop = 0.2824074074074074;
+    vertTopLeft = VertexPositionNormalColorTexture (topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
+    vertTopRight = VertexPositionNormalColorTexture (topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
+    vertBottomRight = VertexPositionNormalColorTexture (bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
+    vertBottomLeft = VertexPositionNormalColorTexture (bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
+
+    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+
+    ////////////////////////////////
+
+    // Start Text drawing
+    const float titleWidth = 0.4;
+    //const float titleHeight = 0.2;
+    const float titleHeight = titleWidth * 0.111864406779661;
+    const float titleSize = 0.2;
+    const float titleOriginY = 0.5;
+    const float titleOriginZ = 0.0;
+    const float titleDepth = distance - 0.01;
+    DirectX::SimpleMath::Vector3 titleOrigin(0.0, titleOriginY, titleOriginZ);
+    topLeft = DirectX::SimpleMath::Vector3(titleDepth, titleHeight, -titleWidth);
+    topRight = DirectX::SimpleMath::Vector3(titleDepth, titleHeight, titleWidth);
+    bottomRight = DirectX::SimpleMath::Vector3(titleDepth, -titleHeight, titleWidth);
+    bottomLeft = DirectX::SimpleMath::Vector3(titleDepth, -titleHeight, -titleWidth);
+
+
+    topLeft += titleOrigin;
+    topRight += titleOrigin;
+    bottomRight += titleOrigin;
+    bottomLeft += titleOrigin;
+
+    uStart = 0.6927083333333333;
+    uStop = 1.0;
+    vStart = 0.0;
+    vStop = 0.0611111111111111;
+
+    vertexNormal = -m_lightPos1;
+    vertTopLeft = VertexPositionNormalColorTexture(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
+    vertTopRight = VertexPositionNormalColorTexture(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
+    vertBottomRight = VertexPositionNormalColorTexture(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
+    vertBottomLeft = VertexPositionNormalColorTexture(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
 
     m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
 }
@@ -2949,6 +3011,7 @@ void Game::Render()
     //DrawShape();
 
     m_batch->Begin();
+
     //DrawDebugLines();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
