@@ -85,7 +85,7 @@ private:
     void Render();
     void ResetGamePlay();
 
-
+    void DrawDebugValue();
 
 
     void Update(DX::StepTimer const& aTimer);
@@ -330,4 +330,8 @@ private:
     
     void SetLighting(LightingState aLightState);
     void UpdateLighting();
+
+    float                               m_debugValue1 = 0.0;
+    float                               m_debugValue2 = 0.0;
+    float                               m_debugValue3 = 0.0;
 };
