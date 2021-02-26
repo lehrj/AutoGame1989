@@ -35,7 +35,8 @@ Game::Game() noexcept :
     {
         m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
-    m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+    m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
+    //m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_currentLightingState = LightingState::LIGHTINGSTATE_STARTUP;
     m_currentUiState = UiState::UISTATE_SWING;
     InitializeWorldGrid();
@@ -207,6 +208,7 @@ void Game::CreateDevice()
     // Textures for teaser trailer
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.png", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTeaser.png", nullptr, m_specularTeaser.ReleaseAndGetAddressOf()));
 
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/road.png", nullptr, m_backgroundTex.ReleaseAndGetAddressOf()));
@@ -885,6 +887,8 @@ void Game::DrawDebugValue()
 
 void Game::DrawGridForStartScreen()
 {
+
+    
     DirectX::XMVECTORF32 gridColor = DirectX::Colors::LawnGreen;
     DirectX::XMVECTORF32 baseColor = DirectX::Colors::Black;
     const float xBase = 1.0;
@@ -893,7 +897,8 @@ void Game::DrawGridForStartScreen()
     const float xLength = 4.0;
     const float zSpacing = 0.2;
     const int verticleLineCount = 80;
-    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    const float timeStamp = static_cast<float>(m_testTimer);
     const float zLength = zSpacing * verticleLineCount;
     const float xSpacing = 0.2;
     const int horizontalLineCount = 25;
@@ -973,16 +978,18 @@ void Game::DrawGridForStartScreen()
 
 void Game::DrawIntroScene()
 {
-    const float fadeDuration = 1.5f;
-    const float logoDisplayDuration = 10.0f;
-    const float logoDisplayGap = 1.0f;
-    const float startDelay = 4.2f;
+    const float fadeDuration = m_fadeDuration;
+    const float logoDisplayDuration = m_logoDisplayDuration;
+    const float logoDisplayGap = m_logoDisplayGap;
+    const float startDelay = m_startDelay;
 
-    const float fogGap1 =  0.5;
-    const float fogGap2 = 1.1;
+    const float fogGap1 = m_fogGap1;
+    const float fogGap2 = m_fogGap2;
 
 
-    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    const float timeStamp = static_cast<float>(m_testTimer);
+
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
@@ -1027,6 +1034,7 @@ void Game::DrawIntroScene()
     {
         m_projectileTimer = 0.0;
         // Render nothing
+        SetLighting(LightingState::LIGHTINGSTATE_JI);
     }
     else if (timeStamp < fadeOutEnd1)  // Render Jackson Industries Logo
     {
@@ -1066,6 +1074,7 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart2)
     {
         // render nothing
+        SetLighting(LightingState::LIGHTINGSTATE_BMW);
     }
     else if (timeStamp < fadeOutEnd2) // Render BMW Logo
     {
@@ -1108,6 +1117,9 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart3)
     {
         // render nothing
+        SetLighting(LightingState::LIGHTINGSTATE_STARTSCREEN);
+        m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
+
     }
     else if (timeStamp < fadeOutEnd3) // Render Start Screen
     {
@@ -1150,10 +1162,11 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart4)
     {
         // render nothing
+        SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
+        m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
     }
     else if (timeStamp < fadeOutEnd4)  // Render Teaser Screen
     {
-    SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
         m_effect->SetTexture(m_textureTeaser.Get());
         m_effect->SetNormalTexture(m_normalMapTeaser.Get());
         m_effect->SetSpecularTexture(m_specularTeaser.Get());
@@ -1199,104 +1212,18 @@ void Game::DrawIntroScene()
         //m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
 
-    DrawLogoScreen();
-}
-
-void Game::DrawIntroScreen()
-{
-    float fadeDuration = 1.5f;
-    float logoDisplayDuration = 5.f;
-    float logoDisplayGap = 1.f;
-    float startDelay = 4.2f;
-    float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-
-    float fadeInStart1 = startDelay;
-    float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
-    float fadeInEnd1 = startDelay + fadeDuration;
-    float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
-    float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
-    float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
-    float fadeOutEnd1 = startDelay + logoDisplayDuration;
-    float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-
-    DirectX::XMVECTORF32 fadeColor = DirectX::Colors::White;
-
-    if (timeStamp < fadeInStart1)
+    if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
-        // Render nothing
+        DrawLogoScreen();
     }
-    else if (timeStamp < fadeOutEnd1)
+    else if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
-        std::string textLine = "Proudly Presents";
-        float textLinePosX = m_bitwiseFontPos.x;
-        float textLinePosY = m_bitwiseFontPos.y + 100;
-        DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
-        DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-
-        if (timeStamp < fadeInEnd1)  // fade in
-        {
-            float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
-            fadeColor.f[0] = colorIntensity;
-            fadeColor.f[1] = colorIntensity;
-            fadeColor.f[2] = colorIntensity;
-            m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
-            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
-        }
-        else if (timeStamp > fadeOutStart1) // fade out
-        {
-            float colorIntensity = (fadeOutEnd1 - timeStamp) / (fadeDuration);
-            fadeColor.f[0] = colorIntensity;
-            fadeColor.f[1] = colorIntensity;
-            fadeColor.f[2] = colorIntensity;
-            m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
-            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
-        }
-        else // display at full intesity
-        {
-            m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
-            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
-        }
+        DrawStartScreen();
     }
-    else if (timeStamp < fadeInStart2)
+    else if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
-        // render nothing
-    }
-    else if (timeStamp < fadeOutEnd2)
-    {
-        std::string textLine = "A Baltimore Magic Werks Production";
-        float textLinePosX = m_bitwiseFontPos.x;
-        float textLinePosY = m_bitwiseFontPos.y + 450;
-        DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
-        DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-        if (timeStamp < fadeInEnd2)  // fade in
-        {
-            float colorIntensity = (timeStamp - fadeInStart2) / (fadeDuration);
-            fadeColor.f[0] = colorIntensity;
-            fadeColor.f[1] = colorIntensity;
-            fadeColor.f[2] = colorIntensity;
-            m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
-            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
-        }
-        else if (timeStamp > fadeOutStart2) // fade out
-        {
-            float colorIntensity = (fadeOutEnd2 - timeStamp) / (fadeDuration);
-            fadeColor.f[0] = colorIntensity;
-            fadeColor.f[1] = colorIntensity;
-            fadeColor.f[2] = colorIntensity;
-            m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
-            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
-        }
-        else
-        {
-            AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
-            m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
-            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
-        }
-    }
-    if (timeStamp > fadeOutEnd2 + logoDisplayGap)
-    {
-        AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_MUSIC01);
-        m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
+        DrawLogoScreen();
+        //DrawTeaserScreen();
     }
 }
 
@@ -1304,7 +1231,8 @@ void Game::DrawLightBar()
 {
     DirectX::XMVECTORF32 color1 = DirectX::Colors::Red;
     DirectX::XMVECTORF32 color2 = DirectX::Colors::Black;
-    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    const float timeStamp = static_cast<float>(m_testTimer);
     float focusPoint = cosf(timeStamp * 3.) / 2.0;
     DirectX::SimpleMath::Vector3 normal = -DirectX::SimpleMath::Vector3::UnitX;
     float x = 1.09;
@@ -1492,13 +1420,14 @@ void Game::DrawLogoScreen()
     testNorm = norm01;
     //DirectX::SimpleMath::Vector3 vertexNormal = testNorm;
     const DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
+    //const DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitY;
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const float height = .5f;
     const float width = .888888888f;
     const float distance = 1.1f;
 
-    m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
-    m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
+    //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
+    //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
@@ -1692,7 +1621,8 @@ void Game::DrawShape()
 
 void Game::DrawStartScreen()
 {
-    float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    const float timeStamp = static_cast<float>(m_testTimer);
     SetLighting(LightingState::LIGHTINGSTATE_STARTSCREEN);
     //SetLighting(LightingState::LIGHTINGSTATE_NULL);
     //SetLighting(LightingState::LIGHTINGSTATE_BMW);
@@ -1902,7 +1832,8 @@ void Game::DrawStartScreenOld()
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(2.f, 2.f), logoColor1, 0.f, titleOrigin);
     m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos + DirectX::SimpleMath::Vector2(-1.f, -1.f), logoColor3, 0.f, titleOrigin);
     */
-    m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos, logoColor2, 0.f, titleOrigin);
+
+    //m_titleFont->DrawString(m_spriteBatch.get(), title.c_str(), titlePos, logoColor2, 0.f, titleOrigin);
 
     m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, Colors::White, 0.f, authorOrigin);
     m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, Colors::White, 0.f, startTextOrigin);
@@ -1917,7 +1848,8 @@ void Game::DrawTeaserScreen()
     float logoDisplayGap = 1.f;
     float startDelay = 4.2f;
     //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-    float timeStamp = static_cast<float>(m_flightStepTimer.GetTotalSeconds()); // Piggy backing on this variable for the moment
+    //float timeStamp = static_cast<float>(m_flightStepTimer.GetTotalSeconds()); // Piggy backing on this variable for the moment
+    const float timeStamp = static_cast<float>(m_testTimer);
     //float timeStamp = static_cast<float>(m_flightStepTimer.GetElapsedSeconds()); // Piggy backing on this variable for the moment
 
     float fadeInStart1 = startDelay;
@@ -1978,7 +1910,7 @@ void Game::DrawTeaserScreen()
     if (timeStamp > fadeOutEnd2 + logoDisplayGap)
     {
 
-        m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
+        //m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
 }
 
@@ -2005,6 +1937,105 @@ void Game::DrawTimer()
     DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), m_fontPosDebug, Colors::White, 0.f, textLineOrigin);
+}
+
+void Game::DrawUIIntroScreen()
+{
+    float fadeDuration = m_fadeDuration;
+    float logoDisplayDuration = m_logoDisplayDuration;
+    float logoDisplayGap = m_logoDisplayGap;
+    float startDelay = m_startDelay;
+    //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    const float timeStamp = static_cast<float>(m_testTimer);
+
+    float fadeInStart1 = startDelay;
+    float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
+    float fadeInEnd1 = startDelay + fadeDuration;
+    float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
+    float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
+    float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    float fadeOutEnd1 = startDelay + logoDisplayDuration;
+    float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+
+    DirectX::XMVECTORF32 fadeColor = DirectX::Colors::White;
+
+    if (timeStamp < fadeInStart1)
+    {
+        // Render nothing
+    }
+    else if (timeStamp < fadeOutEnd1)
+    {
+        std::string textLine = "Proudly Presents";
+        float textLinePosX = m_bitwiseFontPos.x;
+        float textLinePosY = m_bitwiseFontPos.y + 100;
+        DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
+        DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+
+        if (timeStamp < fadeInEnd1)  // fade in
+        {
+            float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
+            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+        else if (timeStamp > fadeOutStart1) // fade out
+        {
+            float colorIntensity = (fadeOutEnd1 - timeStamp) / (fadeDuration);
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
+            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+        else // display at full intesity
+        {
+            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
+            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+    }
+    else if (timeStamp < fadeInStart2)
+    {
+        // render nothing
+    }
+    else if (timeStamp < fadeOutEnd2)
+    {
+        std::string textLine = "A Baltimore Magic Werks Production";
+        float textLinePosX = m_bitwiseFontPos.x;
+        float textLinePosY = m_bitwiseFontPos.y + 450;
+        DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
+        DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+        if (timeStamp < fadeInEnd2)  // fade in
+        {
+            float colorIntensity = (timeStamp - fadeInStart2) / (fadeDuration);
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+            //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
+            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+        else if (timeStamp > fadeOutStart2) // fade out
+        {
+            float colorIntensity = (fadeOutEnd2 - timeStamp) / (fadeDuration);
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+            //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
+            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+        else
+        {
+            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
+            //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
+            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+    }
+    if (timeStamp > fadeOutEnd2 + logoDisplayGap)
+    {
+        //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_MUSIC01);
+        //m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
+    }
 }
 
 void Game::DrawWorld()
@@ -2686,6 +2717,20 @@ void Game::SetLighting(LightingState aLightState)
     m_currentLightingState = aLightState;
 }
 
+void Game::TestDraw()
+{
+    SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
+    m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
+
+    m_effect->SetTexture(m_textureTeaser.Get());
+    m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+    m_effect->SetSpecularTexture(m_specularTeaser.Get());
+
+
+
+    DrawLogoScreen();
+}
+
 // Draws the scene.
 void Game::Render()
 {
@@ -2730,10 +2775,17 @@ void Game::Render()
 
     m_batch->Begin();
 
+    TestDraw();
+
+    if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN || m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
+    {
+        //DrawIntroScene();
+    }
+
     //DrawDebugLines();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawIntroScene();
+        //DrawIntroScene();
         //DrawStartScreen();
         //DrawShape();
         //DrawCar();
@@ -2766,20 +2818,31 @@ void Game::Render()
     //m_d3dContext->PSSetSamplers(0, 1, &sampler);
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
     m_batch2->Begin();
+
+    DrawCameraFocus();
+    DrawLightFocus1();
+    DrawLightFocus2();
+    DrawLightFocus3();
+    DrawWorld();
+
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
 
         //DrawLightBar();
-        //DrawCameraFocus();
-        //DrawLightFocus1();
-        //DrawLightFocus2();
-        //DrawLightFocus3();
-        //DrawWorld();
+        DrawCameraFocus();
+        DrawLightFocus1();
+        DrawLightFocus2();
+        DrawLightFocus3();
+        DrawWorld();
         //DrawWorldCube();
     }
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
         DrawTerrain2();
+    }
+    if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
+    {
+        //DrawLightBar();
     }
     m_batch2->End();
 
@@ -2793,6 +2856,7 @@ void Game::Render()
     m_effect3->Apply(m_d3dContext.Get());
 
     m_batch3->Begin();
+
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
         DrawGridForStartScreen();
@@ -2805,7 +2869,7 @@ void Game::Render()
     //DrawTimer();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
-        DrawIntroScreen();
+        DrawUIIntroScreen();
     }
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
@@ -2863,7 +2927,10 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& aTimer)
 {
+
     double elapsedTime = double(aTimer.GetElapsedSeconds());
+    m_testTimer = m_timer.GetTotalSeconds() + m_testTimerOffset;
+
     m_projectileTimer += elapsedTime;
     // TODO: Add your game logic here.
     m_road->Update(elapsedTime * 500);
@@ -3306,6 +3373,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 void Game::UpdateLighting()
 {
     const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    //const float timeStamp = static_cast<float>(m_testTimer);
     m_effect->EnableDefaultLighting();
     if (m_currentLightingState == LightingState::LIGHTINGSTATE_JI)
     {
@@ -3480,9 +3548,22 @@ void Game::UpdateLighting()
         auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
         if (ilights)
         {
-            ilights->SetLightEnabled(0, false);
-            ilights->SetLightEnabled(1, false);
+            ilights->SetLightEnabled(0, true);
+            ilights->SetLightEnabled(1, true);
             ilights->SetLightEnabled(2, true);
+
+            DirectX::XMVECTORF32 color1 = DirectX::Colors::Red;
+            /*
+            ilights->SetLightDiffuseColor(0, color1);
+            ilights->SetLightDiffuseColor(1, color1);
+            ilights->SetLightDiffuseColor(2, color1);
+            ilights->SetLightSpecularColor(0, color1);
+            ilights->SetLightSpecularColor(1, color1);
+            ilights->SetLightSpecularColor(2, color1);
+            */
+            m_effect->SetDiffuseColor(color1);
+            //m_effect->SetEmissiveColor(color1);
+
             auto time = static_cast<float>(m_timer.GetTotalSeconds());
             float yaw = time * 0.4f;
             float pitch = time * 0.7f;
@@ -3752,11 +3833,12 @@ void Game::UpdateLighting()
         }
     }
 
-    m_effect->EnableDefaultLighting();
+
 
     ///////////////////////////////////////////////////////////////
     // m_effect2 update
-    /*
+    
+    
     auto ilights2 = dynamic_cast<IEffectLights*>(m_effect2.get());
     if (ilights2)
     {
@@ -3774,7 +3856,7 @@ void Game::UpdateLighting()
         auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
 
 
-        m_effect2->SetFogEnabled(true);
+        //m_effect2->SetFogEnabled(true);
         m_effect2->SetFogStart(.4);
         m_effect2->SetFogEnd(1.9);
         light2 = m_lightPos1;
@@ -3783,5 +3865,8 @@ void Game::UpdateLighting()
         //ilights2->SetLightDirection(1, light2);
         ilights2->SetLightDirection(2, light2);
     }
-    */
+
+    m_effect2->EnableDefaultLighting();
+    //m_effect3->EnableDefaultLighting();
+    
 }

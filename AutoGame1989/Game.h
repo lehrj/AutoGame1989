@@ -59,8 +59,7 @@ private:
     void DrawCar();
     void DrawCar2();
     void DrawDebugLines();
-    void DrawGridForStartScreen();
-    void DrawIntroScreen();
+    void DrawGridForStartScreen();   
     void DrawIntroScene();
     void DrawLightBar();
     void DrawLightFocus2();
@@ -76,6 +75,7 @@ private:
     void DrawTerrain();
     void DrawTerrain2();
     void DrawTimer();
+    void DrawUIIntroScreen();
     void DrawWorld();
     void DrawWorldCube();
     void DrawWorldCubeTextured();
@@ -86,7 +86,7 @@ private:
     void ResetGamePlay();
 
     void DrawDebugValue();
-
+    void TestDraw();
 
     void Update(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
@@ -334,4 +334,24 @@ private:
     float                               m_debugValue1 = 0.0;
     float                               m_debugValue2 = 0.0;
     float                               m_debugValue3 = 0.0;
+
+    double                              m_testTimer = 0.0;
+    double                              m_testTimerOffset = 0.0;
+    // start scene control variables
+    const float m_fadeDuration = 1.5f;
+    const float m_logoDisplayDuration = 1.0f;
+    const float m_logoDisplayGap = 1.0f;
+    const float m_startDelay = 1.2f;
+
+    const float m_fogGap1 = 0.5;
+    const float m_fogGap2 = 1.1;
+
+    /*
+    const float m_fadeDuration = 1.5f;
+    const float m_logoDisplayDuration = 10.0f;
+    const float m_logoDisplayGap = 1.0f;
+    const float m_startDelay = 4.2f;
+    const float m_fogGap1 = 0.5;
+    const float m_fogGap2 = 1.1;
+    */
 };
