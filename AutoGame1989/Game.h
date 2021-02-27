@@ -70,6 +70,7 @@ private:
     void DrawMenuMain();
     void DrawShape();
     void DrawStartScreen();
+    void DrawStartScreen2();
     void DrawStartScreenOld();
     void DrawTeaserScreen();
     void DrawTerrain();
