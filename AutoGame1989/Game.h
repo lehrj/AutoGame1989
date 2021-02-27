@@ -354,4 +354,16 @@ private:
     const float m_fogGap1 = 0.5;
     const float m_fogGap2 = 1.1;
     */
+
+    DirectX::SimpleMath::Vector3 introCamPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 introCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.0, 0.0);
+
+    DirectX::SimpleMath::Vector3 startScreenCamPos = DirectX::SimpleMath::Vector3(0.0, 0.4, 0.0);
+    DirectX::SimpleMath::Vector3 startScreenCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.2, 0.0);
+
+    DirectX::SimpleMath::Vector3 teaserCamPos = DirectX::SimpleMath::Vector3(1.2, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3 teaserCamTarg = DirectX::SimpleMath::Vector3(2.3, 0.0, 0.0);
+
+
+    DirectX::SimpleMath::Vector3 m_testNorm = DirectX::SimpleMath::Vector3::UnitZ;
 };

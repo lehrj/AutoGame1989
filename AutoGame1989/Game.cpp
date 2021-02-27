@@ -172,11 +172,12 @@ void Game::CreateDevice()
     // test textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestOP.png", nullptr, m_textureTest.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestOP.png", nullptr, m_normalMapTest.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestOP.png", nullptr, m_specularTest.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/SpecularTeaser1.png", nullptr, m_specularTest.ReleaseAndGetAddressOf()));
     // Jackson Industry textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/TextureJI.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/NormJI.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/SpecJi.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
+
 
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/tex.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/norm2.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
@@ -188,35 +189,30 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm2.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestSpec.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
     // Start screen textures
-    /*
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoAutoGame.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapAutoGame2.dds", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularAutoGame.png", nullptr, m_specularAutoGame.ReleaseAndGetAddressOf()));
-    */
-
-    /*
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/MoonTex2.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/MoonNorm.png", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/MoonSpec.png", nullptr, m_specularAutoGame.ReleaseAndGetAddressOf()));
-    */
-
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/textureUV.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/normalUV.png", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/specularUV.png", nullptr, m_specularAutoGame.ReleaseAndGetAddressOf()));
 
 
     // Textures for teaser trailer
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.png", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularTeaser.png", nullptr, m_specularTeaser.ReleaseAndGetAddressOf()));
+    
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/LogoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.png", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/SpecularTeaser.png", nullptr, m_specularTeaser.ReleaseAndGetAddressOf()));
+    
+    /*
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TeaserTextureTest1.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TeaserNormTest1.png", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TeaserSpecTest1.png", nullptr, m_specularTeaser.ReleaseAndGetAddressOf()));
+    */
 
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/road.png", nullptr, m_backgroundTex.ReleaseAndGetAddressOf()));
     m_road = std::make_unique<ScrollingBackground>();
     m_road->Load(m_backgroundTex.Get());
 
-   
-
+  
     // TODO: Initialize device dependent objects here (independent of window size).
     m_world = DirectX::SimpleMath::Matrix::Identity;
     m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
@@ -1419,7 +1415,7 @@ void Game::DrawLogoScreen()
 
     testNorm = norm01;
     //DirectX::SimpleMath::Vector3 vertexNormal = testNorm;
-    const DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
+    const DirectX::SimpleMath::Vector3 vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
     //const DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitY;
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const float height = .5f;
@@ -1623,9 +1619,9 @@ void Game::DrawStartScreen()
 {
     //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     const float timeStamp = static_cast<float>(m_testTimer);
-    SetLighting(LightingState::LIGHTINGSTATE_STARTSCREEN);
+    //SetLighting(LightingState::LIGHTINGSTATE_STARTSCREEN);
     //SetLighting(LightingState::LIGHTINGSTATE_NULL);
-    //SetLighting(LightingState::LIGHTINGSTATE_BMW);
+    SetLighting(LightingState::LIGHTINGSTATE_BMW);
     //SetLighting(LightingState::LIGHTINGSTATE_);
     
     
@@ -1647,16 +1643,19 @@ void Game::DrawStartScreen()
     float yaw = time * 0.4f;
     float pitch = time * 0.7f;
     float roll = time * 1.1f;
-    roll = cosf(-timeStamp ) +1.7;
+    //oll = cosf(-timeStamp ) +1.7;
     //roll = 3.1f;
     //auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
-    auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, roll);
+    //auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, roll);
+    auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
     //auto norm01 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
-    auto norm01 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitZ, quat0);
+    //auto norm01 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitZ, quat0);
+    auto norm01 = XMVector3Rotate(m_lightPos0, quat0);
     testNorm = norm01;
 
     //DirectX::SimpleMath::Vector3 vertexNormal = testNorm;
     DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
+
 
     //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
     //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
@@ -1677,11 +1676,22 @@ void Game::DrawStartScreen()
     float vStop = 1.0;
     /////////////////////////////
     //DirectX::SimpleMath::Vector3 holdNorm = vertexNormal;
-    //vertexNormal = -m_lightPos0 + testNorm;
+    vertexNormal = -m_lightPos0 + testNorm;
+    
+    vertexNormal = - m_lightPos0;
+    //vertexNormal = testNorm;
+    vertexNormal.Normalize();
+
+    vertexNormal = m_testNorm + m_lightPos0;
+    vertexNormal.Normalize();
+    vertexNormal += m_lightPos0;
+    vertexNormal.Normalize();
+    vertexNormal = -vertexNormal;
+
     /////////////////////////////
 
     //vertexNormal = testNorm;
-    vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
+    vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
     
     VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
     VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
@@ -1691,7 +1701,7 @@ void Game::DrawStartScreen()
     m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
 
     //vertexNormal = holdNorm;
-    vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
+    //vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
 
     // Start moon drawing
     const float moonHeight = 0.2;
@@ -1716,7 +1726,7 @@ void Game::DrawStartScreen()
     vStop = 0.2824074074074074;
 
     
-    vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
+    //vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
     
     //vertexNormal = -m_lightPos0 * cosf(timeStamp);
     //vertexNormal = testNorm;
@@ -2719,14 +2729,29 @@ void Game::SetLighting(LightingState aLightState)
 
 void Game::TestDraw()
 {
-    SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
-    m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
+    const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+    if (m_currentLightingState != LightingState::LIGHTINGSTATE_MANUAL)
+    {
+        SetLighting(LightingState::LIGHTINGSTATE_BMW);
+    }
+    m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
 
-    m_effect->SetTexture(m_textureTeaser.Get());
-    m_effect->SetNormalTexture(m_normalMapTeaser.Get());
-    m_effect->SetSpecularTexture(m_specularTeaser.Get());
+    m_effect->SetTexture(m_textureBMW.Get());
+    m_effect->SetNormalTexture(m_normalMapBMW.Get());
+    m_effect->SetSpecularTexture(m_specularBMW.Get());
+    /*
+    int time = static_cast<int>(timeStamp);
+    if (time % 2 == 0)
+    {
 
+        m_effect->SetSpecularTexture(m_specularTeaser.Get());
+    }
+    else
+    {
 
+        m_effect->SetSpecularTexture(m_specularTest.Get());
+    }
+    */
 
     DrawLogoScreen();
 }
@@ -2775,8 +2800,8 @@ void Game::Render()
 
     m_batch->Begin();
 
-    TestDraw();
-
+    //TestDraw();
+    DrawStartScreen();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN || m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
         //DrawIntroScene();
@@ -2819,11 +2844,13 @@ void Game::Render()
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
     m_batch2->Begin();
 
+    
     DrawCameraFocus();
     DrawLightFocus1();
     DrawLightFocus2();
     DrawLightFocus3();
-    DrawWorld();
+    
+    //DrawWorld();
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
@@ -2842,7 +2869,7 @@ void Game::Render()
     }
     if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
-        //DrawLightBar();
+        DrawLightBar();
     }
     m_batch2->End();
 
@@ -2865,7 +2892,7 @@ void Game::Render()
     m_batch3->End();
 
     m_spriteBatch->Begin();
-    DrawDebugValue();
+    //DrawDebugValue();
     //DrawTimer();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
@@ -3068,8 +3095,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
         if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
         {
-            m_flightStepTimer.ResetElapsedTime(); // piggy backing on this variable for the moment
-            m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
+            //m_flightStepTimer.ResetElapsedTime(); // piggy backing on this variable for the moment
+            //m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
             //m_currentGameState = GameState::GAMESTATE_MAINMENU;
         }
     }
@@ -3127,7 +3154,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.R)
     {
-        m_timer.ResetElapsedTime();
+        SetLighting(LightingState::LIGHTINGSTATE_MANUAL);
     }
     if (kb.D)
     {
@@ -3380,20 +3407,20 @@ void Game::UpdateLighting()
         auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
         if (ilights)
         {
-            ilights->SetLightEnabled(0, false);
-            ilights->SetLightEnabled(1, false);
+            ilights->SetLightEnabled(0, true);
+            ilights->SetLightEnabled(1, true);
             ilights->SetLightEnabled(2, true);
             auto time = static_cast<float>(m_timer.GetTotalSeconds());
             float yaw = time * 0.4f;
             float pitch = time * 0.7f;
             float roll = time * 1.1f;
-            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-pitch, 0.0, 0.0);
-            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
-            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-roll, 0.0, 0.0);
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, 0.0, 0.0);
+            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
             auto light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
             auto light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
             auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
-            light0 = DirectX::SimpleMath::Vector3::UnitX;
+            //light0 = DirectX::SimpleMath::Vector3::UnitX;
             //light1 = light0;
             //light2 = light0;
             ilights->SetLightDirection(0, light0);
@@ -3420,13 +3447,15 @@ void Game::UpdateLighting()
             float yaw = time * 0.4f;
             float pitch = time * 0.7f;
             float roll = time * 1.1f;
-
-            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, pitch, 0.0);
-            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, yaw, 0.0);
+            /*
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 1.4, 0.0);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + .4, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
-
+            */
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
+            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
             auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -roll, 0.0);
-
             //quat0 = quat;
             //quat1 = quat;
             //quat2 = quat;
@@ -3438,34 +3467,50 @@ void Game::UpdateLighting()
             DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(axis, quat0);
             DirectX::SimpleMath::Vector3 light1 = XMVector3Rotate(axis, quat1);
             DirectX::SimpleMath::Vector3 light2 = XMVector3Rotate(axis, quat2);
+            
             light0.x += 1.0;
             light0.Normalize();
             light1.x += 1.0;
             light1.Normalize();
             light2.x += 1.0;
             light2.Normalize();
+            
+            //testing start
+            /*
+            float offset = -0.0;
+            light0.x += offset;
+            light0.Normalize();
+            light0 *= 20.0;
+            light1.x += offset;
+            light1.Normalize();
+            light2.x += offset;
+            light2.Normalize();
+            */
+            //testing end
 
-            quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+            m_testNorm = XMVector3Rotate(light0, quat0);
+            m_testNorm.Normalize();
             DirectX::SimpleMath::Vector3 light = XMVector3Rotate(axis, quat);
-            //light.x += 1.0;
+            light.x += 1.0;
             //light.z += .5;
             light.Normalize();
-            light0 = light;
-            light1 = light;
-            light2 = light;
+            //light0 = light;
+            //light1 = light;
+            //light2 = light;
 
-            //light = - DirectX::SimpleMath::Vector3::UnitX;
+            //light = DirectX::SimpleMath::Vector3::UnitX;
 
-            light0 = light;
-            light1 = light;
-            light2 = light;
+            float val = 0.1;
+            DirectX::SimpleMath::Vector4 test(val, val, val, 1.0);
+            m_effect->SetAmbientLightColor(test);
+
 
             ilights->SetLightDirection(0, light0);
             ilights->SetLightDirection(1, light1);
             ilights->SetLightDirection(2, light2);
 
             m_lightPos0 = light0;
-            m_lightPos1 = light1;
+            m_lightPos1  = light1;
             m_lightPos2 = light2;
 
         }
@@ -3552,23 +3597,41 @@ void Game::UpdateLighting()
             ilights->SetLightEnabled(1, true);
             ilights->SetLightEnabled(2, true);
 
-            DirectX::XMVECTORF32 color1 = DirectX::Colors::Red;
-            /*
-            ilights->SetLightDiffuseColor(0, color1);
-            ilights->SetLightDiffuseColor(1, color1);
-            ilights->SetLightDiffuseColor(2, color1);
-            ilights->SetLightSpecularColor(0, color1);
-            ilights->SetLightSpecularColor(1, color1);
-            ilights->SetLightSpecularColor(2, color1);
-            */
-            m_effect->SetDiffuseColor(color1);
+            DirectX::XMVECTORF32 red = DirectX::Colors::Red;
+            DirectX::XMVECTORF32 white = DirectX::Colors::White;
+            DirectX::XMVECTORF32 blue = DirectX::Colors::Blue;
+            DirectX::XMVECTORF32 green = DirectX::Colors::Green;
+            DirectX::XMVECTORF32 black = DirectX::Colors::Black;
+            DirectX::XMVECTORF32 gray = DirectX::Colors::Gray;
+
+            DirectX::SimpleMath::Vector4 test(0.05, 0.05, 0.05, 0.5);
+            //DirectX::XMVECTORF32 testBlack = test;
+            
+            m_effect->SetSpecularColor(white);
+            
+            m_effect->SetLightSpecularColor(0, red);
+            m_effect->SetLightSpecularColor(1, red);
+            m_effect->SetLightSpecularColor(2, red);
+            
+            //m_effect->SetColorAndAlpha(blue);
+            //m_effect->SetEmissiveColor(green);          
+            //m_effect->SetDiffuseColor(blue);
             //m_effect->SetEmissiveColor(color1);
+
+            //ilights->SetLightSpecularColor(0, blue);
+            //ilights->SetLightSpecularColor(1, blue);
+            //ilights->SetLightSpecularColor(2, blue);
+            m_effect->SetColorAndAlpha(test);
+            m_effect->SetEmissiveColor(test);
+            //m_effect->Apply(m_d3dContext.Get());
 
             auto time = static_cast<float>(m_timer.GetTotalSeconds());
             float yaw = time * 0.4f;
             float pitch = time * 0.7f;
-            float roll = time * 1.1f;
+            float roll = time * 2.1f;
             roll = cosf(-timeStamp);
+
+            roll = cosf(timeStamp * 3.);
             auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
             auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
@@ -3589,7 +3652,7 @@ void Game::UpdateLighting()
             light1.Normalize();
             light2.y += shift;
             light2.Normalize();
-
+            
             //light1 = light0;
             //light2 = light0;
             ilights->SetLightDirection(0, light0);
