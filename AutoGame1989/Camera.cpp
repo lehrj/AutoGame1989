@@ -243,6 +243,7 @@ void Camera::SetDestinationPos(const DirectX::SimpleMath::Vector3 aDestPos)
 {
 	if (aDestPos == m_target)
 	{
+		int testBreak = 0;
 		// add error handling to prevent crash
 		//std::cerr << "Error in Camera::UpdatePosition, updated position = current target position";
 		return;
@@ -348,6 +349,18 @@ void Camera::UpdateTransitionCamera(DX::StepTimer const& aTimer)
 
 	}
 }
+void Camera::SetTransitionSpeed(const float aSpeed)
+{
+	if (aSpeed > 0.0)
+	{
+		m_cameraTransitionSpeed = aSpeed;
+	}
+	else
+	{
+		// add error handling to prevent transition stall or backwards motion that could break things
+		// cerr << "input range out of bounds"
+	}
+}
 
 void Camera::TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation)
 {
@@ -380,6 +393,10 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	}
 	if (m_cameraState == CameraState::CAMERASTATE_TRANSITION)
 	{
+		bool testIsAtDest = m_isCameraAtDestination;
+		DirectX::SimpleMath::Vector3 testPos = m_position;
+		DirectX::SimpleMath::Vector3 testDestPos = m_destinationPosition;
+
 		if (IsCameraAtDestination() == false)
 		{
 			UpdateTransitionCamera(aTimer);

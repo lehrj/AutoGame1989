@@ -326,7 +326,7 @@ private:
 
     DirectX::VertexPositionNormalColor* m_terrainVertexArray2;
     DirectX::VertexPositionNormalColor* m_terrainVertexArrayBase2;
-    int                                         m_terrainVertexCount2;
+    int                                  m_terrainVertexCount2;
 
     
     void SetLighting(LightingState aLightState);
@@ -339,32 +339,34 @@ private:
     double                              m_testTimer = 0.0;
     double                              m_testTimerOffset = 0.0;
     // start scene control variables
-    const float m_fadeDuration = 1.5f;
-    const float m_logoDisplayDuration = 1.0f;
-    const float m_logoDisplayGap = 1.0f;
-    const float m_startDelay = 1.2f;
+    const float                         m_fadeDuration = 1.5f;
+    const float                         m_logoDisplayDuration = 4.0f;
+    const float                         m_logoDisplayGap = 1.0f;
+    const float                         m_startDelay = 1.2f;
 
-    const float m_fogGap1 = 0.5;
-    const float m_fogGap2 = 1.1;
+    const float                         m_fogGap1 = 0.5;
+    const float                         m_fogGap2 = 1.1;
 
     /*
-    const float m_fadeDuration = 1.5f;
-    const float m_logoDisplayDuration = 10.0f;
-    const float m_logoDisplayGap = 1.0f;
-    const float m_startDelay = 4.2f;
-    const float m_fogGap1 = 0.5;
-    const float m_fogGap2 = 1.1;
+    const float                         m_fadeDuration = 1.5f;
+    const float                         m_logoDisplayDuration = 10.0f;
+    const float                         m_logoDisplayGap = 1.0f;
+    const float                         m_startDelay = 4.2f;
+    const float                         m_fogGap1 = 0.5;
+    const float                         m_fogGap2 = 1.1;
     */
 
-    DirectX::SimpleMath::Vector3 introCamPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 introCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3    m_introCamPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3    m_introCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.0, 0.0);
 
-    DirectX::SimpleMath::Vector3 startScreenCamPos = DirectX::SimpleMath::Vector3(0.0, 0.4, 0.0);
-    DirectX::SimpleMath::Vector3 startScreenCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.2, 0.0);
+    DirectX::SimpleMath::Vector3    m_startScreenCamPos = DirectX::SimpleMath::Vector3(-0.5, 0.2, 0.0);
+    DirectX::SimpleMath::Vector3    m_startScreenCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.2, 0.0);
 
-    DirectX::SimpleMath::Vector3 teaserCamPos = DirectX::SimpleMath::Vector3(1.2, 0.0, 0.0);
-    DirectX::SimpleMath::Vector3 teaserCamTarg = DirectX::SimpleMath::Vector3(2.3, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3    m_teaserCamPos = DirectX::SimpleMath::Vector3(1.2, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3    m_teaserCamTarg = DirectX::SimpleMath::Vector3(2.3, 0.0, 0.0);
 
 
     DirectX::SimpleMath::Vector3 m_testNorm = DirectX::SimpleMath::Vector3::UnitZ;
+
+    float                               m_terrainColorDimmer = 0.0;
 };

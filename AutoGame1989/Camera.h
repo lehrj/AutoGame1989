@@ -59,7 +59,7 @@ public:
     void SetCameraStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetTargetEndPos(DirectX::SimpleMath::Vector3 aEndPos);
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
-
+    void SetTransitionSpeed(const float aSpeed);
     void TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation); //Chili
 
     void UpdateCamera(DX::StepTimer const& aTimer);
@@ -107,7 +107,8 @@ private:
     const float                     m_rotationTravelSpeed = 1.3f;
     const float                     m_aimTurnRate = 0.3f;
 
-    bool                            m_isCameraAtDestination;
+    //bool                            m_isCameraAtDestination;
+    bool                            m_isCameraAtDestination = false;
 
     CameraState                     m_cameraState;
     
@@ -132,7 +133,7 @@ private:
     DirectX::SimpleMath::Vector3    m_targetStartPos;
     DirectX::SimpleMath::Vector3    m_targetEndPos;
 
-    const float                     m_cameraTransitionSpeed = 0.9f;
+    float                           m_cameraTransitionSpeed = 0.9f;
     DX::StepTimer                   m_cameraTimer;
 
     bool                            m_isFpYaxisInverted = true; // toggle of turning on/off inverting the firstperson camera y axis control, set to true because I am weirdo that likes an inverted y axis
