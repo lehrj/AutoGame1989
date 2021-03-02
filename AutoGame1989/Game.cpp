@@ -1131,7 +1131,7 @@ void Game::DrawIntroScene()
     ///////////////////////////
     /// Render Start Screen ///
     /////////////////////////// 
-    else if (timeStamp < fadeInStart3 || 0 == 0)
+    else if (timeStamp < fadeInStart3)
     {      
         /*
         m_camera->SetCameraStartPos(m_introCamPos);
@@ -1150,7 +1150,7 @@ void Game::DrawIntroScene()
         SetLighting(LightingState::LIGHTINGSTATE_STARTSCREEN);
         m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
-    else if (timeStamp < fadeOutEnd3 || 0 == 0) // Render Start Screen
+    else if (timeStamp < fadeOutEnd3) // Render Start Screen
     {        
         SetLighting(LightingState::LIGHTINGSTATE_STARTSCREEN);
         m_effect->SetTexture(m_textureAutoGame.Get());
@@ -3074,23 +3074,24 @@ void Game::TestDraw()
     const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     if (m_currentLightingState != LightingState::LIGHTINGSTATE_MANUAL)
     {
-        SetLighting(LightingState::LIGHTINGSTATE_BMW);
+        //SetLighting(LightingState::LIGHTINGSTATE_BMW);
+        SetLighting(LightingState::LIGHTINGSTATE_JI);
     }
     m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
 
-    m_effect->SetTexture(m_textureBMW.Get());
-    
-    m_effect->SetSpecularTexture(m_specularBMW.Get());
+    m_effect->SetTexture(m_textureJI.Get());
+    m_effect->SetNormalTexture(m_normalMapJI.Get());
+    m_effect->SetSpecularTexture(m_specularJI.Get());
     
     int time = static_cast<int>(timeStamp * .5 );
     if (time % 2 == 0)
     {
-        m_effect->SetNormalTexture(m_normalMapBMW2.Get());
+        //m_effect->SetNormalTexture(m_normalMapBMW2.Get());
         //m_effect->SetSpecularTexture(m_specularTeaser.Get());
     }
     else
     {
-        m_effect->SetNormalTexture(m_normalMapBMW2.Get());
+        //m_effect->SetNormalTexture(m_normalMapBMW2.Get());
         //m_effect->SetSpecularTexture(m_specularTest.Get());
     }
     
@@ -3142,12 +3143,12 @@ void Game::Render()
 
     m_batch->Begin();
 
-    TestDraw();
+    //TestDraw();
     
     //DrawStartScreen();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN || m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
-        //DrawIntroScene();
+        DrawIntroScene();
     }
 
     //DrawDebugLines();
@@ -3756,12 +3757,55 @@ void Game::UpdateLighting()
             float yaw = time * 0.4f;
             float pitch = time * 0.7f;
             float roll = time * 1.1f;
+    
+           /*
             auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
             auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, 0.0, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+            */
+            
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, -yaw);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, -pitch);
+            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, -roll);
+            
+            /*
+            int timeStamp = static_cast<int>(time);
+            if (timeStamp % 3 == 0)
+            {
+                quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
+                quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, 0.0, 0.0);
+                quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+            }
+            */
+
+            /*
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, yaw, pitch);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, pitch, roll);
+            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, yaw);
+            */
+            /*
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, yaw, pitch);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
+            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, roll, yaw);
+            */
+            /*
             auto light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
             auto light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
             auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
+            */
+            DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
+            DirectX::SimpleMath::Vector3 light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
+            DirectX::SimpleMath::Vector3 light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
+            /*
+            light0 = DirectX::SimpleMath::Vector3(abs(light0.x), light0.y, light0.z);
+            light1 = DirectX::SimpleMath::Vector3(abs(light1.x), light1.y, light1.z);
+            light2 = DirectX::SimpleMath::Vector3(abs(light2.x), light2.y, light2.z);
+            */
+            /*
+            light0 *= .5;
+            light1 *= .5;
+            light2 *= .5;
+            */
             //light0 = DirectX::SimpleMath::Vector3::UnitX;
             //light1 = light0;
             //light2 = light0;
