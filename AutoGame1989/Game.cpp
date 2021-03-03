@@ -856,18 +856,23 @@ void Game::DrawDebugLines()
 void Game::DrawDebugValue()
 {
     std::string textLine = "Value1 = " + std::to_string(m_debugValue1);
-    float textLinePosX = m_bitwiseFontPos.x;
+    float textLinePosX = m_bitwiseFontPos.x - 250.;
     float textLinePosY = m_bitwiseFontPos.y;
     //float textLinePosY = m_bitwiseFontPos.y + 100;
-    DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
+    //DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
+    DirectX::SimpleMath::Vector2 textLinePos = m_fontPosDebug;
+    DirectX::SimpleMath::Vector2 textDrawPoint = m_fontPosDebug;
+    textLinePos.x -= 300.;
+    textDrawPoint.x -= 300.;
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), m_fontPosDebug, Colors::White, 0.f, textLineOrigin);
+    //m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), m_fontPosDebug, Colors::White, 0.f, textLineOrigin);
+    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
     textLine = "Value2 = " + std::to_string(m_debugValue2);
     textLinePosX = m_bitwiseFontPos.x;
     //textLinePosY += 300;
     //float textLinePosY = m_bitwiseFontPos.y + 100;
-    textLinePos = m_fontPosDebug;
+    //textLinePos = m_fontPosDebug;
     textLinePos.y += 100.;
     textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
@@ -878,6 +883,28 @@ void Game::DrawDebugValue()
     //float textLinePosY = m_bitwiseFontPos.y + 100;
     textLinePos.y += 100.;
     textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
+    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+
+    textLine = "ColorVal4 = " + std::to_string(m_debugValue4);
+    textLinePosX = m_bitwiseFontPos.x;
+    //textLinePosY = m_bitwiseFontPos.y + 200;
+    //float textLinePosY = m_bitwiseFontPos.y + 100;
+    textLinePos.y += 100.;
+    textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
+    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin);
+    textLinePos.x += 2.0;
+    textLinePos.y += 2.0;
+    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+
+    textLine = "ColorVal5 = " + std::to_string(m_debugValue5);
+    textLinePosX = m_bitwiseFontPos.x;
+    //textLinePosY = m_bitwiseFontPos.y + 200;
+    //float textLinePosY = m_bitwiseFontPos.y + 100;
+    textLinePos.y += 100.;
+    textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
+    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin);
+    textLinePos.x += 2.0;
+    textLinePos.y += 2.0;
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 }
 
@@ -984,6 +1011,7 @@ void Game::DrawGridForStartScreen()
 
 void Game::DrawIntroScene()
 {
+    DirectX::SimpleMath::Vector3 testFogTarget1(1.1, 0.0, 0.0);
     const float fadeDuration = m_fadeDuration;
     const float logoDisplayDuration = m_logoDisplayDuration;
     const float logoDisplayGap = m_logoDisplayGap;
@@ -1061,6 +1089,8 @@ void Game::DrawIntroScene()
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
 
+            SetFogVals(testFogTarget1, colorIntensity);
+
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
@@ -1073,13 +1103,15 @@ void Game::DrawIntroScene()
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
 
+            SetFogVals(testFogTarget1, colorIntensity);
+
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
         }
         else // display at full intesity
         {
-            m_effect->SetFogEnabled(false);
+            //m_effect->SetFogEnabled(false);
         }
     }
     ///////////////////////////////
@@ -1104,6 +1136,8 @@ void Game::DrawIntroScene()
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
 
+            SetFogVals(testFogTarget1, colorIntensity);
+
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
@@ -1116,13 +1150,15 @@ void Game::DrawIntroScene()
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
 
+            SetFogVals(testFogTarget1, colorIntensity);
+
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
         }
         else
         {
-            m_effect->SetFogEnabled(false);
+            //m_effect->SetFogEnabled(false);
             //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
             //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
             //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
@@ -1133,7 +1169,7 @@ void Game::DrawIntroScene()
     /////////////////////////// 
     else if (timeStamp < fadeInStart3)
     {      
-        /*
+        // render nothing
         m_camera->SetCameraStartPos(m_introCamPos);
         m_camera->SetCameraEndPos(m_startScreenCamPos);
         m_camera->SetDestinationPos(m_startScreenCamPos);
@@ -1142,11 +1178,11 @@ void Game::DrawIntroScene()
         //m_camera->TurnEndPosAroundPoint(Utility::ToRadians(pPlay->GetShotDirection()), pGolf->GetShotStartPos());
         //m_camera->TurnEndPosAroundPoint(0.0, m_startScreenCamPos);
         m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
-        */
+        
         //m_camera->SetPos(m_startScreenCamPos);
         //m_camera->SetTargetPos(m_startScreenCamTarg);
 
-        // render nothing
+        
         SetLighting(LightingState::LIGHTINGSTATE_STARTSCREEN);
         m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
@@ -1182,7 +1218,7 @@ void Game::DrawIntroScene()
         }
         else
         {
-            m_effect->SetFogEnabled(false);
+            //m_effect->SetFogEnabled(false);
             //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
             //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
             //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
@@ -1194,15 +1230,30 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart4)
     {
         // render nothing
+
+        m_camera->SetCameraStartPos(m_startScreenCamPos);
+        m_camera->SetCameraEndPos(m_teaserCamPos);
+        m_camera->SetDestinationPos(m_teaserCamPos);
+        m_camera->SetTargetStartPos(m_startScreenCamPos);
+        m_camera->SetTargetEndPos(m_teaserCamTarg);
+        m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
+
         SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
         m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
-    }
-    else if (timeStamp < fadeOutEnd4)  // Render Teaser Screen
-    {
+        
         m_effect->SetTexture(m_textureTeaser.Get());
         m_effect->SetNormalTexture(m_normalMapTeaser.Get());
         m_effect->SetSpecularTexture(m_specularTeaser.Get());
-        m_effect->SetFogEnabled(false);
+        
+    }
+    else if (timeStamp < fadeOutEnd4)  // Render Teaser Screen
+    {
+    /*
+        m_effect->SetTexture(m_textureTeaser.Get());
+        m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+        m_effect->SetSpecularTexture(m_specularTeaser.Get());
+        */
+        //m_effect->SetFogEnabled(false);
         if (timeStamp < fadeInEnd4)  // fade in
         {
             float colorIntensity = (timeStamp - fadeInStart4) / (fadeDuration);
@@ -1229,7 +1280,7 @@ void Game::DrawIntroScene()
         }
         else
         {
-            m_effect->SetFogEnabled(false);
+            //m_effect->SetFogEnabled(false);
             //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
             //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
             //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
@@ -3064,6 +3115,29 @@ void Game::Present()
     }
 }
 
+void Game::SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
+{
+    const float fogStartStopGap = 1.0;
+    float distanceToTarget = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), aTargetPos);
+
+    float distanceToTarget2 = DirectX::SimpleMath::Vector3::Distance(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX);
+
+    float fogStart = distanceToTarget - aDimmerVal;
+    float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
+    float testVal = fogEnd - distanceToTarget;
+    
+    //m_debugValue2 = testVal;
+    m_debugValue3 = distanceToTarget;
+    m_debugValue4 = testVal;
+    m_debugValue5 = distanceToTarget - fogStart;
+
+    m_effect->SetFogEnabled(true);
+    m_effect->SetFogStart(fogEnd);
+    m_effect->SetFogEnd(fogStart);
+    m_effect->Apply(m_d3dContext.Get());
+
+}
+
 void Game::SetLighting(LightingState aLightState)
 {
     m_currentLightingState = aLightState;
@@ -3072,10 +3146,23 @@ void Game::SetLighting(LightingState aLightState)
 void Game::TestDraw()
 {
     const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+
+    DirectX::SimpleMath::Vector3 fogTarget(1.1, 0.0, 0.0);
+    float dimmer = ((cosf(timeStamp) + 1.) * 0.5);
+
+    SetFogVals(fogTarget, dimmer);
+
+    DirectX::SimpleMath::Vector3 testCamPos = m_camera->GetPos();
+    if (testCamPos.x < -1.0)
+    {
+        int testBreak = 0;
+        ++testBreak;
+    }
+
     if (m_currentLightingState != LightingState::LIGHTINGSTATE_MANUAL)
     {
-        //SetLighting(LightingState::LIGHTINGSTATE_BMW);
-        SetLighting(LightingState::LIGHTINGSTATE_JI);
+        SetLighting(LightingState::LIGHTINGSTATE_BMW);
+        //SetLighting(LightingState::LIGHTINGSTATE_JI);
     }
     m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
 
@@ -3187,13 +3274,13 @@ void Game::Render()
     //m_d3dContext->PSSetSamplers(0, 1, &sampler);
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
     m_batch2->Begin();
-    /*
+    
     DrawCameraFocus();
     DrawLightFocus1();
     DrawLightFocus2();
     DrawLightFocus3();
     DrawWorld();
-    */
+    
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
 
@@ -3234,7 +3321,7 @@ void Game::Render()
     m_batch3->End();
 
     m_spriteBatch->Begin();
-    //DrawDebugValue();
+    DrawDebugValue();
     //DrawTimer();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {

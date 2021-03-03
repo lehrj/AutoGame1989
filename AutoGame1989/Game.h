@@ -86,6 +86,8 @@ private:
     void Render();
     void ResetGamePlay();
 
+    void SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+
     void DrawDebugValue();
     void TestDraw();
 
@@ -335,17 +337,19 @@ private:
     float                               m_debugValue1 = 0.0;
     float                               m_debugValue2 = 0.0;
     float                               m_debugValue3 = 0.0;
+    float                               m_debugValue4 = 0.0;
+    float                               m_debugValue5 = 0.0;
 
     double                              m_testTimer = 0.0;
     double                              m_testTimerOffset = 0.0;
     // start scene control variables
-    const float                         m_fadeDuration = 1.5f;
-    const float                         m_logoDisplayDuration = 4.0f;
-    const float                         m_logoDisplayGap = 1.0f;
+    const float                         m_fadeDuration = 4.5f;
+    const float                         m_logoDisplayDuration = 6.0f;
+    const float                         m_logoDisplayGap = 3.0f;
     const float                         m_startDelay = 1.2f;
 
-    const float                         m_fogGap1 = 0.5;
-    const float                         m_fogGap2 = 1.1;
+    const float                         m_fogGap1 = 0.0;
+    const float                         m_fogGap2 = 10.0;
 
     /*
     const float                         m_fadeDuration = 1.5f;
@@ -356,17 +360,17 @@ private:
     const float                         m_fogGap2 = 1.1;
     */
 
-    DirectX::SimpleMath::Vector3    m_introCamPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3    m_introCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3        m_introCamPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3        m_introCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.0, 0.0);
 
-    DirectX::SimpleMath::Vector3    m_startScreenCamPos = DirectX::SimpleMath::Vector3(-0.5, 0.2, 0.0);
-    DirectX::SimpleMath::Vector3    m_startScreenCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.2, 0.0);
+    DirectX::SimpleMath::Vector3        m_startScreenCamPos = DirectX::SimpleMath::Vector3(-0.5, 0.2, 0.0);
+    DirectX::SimpleMath::Vector3        m_startScreenCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.2, 0.0);
 
-    DirectX::SimpleMath::Vector3    m_teaserCamPos = DirectX::SimpleMath::Vector3(1.2, 0.0, 0.0);
-    DirectX::SimpleMath::Vector3    m_teaserCamTarg = DirectX::SimpleMath::Vector3(2.3, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3        m_teaserCamPos = DirectX::SimpleMath::Vector3(1.2, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3        m_teaserCamTarg = DirectX::SimpleMath::Vector3(2.3, 0.0, 0.0);
 
 
-    DirectX::SimpleMath::Vector3 m_testNorm = DirectX::SimpleMath::Vector3::UnitZ;
+    DirectX::SimpleMath::Vector3        m_testNorm = DirectX::SimpleMath::Vector3::UnitZ;
 
     float                               m_terrainColorDimmer = 0.0;
 };
