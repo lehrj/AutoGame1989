@@ -1012,6 +1012,8 @@ void Game::DrawGridForStartScreen()
 void Game::DrawIntroScene()
 {
     DirectX::SimpleMath::Vector3 testFogTarget1(1.1, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3 testFogTarget2(1.1, .75, 0.0);
+    DirectX::SimpleMath::Vector3 testFogTarget3(0.5, 0.0, 0.0);
     const float fadeDuration = m_fadeDuration;
     const float logoDisplayDuration = m_logoDisplayDuration;
     const float logoDisplayGap = m_logoDisplayGap;
@@ -1020,10 +1022,9 @@ void Game::DrawIntroScene()
     const float fogGap1 = m_fogGap1;
     const float fogGap2 = m_fogGap2;
 
-
     //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-    const float timeStamp = static_cast<float>(m_testTimer);
-
+    float timeStamp = static_cast<float>(m_testTimer);
+    timeStamp += 20.;
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
@@ -1060,7 +1061,6 @@ void Game::DrawIntroScene()
     float fadeOutEndX3 = fadeOutEnd4 - fadeOutEnd3;
     */
 
-
     if (timeStamp < fadeInStart1)
     {
         m_projectileTimer = 0.0;
@@ -1086,8 +1086,8 @@ void Game::DrawIntroScene()
             float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-            m_effect->SetFogStart(fogStart);
-            m_effect->SetFogEnd(fogEnd);
+            //m_effect->SetFogStart(fogStart);
+            //m_effect->SetFogEnd(fogEnd);
 
             SetFogVals(testFogTarget1, colorIntensity);
 
@@ -1100,8 +1100,8 @@ void Game::DrawIntroScene()
             float colorIntensity = (fadeOutEnd1 - timeStamp) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-            m_effect->SetFogStart(fogStart);
-            m_effect->SetFogEnd(fogEnd);
+            //m_effect->SetFogStart(fogStart);
+            //m_effect->SetFogEnd(fogEnd);
 
             SetFogVals(testFogTarget1, colorIntensity);
 
@@ -1197,8 +1197,12 @@ void Game::DrawIntroScene()
             float colorIntensity = (timeStamp - fadeInStart3) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-            m_effect->SetFogStart(fogStart);
-            m_effect->SetFogEnd(fogEnd);
+            //m_effect->SetFogStart(fogStart);
+            //m_effect->SetFogEnd(fogEnd);
+
+            SetFogVals(testFogTarget1, colorIntensity);
+            SetFogVals2(testFogTarget2, colorIntensity);
+            SetFogVals3(testFogTarget3, colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -1209,8 +1213,12 @@ void Game::DrawIntroScene()
             float colorIntensity = (fadeOutEnd3 - timeStamp) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-            m_effect->SetFogStart(fogStart);
-            m_effect->SetFogEnd(fogEnd);
+            //m_effect->SetFogStart(fogStart);
+            //m_effect->SetFogEnd(fogEnd);
+
+            SetFogVals(testFogTarget1, colorIntensity);
+            SetFogVals2(testFogTarget2, colorIntensity);
+            SetFogVals3(testFogTarget3, colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -2055,9 +2063,6 @@ void Game::DrawStartScreen()
     m_effect->Apply(m_d3dContext.Get());
 
     m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
-
-
-
 }
 
 void Game::DrawStartScreen2()
@@ -3138,6 +3143,59 @@ void Game::SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float
 
 }
 
+void Game::SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
+{
+    const float fogStartStopGap = 1.0;
+    float distanceToTarget = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), aTargetPos);
+
+    float distanceToTarget2 = DirectX::SimpleMath::Vector3::Distance(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX);
+
+    float fogStart = distanceToTarget - aDimmerVal;
+    float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
+    float testVal = fogEnd - distanceToTarget;
+
+    //m_debugValue2 = testVal;
+    /*
+    m_debugValue3 = distanceToTarget;
+    m_debugValue4 = testVal;
+    m_debugValue5 = distanceToTarget - fogStart;
+    */
+
+    m_effect2->SetFogEnabled(true);
+    m_effect2->SetFogStart(fogEnd);
+    m_effect2->SetFogEnd(fogStart);
+    //m_effect2->Apply(m_d3dContext.Get());
+}
+
+void Game::SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
+{
+    const float fogStartStopGap = 1.0;
+    float distanceToTarget = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), aTargetPos);
+
+    float distanceToTarget2 = DirectX::SimpleMath::Vector3::Distance(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX);
+
+    float fogStart = distanceToTarget - aDimmerVal;
+    float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
+    float testVal = fogEnd - distanceToTarget;
+
+    //m_debugValue2 = testVal;
+    /*
+    m_debugValue3 = distanceToTarget;
+    m_debugValue4 = testVal;
+    m_debugValue5 = distanceToTarget - fogStart;
+    */
+
+    m_effect3->SetFogEnabled(true);
+    m_effect3->SetFogStart(fogEnd);
+    m_effect3->SetFogEnd(fogStart);
+    //m_effect3->Apply(m_d3dContext.Get());
+}
+
+void Game::SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
+{
+
+}
+
 void Game::SetLighting(LightingState aLightState)
 {
     m_currentLightingState = aLightState;
@@ -3148,9 +3206,14 @@ void Game::TestDraw()
     const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
 
     DirectX::SimpleMath::Vector3 fogTarget(1.1, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3 fogTarget2(1.1, 0.75, 0.0);
+    DirectX::SimpleMath::Vector3 fogTarget3(0.5, 0.0, 0.0);
+
     float dimmer = ((cosf(timeStamp) + 1.) * 0.5);
 
-    SetFogVals(fogTarget, dimmer);
+    SetFogVals(fogTarget, dimmer -.5);
+    SetFogVals2(fogTarget2, dimmer -1.5);
+    SetFogVals3(fogTarget3, dimmer -1.5);
 
     DirectX::SimpleMath::Vector3 testCamPos = m_camera->GetPos();
     if (testCamPos.x < -1.0)
@@ -3164,12 +3227,18 @@ void Game::TestDraw()
         SetLighting(LightingState::LIGHTINGSTATE_BMW);
         //SetLighting(LightingState::LIGHTINGSTATE_JI);
     }
-    m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
+    //m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
+    m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
 
+    /*
     m_effect->SetTexture(m_textureJI.Get());
     m_effect->SetNormalTexture(m_normalMapJI.Get());
     m_effect->SetSpecularTexture(m_specularJI.Get());
-    
+    */
+    m_effect->SetTexture(m_textureAutoGame.Get());
+    m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
+    m_effect->SetSpecularTexture(m_specularAutoGame.Get());
+
     int time = static_cast<int>(timeStamp * .5 );
     if (time % 2 == 0)
     {
@@ -3230,12 +3299,12 @@ void Game::Render()
 
     m_batch->Begin();
 
-    //TestDraw();
+    TestDraw();
     
     //DrawStartScreen();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN || m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
-        DrawIntroScene();
+        //DrawIntroScene();
     }
 
     //DrawDebugLines();

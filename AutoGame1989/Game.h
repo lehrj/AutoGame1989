@@ -87,6 +87,9 @@ private:
     void ResetGamePlay();
 
     void SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    void SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    void SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    void SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
 
     void DrawDebugValue();
     void TestDraw();
@@ -343,8 +346,8 @@ private:
     double                              m_testTimer = 0.0;
     double                              m_testTimerOffset = 0.0;
     // start scene control variables
-    const float                         m_fadeDuration = 4.5f;
-    const float                         m_logoDisplayDuration = 6.0f;
+    const float                         m_fadeDuration = 3.5f;
+    const float                         m_logoDisplayDuration = 9.0f;
     const float                         m_logoDisplayGap = 3.0f;
     const float                         m_startDelay = 1.2f;
 
