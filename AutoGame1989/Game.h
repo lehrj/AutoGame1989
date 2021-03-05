@@ -348,7 +348,7 @@ private:
     // start scene control variables
     const float                         m_fadeDuration = 3.5f;
     const float                         m_logoDisplayDuration = 9.0f;
-    const float                         m_logoDisplayGap = 3.0f;
+    const float                         m_logoDisplayGap = 5.0f;
     const float                         m_startDelay = 1.2f;
 
     const float                         m_fogGap1 = 0.0;

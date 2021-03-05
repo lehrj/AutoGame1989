@@ -1024,7 +1024,7 @@ void Game::DrawIntroScene()
 
     //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     float timeStamp = static_cast<float>(m_testTimer);
-    timeStamp += 20.;
+   
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
@@ -1151,6 +1151,8 @@ void Game::DrawIntroScene()
             m_effect->SetFogEnd(fogEnd);
 
             SetFogVals(testFogTarget1, colorIntensity);
+            SetFogVals2(testFogTarget2, colorIntensity);
+            SetFogVals3(testFogTarget3, colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -1170,6 +1172,13 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart3)
     {      
         // render nothing
+        float colorIntensity = (fadeInEnd3 - timeStamp) / (fadeDuration);
+        colorIntensity = 0.0;
+        SetFogVals(testFogTarget2, colorIntensity);
+        SetFogVals2(testFogTarget2, colorIntensity);
+        SetFogVals3(testFogTarget3, colorIntensity);
+        SetTerrainGridDimmer(testFogTarget3, colorIntensity);
+
         m_camera->SetCameraStartPos(m_introCamPos);
         m_camera->SetCameraEndPos(m_startScreenCamPos);
         m_camera->SetDestinationPos(m_startScreenCamPos);
@@ -1181,8 +1190,7 @@ void Game::DrawIntroScene()
         
         //m_camera->SetPos(m_startScreenCamPos);
         //m_camera->SetTargetPos(m_startScreenCamTarg);
-
-        
+       
         SetLighting(LightingState::LIGHTINGSTATE_STARTSCREEN);
         m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
@@ -1203,6 +1211,7 @@ void Game::DrawIntroScene()
             SetFogVals(testFogTarget1, colorIntensity);
             SetFogVals2(testFogTarget2, colorIntensity);
             SetFogVals3(testFogTarget3, colorIntensity);
+            SetTerrainGridDimmer(testFogTarget3, colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -1219,6 +1228,7 @@ void Game::DrawIntroScene()
             SetFogVals(testFogTarget1, colorIntensity);
             SetFogVals2(testFogTarget2, colorIntensity);
             SetFogVals3(testFogTarget3, colorIntensity);
+            SetTerrainGridDimmer(testFogTarget3, colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -2338,7 +2348,9 @@ void Game::DrawTimer()
 {
     // m_flightStepTimer
     // m_projectileTimer
-    std::string textLine = "Timer = " + std::to_string(m_projectileTimer);
+    //std::string textLine = "Timer = " + std::to_string(m_projectileTimer);
+    std::string textLine = "Timer = " + std::to_string(m_testTimer);
+
     float textLinePosX = m_bitwiseFontPos.x;
     float textLinePosY = m_bitwiseFontPos.y;
     //float textLinePosY = m_bitwiseFontPos.y + 100;
@@ -2421,7 +2433,7 @@ void Game::DrawUIIntroScreen()
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
             //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
-            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
         else if (timeStamp > fadeOutStart2) // fade out
         {
@@ -2430,13 +2442,13 @@ void Game::DrawUIIntroScreen()
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
             //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
-            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
         else
         {
             //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
             //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
-            m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
     }
     if (timeStamp > fadeOutEnd2 + logoDisplayGap)
@@ -3194,6 +3206,13 @@ void Game::SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const floa
 void Game::SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
 {
 
+    for (int i = 0; i < m_terrainVertexCount; ++i)
+    {
+        DirectX::SimpleMath::Vector4 testColor = DirectX::Colors::LawnGreen;
+        //DirectX::SimpleMath::Vector4 testColor = m_terrainVertexArray[i].color;
+        testColor *= aDimmerVal;
+        m_terrainVertexArray[i].color = testColor;
+    }
 }
 
 void Game::SetLighting(LightingState aLightState)
@@ -3299,12 +3318,12 @@ void Game::Render()
 
     m_batch->Begin();
 
-    TestDraw();
+    //TestDraw();
     
     //DrawStartScreen();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN || m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
-        //DrawIntroScene();
+        DrawIntroScene();
     }
 
     //DrawDebugLines();
@@ -3390,8 +3409,8 @@ void Game::Render()
     m_batch3->End();
 
     m_spriteBatch->Begin();
-    DrawDebugValue();
-    //DrawTimer();
+    //DrawDebugValue();
+    DrawTimer();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
         DrawUIIntroScreen();
