@@ -911,7 +911,8 @@ void Game::DrawDebugValue()
 void Game::DrawGridForStartScreen()
 {  
     //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-    const float timeStamp = static_cast<float>(m_testTimer);
+    float timeStamp = static_cast<float>(m_testTimer);
+
     /*
     m_terrainColorDimmer = abs(cosf(m_testTimer * 0.5));
     //XMGLOBALCONST XMVECTORF32 LawnGreen = { { { 0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f } } };
@@ -924,6 +925,11 @@ void Game::DrawGridForStartScreen()
     */
     DirectX::XMVECTORF32 gridColor = DirectX::Colors::LawnGreen;
     DirectX::XMVECTORF32 baseColor = DirectX::Colors::Black;
+    DirectX::SimpleMath::Vector4 gridColor2 = DirectX::Colors::LawnGreen;
+    if (m_terrainVertexCount > 0)
+    {
+        gridColor2 = m_terrainVertexArray[0].color;
+    }
 
     const float xBase = 1.0;
     const float yBase = - 0.0;
@@ -941,8 +947,9 @@ void Game::DrawGridForStartScreen()
     {
         DirectX::SimpleMath::Vector3 verticleEnd = verticleStart;
         verticleEnd.x -= xLength;
-        DirectX::VertexPositionColor vertexStart(verticleStart, gridColor);
-        DirectX::VertexPositionColor vertexEnd(verticleEnd, gridColor);
+        DirectX::VertexPositionColor vertexStart(verticleStart, gridColor2);
+        DirectX::VertexPositionColor vertexEnd(verticleEnd, gridColor2);
+        
         m_batch3->DrawLine(vertexStart, vertexEnd);
         verticleStart.z += zSpacing;
     }
@@ -958,8 +965,8 @@ void Game::DrawGridForStartScreen()
 
         DirectX::SimpleMath::Vector3 horizontalEnd = horizontalStart;
         horizontalEnd.z += zLength;
-        DirectX::VertexPositionColor vertexStart(horizontalStart, gridColor);
-        DirectX::VertexPositionColor vertexEnd(horizontalEnd, gridColor);
+        DirectX::VertexPositionColor vertexStart(horizontalStart, gridColor2);
+        DirectX::VertexPositionColor vertexEnd(horizontalEnd, gridColor2);
 
         //m_batch3->DrawLine(vertexStart, vertexEnd);
 
@@ -996,10 +1003,10 @@ void Game::DrawGridForStartScreen()
     se.y -= baseOffset;
     sw.y -= baseOffset;
 
-    v1 = DirectX::VertexPositionColor(nw, gridColor);
-    v2 = DirectX::VertexPositionColor(ne, gridColor);
-    v3 = DirectX::VertexPositionColor(se, gridColor);
-    v4 = DirectX::VertexPositionColor(sw, gridColor);
+    v1 = DirectX::VertexPositionColor(nw, gridColor2);
+    v2 = DirectX::VertexPositionColor(ne, gridColor2);
+    v3 = DirectX::VertexPositionColor(se, gridColor2);
+    v4 = DirectX::VertexPositionColor(sw, gridColor2);
 
     m_batch3->DrawLine(v1, v2);
     m_batch3->DrawLine(v2, v3);
@@ -1014,6 +1021,8 @@ void Game::DrawIntroScene()
     DirectX::SimpleMath::Vector3 testFogTarget1(1.1, 0.0, 0.0);
     DirectX::SimpleMath::Vector3 testFogTarget2(1.1, .75, 0.0);
     DirectX::SimpleMath::Vector3 testFogTarget3(0.5, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3 testFogTarget4(3.1, 0.0, 0.0);
+
     const float fadeDuration = m_fadeDuration;
     const float logoDisplayDuration = m_logoDisplayDuration;
     const float logoDisplayGap = m_logoDisplayGap;
@@ -1024,7 +1033,7 @@ void Game::DrawIntroScene()
 
     //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     float timeStamp = static_cast<float>(m_testTimer);
-   
+    timeStamp += 128.0;
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
@@ -1266,7 +1275,7 @@ void Game::DrawIntroScene()
     }
     else if (timeStamp < fadeOutEnd4)  // Render Teaser Screen
     {
-    /*
+        /*
         m_effect->SetTexture(m_textureTeaser.Get());
         m_effect->SetNormalTexture(m_normalMapTeaser.Get());
         m_effect->SetSpecularTexture(m_specularTeaser.Get());
@@ -1280,6 +1289,11 @@ void Game::DrawIntroScene()
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
 
+            SetFogVals(testFogTarget4, colorIntensity);
+            SetFogVals2(testFogTarget4, colorIntensity);
+            SetFogVals3(testFogTarget4, colorIntensity);
+
+
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
@@ -1291,6 +1305,11 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
+
+            SetFogVals(testFogTarget4, colorIntensity);
+            SetFogVals2(testFogTarget4, colorIntensity);
+            SetFogVals3(testFogTarget4, colorIntensity);
+
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -3363,12 +3382,13 @@ void Game::Render()
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
     m_batch2->Begin();
     
+    /*
     DrawCameraFocus();
     DrawLightFocus1();
     DrawLightFocus2();
     DrawLightFocus3();
     DrawWorld();
-    
+    */
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
 
