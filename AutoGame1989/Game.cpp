@@ -1023,6 +1023,8 @@ void Game::DrawIntroScene()
     DirectX::SimpleMath::Vector3 testFogTarget3(0.5, 0.0, 0.0);
     DirectX::SimpleMath::Vector3 testFogTarget4(3.1, 0.0, 0.0);
 
+    float testVal1, testVal2, testVal3, testVal4;
+
     const float fadeDuration = m_fadeDuration;
     const float logoDisplayDuration = m_logoDisplayDuration;
     const float logoDisplayGap = m_logoDisplayGap;
@@ -1033,7 +1035,7 @@ void Game::DrawIntroScene()
 
     //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     float timeStamp = static_cast<float>(m_testTimer);
-    timeStamp += 128.0;
+    //timeStamp += 23.0;
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
@@ -1257,7 +1259,7 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart4)
     {
         // render nothing
-
+        m_camera->SetTransitionSpeed(9.001);
         m_camera->SetCameraStartPos(m_startScreenCamPos);
         m_camera->SetCameraEndPos(m_teaserCamPos);
         m_camera->SetDestinationPos(m_teaserCamPos);
@@ -1293,10 +1295,10 @@ void Game::DrawIntroScene()
             SetFogVals2(testFogTarget4, colorIntensity);
             SetFogVals3(testFogTarget4, colorIntensity);
 
-
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
+            testVal1 = colorIntensity;
         }
         else if (timeStamp > fadeOutStart4) // fade out
         {
@@ -1310,28 +1312,32 @@ void Game::DrawIntroScene()
             SetFogVals2(testFogTarget4, colorIntensity);
             SetFogVals3(testFogTarget4, colorIntensity);
 
-
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
         }
         else
         {
+            int testBreak = 0;
+            ++testBreak;
             //m_effect->SetFogEnabled(false);
             //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
             //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
             //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
     }
+
+
+    /*
     if (timeStamp > fadeOutEnd4 + logoDisplayGap)
     {
         float time = m_projectileTimer;
 
-        int x = 0;
         //m_projectileTimer = 0.0;
         //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_MUSIC01);
         //m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
+    */
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
@@ -2396,6 +2402,11 @@ void Game::DrawUIIntroScreen()
     float fadeOutEnd1 = startDelay + logoDisplayDuration;
     float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
 
+    const float fadeInStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeOutStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    const float fadeOutEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+
     DirectX::XMVECTORF32 fadeColor = DirectX::Colors::White;
 
     if (timeStamp < fadeInStart1)
@@ -2470,6 +2481,79 @@ void Game::DrawUIIntroScreen()
             //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
     }
+    else if (timeStamp < fadeInStart3)
+    {
+        // Render nothing
+    }
+    else if (timeStamp < fadeOutEnd3)
+    {
+        //const std::string title = "AutoGame1989";
+        const std::string author = "By Lehr Jackson";
+        const std::string startText = "Press Enter to Start";
+
+
+        float fontTitlePosX = m_fontPos.x;
+        float fontTitlePosY = m_fontPos.y / 2.f;
+        DirectX::SimpleMath::Vector2 titlePos(fontTitlePosX, fontTitlePosY);
+        float fontAuthorPosX = m_fontPos.x;
+        float fontAuthorPosY = m_fontPos.y;
+        DirectX::SimpleMath::Vector2 authorPos(fontAuthorPosX, fontAuthorPosY);
+        DirectX::SimpleMath::Vector2 startTextPos(m_fontPos.x, m_fontPos.y + fontTitlePosY);
+
+        //DirectX::SimpleMath::Vector2 titleOrigin = m_titleFont->MeasureString(title.c_str()) / 2.f;
+        DirectX::SimpleMath::Vector2 authorOrigin = m_font->MeasureString(author.c_str()) / 2.f;
+        DirectX::SimpleMath::Vector2 startTextOrigin = m_font->MeasureString(startText.c_str()) / 2.f;
+
+        ///////////////////////////
+        /*
+        std::string textLine = "Proudly Presents";
+        float textLinePosX = m_bitwiseFontPos.x;
+        float textLinePosY = m_bitwiseFontPos.y + 100;
+        DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
+        DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+        */
+
+        if (timeStamp < fadeInEnd3)  // fade in
+        {
+            float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
+            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+            m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, fadeColor, 0.f, authorOrigin);
+            m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
+
+
+        }
+        else if (timeStamp > fadeOutStart3) // fade out
+        {
+            float colorIntensity = (fadeOutEnd1 - timeStamp) / (fadeDuration);
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
+            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+
+            m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, fadeColor, 0.f, authorOrigin);
+            m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
+        }
+        else // display at full intesity
+        {
+            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
+            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+
+            m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, fadeColor, 0.f, authorOrigin);
+            m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
+        }
+    }
+
+
+
+
+
+
+
     if (timeStamp > fadeOutEnd2 + logoDisplayGap)
     {
         //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_MUSIC01);
@@ -3430,14 +3514,15 @@ void Game::Render()
 
     m_spriteBatch->Begin();
     //DrawDebugValue();
-    DrawTimer();
+    //();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
         DrawUIIntroScreen();
     }
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
-        DrawStartScreenOld();
+        //DrawStartScreenOld();
+        //DrawUIIntroScreen();
     }
     if (m_currentGameState == GameState::GAMESTATE_MAINMENU)
     {
