@@ -346,8 +346,8 @@ private:
     double                              m_testTimer = 0.0;
     double                              m_testTimerOffset = 0.0;
     // start scene control variables
-    const float                         m_fadeDuration = 3.5f;
-    const float                         m_logoDisplayDuration = 6.0f;
+    const float                         m_fadeDuration = 2.0f;
+    const float                         m_logoDisplayDuration = 8.0f;
     const float                         m_logoDisplayGap = 2.0f;
     const float                         m_startDelay = 1.2f;
     /*
@@ -381,4 +381,6 @@ private:
     DirectX::SimpleMath::Vector3        m_testNorm = DirectX::SimpleMath::Vector3::UnitZ;
 
     float                               m_terrainColorDimmer = 0.0;
+
+    const float                         m_debugStartTime = 17.0;
 };

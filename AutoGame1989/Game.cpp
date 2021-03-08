@@ -1035,7 +1035,7 @@ void Game::DrawIntroScene()
 
     //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     float timeStamp = static_cast<float>(m_testTimer);
-    //timeStamp += 23.0;
+    timeStamp += m_debugStartTime;
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
@@ -1244,6 +1244,26 @@ void Game::DrawIntroScene()
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
+            
+            //////////////
+
+            DirectX::SimpleMath::Vector3 endPos(1.2, 0.1, 0.0);
+
+            DirectX::SimpleMath::Vector3 camPos = m_camera->GetPos();
+            DirectX::SimpleMath::Vector3 destPos = endPos;
+            float distance = DirectX::SimpleMath::Vector3::Distance(camPos, destPos);
+            float speed = distance / (fadeOutEnd3 - fadeOutStart3);
+
+
+            
+            //////////////
+            m_camera->SetTransitionSpeed(speed);
+            m_camera->SetCameraStartPos(m_startScreenCamPos);
+            m_camera->SetCameraEndPos(endPos);
+            m_camera->SetDestinationPos(endPos);
+            m_camera->SetTargetStartPos(m_startScreenCamPos);
+            m_camera->SetTargetEndPos(m_teaserCamTarg);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
         }
         else
         {
@@ -1259,24 +1279,34 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart4)
     {
         // render nothing
-        m_camera->SetTransitionSpeed(9.001);
+        /*
+        m_camera->SetTransitionSpeed(0.9001);
         m_camera->SetCameraStartPos(m_startScreenCamPos);
         m_camera->SetCameraEndPos(m_teaserCamPos);
         m_camera->SetDestinationPos(m_teaserCamPos);
         m_camera->SetTargetStartPos(m_startScreenCamPos);
         m_camera->SetTargetEndPos(m_teaserCamTarg);
         m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
+        */
 
+        /*
         SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
         m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
         
         m_effect->SetTexture(m_textureTeaser.Get());
         m_effect->SetNormalTexture(m_normalMapTeaser.Get());
         m_effect->SetSpecularTexture(m_specularTeaser.Get());
-        
+        */
     }
     else if (timeStamp < fadeOutEnd4)  // Render Teaser Screen
     {
+        SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
+        m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
+
+        m_effect->SetTexture(m_textureTeaser.Get());
+        m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+        m_effect->SetSpecularTexture(m_specularTeaser.Get());
+
         /*
         m_effect->SetTexture(m_textureTeaser.Get());
         m_effect->SetNormalTexture(m_normalMapTeaser.Get());
@@ -1318,6 +1348,12 @@ void Game::DrawIntroScene()
         }
         else
         {
+            float colorIntensity = (fadeOutEnd4 - timeStamp) / (fadeDuration);
+            float fogStart = colorIntensity + fogGap1;
+            float fogEnd = colorIntensity + fogGap2;
+
+            m_effect2->SetFogEnabled(false);
+
             int testBreak = 0;
             ++testBreak;
             //m_effect->SetFogEnabled(false);
@@ -2340,7 +2376,7 @@ void Game::DrawTeaserScreen()
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const float height = .5f;
     const float width = .888888888f;
-    const float distance = 3.1f;
+    const float distance = 3.001f;
 
     //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
     //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
@@ -2391,7 +2427,9 @@ void Game::DrawUIIntroScreen()
     float logoDisplayGap = m_logoDisplayGap;
     float startDelay = m_startDelay;
     //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
-    const float timeStamp = static_cast<float>(m_testTimer);
+    float timeStamp = static_cast<float>(m_testTimer);
+    timeStamp += m_debugStartTime;
+
 
     float fadeInStart1 = startDelay;
     float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
@@ -2512,10 +2550,10 @@ void Game::DrawUIIntroScreen()
         DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
         DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
         */
-
+        DirectX::XMVECTORF32 fadeColor2 = DirectX::Colors::White;
         if (timeStamp < fadeInEnd3)  // fade in
         {
-            float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
+            float colorIntensity = (timeStamp - fadeInStart3) / fadeDuration;
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2528,10 +2566,12 @@ void Game::DrawUIIntroScreen()
         }
         else if (timeStamp > fadeOutStart3) // fade out
         {
-            float colorIntensity = (fadeOutEnd1 - timeStamp) / (fadeDuration);
+            float colorIntensity = (fadeOutEnd3 - timeStamp) / (fadeDuration);
+            colorIntensity = 0.0;
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
+
             //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
             //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
 
@@ -2543,15 +2583,15 @@ void Game::DrawUIIntroScreen()
             //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
             //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
 
+            float colorIntensity = (fadeOutStart3 - timeStamp) / (fadeDuration);
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+
             m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, fadeColor, 0.f, authorOrigin);
             m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
         }
     }
-
-
-
-
-
 
 
     if (timeStamp > fadeOutEnd2 + logoDisplayGap)
@@ -3279,6 +3319,7 @@ void Game::SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const floa
     m_effect2->SetFogEnabled(true);
     m_effect2->SetFogStart(fogEnd);
     m_effect2->SetFogEnd(fogStart);
+
     //m_effect2->Apply(m_d3dContext.Get());
 }
 
@@ -3471,8 +3512,9 @@ void Game::Render()
     DrawLightFocus1();
     DrawLightFocus2();
     DrawLightFocus3();
-    DrawWorld();
     */
+    DrawWorld();
+    
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
 
@@ -3522,7 +3564,7 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
         //DrawStartScreenOld();
-        //DrawUIIntroScreen();
+        DrawUIIntroScreen();
     }
     if (m_currentGameState == GameState::GAMESTATE_MAINMENU)
     {
