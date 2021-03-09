@@ -349,7 +349,7 @@ private:
     const float                         m_fadeDuration = 2.0f;
     const float                         m_logoDisplayDuration = 8.0f;
     const float                         m_logoDisplayGap = 2.0f;
-    const float                         m_startDelay = 1.2f;
+    const float                         m_startDelay = 16.2f;
     /*
     const float                         m_fadeDuration = 3.5f;
     const float                         m_logoDisplayDuration = 9.0f;
@@ -382,5 +382,6 @@ private:
 
     float                               m_terrainColorDimmer = 0.0;
 
-    const float                         m_debugStartTime = 17.0;
+    //const float                         m_debugStartTime = 17.0;
+    const float                         m_debugStartTime = 0.0;
 };

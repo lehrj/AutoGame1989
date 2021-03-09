@@ -1582,6 +1582,7 @@ void Game::DrawLogoScreen()
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
     DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
     DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
+    
     VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
     VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
     VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
@@ -2450,6 +2451,33 @@ void Game::DrawUIIntroScreen()
     if (timeStamp < fadeInStart1)
     {
         // Render nothing
+
+        std::string textLine = "Insert Coin to Start";
+        float textLinePosX = m_bitwiseFontPos.x;
+        float textLinePosY = m_bitwiseFontPos.y;
+        DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
+        DirectX::SimpleMath::Vector2 textLineOrigin = m_titleFont->MeasureString(textLine.c_str()) / 2.f;
+
+        if (timeStamp < (fadeInStart1 * .3))  // fade in
+        {
+            float colorIntensity = (timeStamp - 0.0) / fadeDuration;
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+            m_titleFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+        else if (timeStamp > (fadeInStart1 * .6)) // fade out
+        {
+            float colorIntensity = (fadeInStart1 - timeStamp) / (fadeDuration);
+            fadeColor.f[0] = colorIntensity;
+            fadeColor.f[1] = colorIntensity;
+            fadeColor.f[2] = colorIntensity;
+            m_titleFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
+        else // display at full intesity
+        {
+            m_titleFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
+        }
     }
     else if (timeStamp < fadeOutEnd1)
     {
