@@ -347,9 +347,9 @@ private:
     double                              m_testTimerOffset = 0.0;
     // start scene control variables
     const float                         m_fadeDuration = 2.0f;
-    const float                         m_logoDisplayDuration = 8.0f;
+    const float                         m_logoDisplayDuration = 38.0f;
     const float                         m_logoDisplayGap = 2.0f;
-    const float                         m_startDelay = 16.2f;
+    const float                         m_startDelay = 0.4f;
     /*
     const float                         m_fadeDuration = 3.5f;
     const float                         m_logoDisplayDuration = 9.0f;
