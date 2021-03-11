@@ -347,9 +347,9 @@ private:
     double                              m_testTimerOffset = 0.0;
     // start scene control variables
     const float                         m_fadeDuration = 2.0f;
-    const float                         m_logoDisplayDuration = 38.0f;
+    const float                         m_logoDisplayDuration = 10.0f;
     const float                         m_logoDisplayGap = 2.0f;
-    const float                         m_startDelay = 0.4f;
+    const float                         m_startDelay = 4.0f;
     /*
     const float                         m_fadeDuration = 3.5f;
     const float                         m_logoDisplayDuration = 9.0f;
@@ -374,14 +374,21 @@ private:
     DirectX::SimpleMath::Vector3        m_startScreenCamPos = DirectX::SimpleMath::Vector3(-0.7, 0.2, 0.0);
     DirectX::SimpleMath::Vector3        m_startScreenCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.0, 0.0);
 
-    DirectX::SimpleMath::Vector3        m_teaserCamPos = DirectX::SimpleMath::Vector3(1.2, 0.0, 0.0);
-    DirectX::SimpleMath::Vector3        m_teaserCamTarg = DirectX::SimpleMath::Vector3(2.3, 0.0, 0.0);
+    //DirectX::SimpleMath::Vector3        m_startScreenCamZoomPos = DirectX::SimpleMath::Vector3(1.2, 0.0, 0.0);
+    //DirectX::SimpleMath::Vector3        m_startScreenZCamZoomTarg = DirectX::SimpleMath::Vector3(2.3, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3        m_startScreenCamZoomPos = DirectX::SimpleMath::Vector3(1.2, 0.1, 0.0);
+    DirectX::SimpleMath::Vector3        m_startScreenZCamZoomTarg = DirectX::SimpleMath::Vector3(2.3, 0.0, 0.0);
 
+    const float                         m_teaserScreenDistance = 5.0;
+
+    DirectX::SimpleMath::Vector3        m_teaserCamPos = DirectX::SimpleMath::Vector3(m_teaserScreenDistance - 1.0, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3        m_teaserCamTarg = DirectX::SimpleMath::Vector3(m_teaserScreenDistance, 0.0, 0.0);
 
     DirectX::SimpleMath::Vector3        m_testNorm = DirectX::SimpleMath::Vector3::UnitZ;
 
     float                               m_terrainColorDimmer = 0.0;
-
-    //const float                         m_debugStartTime = 17.0;
-    const float                         m_debugStartTime = 0.0;
+  
+    const float                         m_debugStartTime = 27.0;
+    
+    
 };

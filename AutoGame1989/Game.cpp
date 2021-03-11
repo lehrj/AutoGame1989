@@ -93,7 +93,7 @@ void Game::AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK aSFX)
 void Game::Clear()
 {
     // Clear the views.
-    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::Black);
+    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::White);
     m_d3dContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 
@@ -1121,6 +1121,7 @@ void Game::DrawIntroScene()
         }
         else // display at full intesity
         {
+            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_COINSFX);
             //m_effect->SetFogEnabled(false);
         }
     }
@@ -1244,22 +1245,13 @@ void Game::DrawIntroScene()
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
             
-            //////////////
-
-            DirectX::SimpleMath::Vector3 endPos(1.2, 0.1, 0.0);
-
-            DirectX::SimpleMath::Vector3 camPos = m_camera->GetPos();
-            DirectX::SimpleMath::Vector3 destPos = endPos;
-            float distance = DirectX::SimpleMath::Vector3::Distance(camPos, destPos);
+            float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_startScreenCamZoomPos);
             float speed = distance / (fadeOutEnd3 - fadeOutStart3);
-
-
             
-            //////////////
             m_camera->SetTransitionSpeed(speed);
             m_camera->SetCameraStartPos(m_startScreenCamPos);
-            m_camera->SetCameraEndPos(endPos);
-            m_camera->SetDestinationPos(endPos);
+            m_camera->SetCameraEndPos(m_startScreenCamZoomPos);
+            m_camera->SetDestinationPos(m_startScreenCamZoomPos);
             m_camera->SetTargetStartPos(m_startScreenCamPos);
             m_camera->SetTargetEndPos(m_teaserCamTarg);
             m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
@@ -1278,6 +1270,29 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart4)
     {
         // render nothing
+        DirectX::SimpleMath::Vector3 preZoomPos = m_startScreenCamZoomPos;
+        preZoomPos.y = 0.0;
+
+        m_camera->SetPos(preZoomPos);
+        m_camera->SetTargetPos(m_teaserCamTarg);
+
+
+
+        /*
+        float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_teaserCamTarg);
+        //float speed = distance / (fadeOutEnd4 - fadeOutStart4);
+        float speed = distance / (fadeInEnd4 - fadeInStart4);
+
+        m_camera->SetTransitionSpeed(speed);
+        m_camera->SetCameraStartPos(m_startScreenCamZoomPos);
+        m_camera->SetCameraEndPos(m_teaserCamPos);
+        m_camera->SetDestinationPos(m_teaserCamPos);
+        m_camera->SetTargetStartPos(m_startScreenZCamZoomTarg);
+        m_camera->SetTargetEndPos(m_teaserCamTarg);
+        m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
+        */
+
+
         /*
         m_camera->SetTransitionSpeed(0.9001);
         m_camera->SetCameraStartPos(m_startScreenCamPos);
@@ -1314,6 +1329,21 @@ void Game::DrawIntroScene()
         //m_effect->SetFogEnabled(false);
         if (timeStamp < fadeInEnd4)  // fade in
         {
+            float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_teaserCamPos);
+            //float speed = distance / (fadeOutEnd4 - fadeOutStart4);
+            float speed = distance / (fadeInEnd4 - fadeInStart4);
+
+            m_camera->SetTransitionSpeed(speed);
+            //m_camera->SetCameraStartPos(m_startScreenCamZoomPos);
+            m_camera->SetCameraStartPos(m_camera->GetPos());
+            m_camera->SetCameraEndPos(m_teaserCamPos);
+            m_camera->SetDestinationPos(m_teaserCamPos);
+            m_camera->SetTargetStartPos(m_startScreenZCamZoomTarg);
+            m_camera->SetTargetEndPos(m_teaserCamTarg);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
+
+
+            ////////////////////////////////////////////////
             float colorIntensity = (timeStamp - fadeInStart4) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
@@ -1397,7 +1427,7 @@ void Game::DrawLightBar()
     const float timeStamp = static_cast<float>(m_testTimer);
     float focusPoint = cosf(timeStamp * 3.) / 2.0;
     DirectX::SimpleMath::Vector3 normal = -DirectX::SimpleMath::Vector3::UnitX;
-    float x = 3.0;
+    float x = m_teaserScreenDistance;
     float y = -0.1;
     float z = .7;
     DirectX::SimpleMath::Vector3 left(x, y, -z);
@@ -1799,7 +1829,6 @@ void Game::DrawStartScreen()
     //DirectX::SimpleMath::Vector3 vertexNormal = testNorm;
     DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
 
-
     //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
     //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
@@ -1867,8 +1896,7 @@ void Game::DrawStartScreen()
     uStop = 0.1588541666666667;
     vStart = 0.0;
     vStop = 0.2824074074074074;
-
-    
+ 
     //vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
     
     //vertexNormal = -m_lightPos0 * cosf(timeStamp);
@@ -2364,7 +2392,7 @@ void Game::DrawTeaserScreen()
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const float height = .5f;
     const float width = .888888888f;
-    const float distance = 3.001f;
+    const float distance = m_teaserScreenDistance + 0.0001;
 
     //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
     //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
@@ -2438,7 +2466,6 @@ void Game::DrawUIIntroScreen()
     if (timeStamp < fadeInStart1)
     {
         // Render nothing
-
         std::string textLine = "Insert Coin to Start";
         float textLinePosX = m_bitwiseFontPos.x;
         float textLinePosY = m_bitwiseFontPos.y;
@@ -2447,7 +2474,8 @@ void Game::DrawUIIntroScreen()
 
         if (timeStamp < (fadeInStart1 * .3))  // fade in
         {
-            float colorIntensity = (timeStamp - 0.0) / fadeDuration;
+            //float colorIntensity = (timeStamp - 0.0) / fadeDuration;
+            float colorIntensity = (timeStamp - 0.0) / (fadeInStart1 * .3);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2455,7 +2483,8 @@ void Game::DrawUIIntroScreen()
         }
         else if (timeStamp > (fadeInStart1 * .6)) // fade out
         {
-            float colorIntensity = (fadeInStart1 - timeStamp) / (fadeDuration);
+            //float colorIntensity = (fadeInStart1 - (timeStamp)) / (fadeDuration);
+            float colorIntensity = (fadeInStart1 - timeStamp) / (fadeInStart1 * .3);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2463,6 +2492,7 @@ void Game::DrawUIIntroScreen()
         }
         else // display at full intesity
         {
+
             m_titleFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
     }
@@ -3478,7 +3508,7 @@ void Game::Render()
     m_batch->Begin();
 
     //TestDraw();
-    
+    //DrawTeaserScreen();
     //DrawStartScreen();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN || m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
@@ -3521,15 +3551,15 @@ void Game::Render()
     //m_d3dContext->PSSetSamplers(0, 1, &sampler);
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
     m_batch2->Begin();
+    //DrawLightBar();
     
-    /*
     DrawCameraFocus();
     DrawLightFocus1();
     DrawLightFocus2();
     DrawLightFocus3();
     
     DrawWorld();
-    */
+    
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
 
@@ -4211,9 +4241,10 @@ void Game::UpdateLighting()
             auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + .4, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
             */
-            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 0.0, 0.0);
-            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 2.09, 0.0);
-            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 4.18, 0.0);
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll +3.14, 0.0);
+            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 1.25, 0.0);
+            //auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -1.0, 0.0);
             auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -roll, 0.0);
             //quat0 = quat;
             //quat1 = quat;
