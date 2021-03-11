@@ -93,7 +93,7 @@ void Game::AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK aSFX)
 void Game::Clear()
 {
     // Clear the views.
-    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::White);
+    m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::Black);
     m_d3dContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 
@@ -2474,6 +2474,7 @@ void Game::DrawUIIntroScreen()
 
         if (timeStamp < (fadeInStart1 * .3))  // fade in
         {
+            AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_COINSFX);
             //float colorIntensity = (timeStamp - 0.0) / fadeDuration;
             float colorIntensity = (timeStamp - 0.0) / (fadeInStart1 * .3);
             fadeColor.f[0] = colorIntensity;
@@ -2483,6 +2484,7 @@ void Game::DrawUIIntroScreen()
         }
         else if (timeStamp > (fadeInStart1 * .6)) // fade out
         {
+            AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
             //float colorIntensity = (fadeInStart1 - (timeStamp)) / (fadeDuration);
             float colorIntensity = (fadeInStart1 - timeStamp) / (fadeInStart1 * .3);
             fadeColor.f[0] = colorIntensity;
@@ -2492,12 +2494,13 @@ void Game::DrawUIIntroScreen()
         }
         else // display at full intesity
         {
-
+            
             m_titleFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
     }
     else if (timeStamp < fadeOutEnd1)
     {
+        
         std::string textLine = "Proudly Presents";
         float textLinePosX = m_bitwiseFontPos.x;
         float textLinePosY = m_bitwiseFontPos.y + 100;
@@ -2506,6 +2509,7 @@ void Game::DrawUIIntroScreen()
 
         if (timeStamp < fadeInEnd1)  // fade in
         {
+            
             float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
@@ -3552,14 +3556,13 @@ void Game::Render()
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
     m_batch2->Begin();
     //DrawLightBar();
-    
+    /*
     DrawCameraFocus();
     DrawLightFocus1();
     DrawLightFocus2();
     DrawLightFocus3();
-    
     DrawWorld();
-    
+    */   
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
 
