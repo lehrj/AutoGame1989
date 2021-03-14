@@ -197,7 +197,7 @@ void Game::CreateDevice()
     
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/LogoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.dds", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser2.png", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/NormalMapTeaser.png", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/SpecularTeaser.png", nullptr, m_specularTeaser.ReleaseAndGetAddressOf()));
     
     /*
@@ -1425,8 +1425,8 @@ void Game::DrawLightBar()
     DirectX::XMVECTORF32 color2 = DirectX::Colors::Black;
     //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     const float timeStamp = static_cast<float>(m_testTimer);
-    float focusPoint = cosf(timeStamp);
-    focusPoint *= .7;
+    float focusPoint = cosf(timeStamp * 3.) * .7;
+
     DirectX::SimpleMath::Vector3 normal = -DirectX::SimpleMath::Vector3::UnitX;
     float x = m_teaserScreenDistance;
     float y = -0.1;
@@ -1882,7 +1882,7 @@ void Game::DrawStartScreen()
     const float moonWidth = 0.2;
     const float moonSize = 0.2;
     const float moonOriginY = 0.7;
-    const float moonOriginZ = -0.9;
+    const float moonOriginZ = -1.1;
     const float moonDepth = -0.01;
     DirectX::SimpleMath::Vector3 moonOrigin(distance, moonOriginY, moonOriginZ);
     topLeft = DirectX::SimpleMath::Vector3(moonDepth + distance, moonOriginY, moonOriginZ);
@@ -1918,7 +1918,8 @@ void Game::DrawStartScreen()
 
     ////////////////////////////////
     // Start Text drawing
-    const float titleWidth = 0.4;
+    //const float titleWidth = 0.4;
+    const float titleWidth = 0.6;
     //const float titleHeight = 0.2;
     const float titleHeight = titleWidth * 0.111864406779661;
     const float titleSize = 0.2;
@@ -4348,9 +4349,9 @@ void Game::UpdateLighting()
             roll = cosf(-timeStamp);
 
             //roll = cosf(timeStamp * 3.) * .5;
-            roll = cosf(timeStamp * 3.) * .65;
-            roll = cosf(timeStamp * 3.) * .9;
-            roll = cosf(timeStamp) * .7;
+            //roll = cosf(timeStamp * 3.) * .65;
+            //roll = cosf(timeStamp * 3.) * .9;
+            roll = cosf(timeStamp * 3.) * .7;
             auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
             auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
