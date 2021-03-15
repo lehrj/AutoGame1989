@@ -11,6 +11,7 @@
 #include "Auto.h"
 #include "Camera.h"
 #include "Environment.h"
+#include "Lighting.h"
 #include "sounds.h"
 #include "Vehicle.h"
 
@@ -101,6 +102,7 @@ private:
     Camera* m_camera;
     Vehicle* m_vehicle;
     Environment* m_environment;
+    Lighting* m_lighting;
 
     // Device resources.
     HWND                                            m_window;

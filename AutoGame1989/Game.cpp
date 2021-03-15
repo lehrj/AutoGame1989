@@ -24,7 +24,7 @@ Game::Game() noexcept :
 
     m_camera = new Camera(m_outputWidth, m_outputHeight);
     m_camera->InintializePreSwingCamera(DirectX::SimpleMath::Vector3::Zero, 0.0);
-
+    m_lighting = new Lighting();
     m_vehicle = new Vehicle();
 
     if (m_isInDebugMode == false)
@@ -54,6 +54,7 @@ Game::~Game()
     delete m_auto;
     delete m_camera;
     delete m_environment;
+    delete m_lighting;
     delete m_vehicle;
 
     delete[] m_terrainVertexArray;
