@@ -372,6 +372,11 @@ private:
 
     DirectX::SimpleMath::Vector3        m_introCamPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3        m_introCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.0, 0.0);
+    //DirectX::SimpleMath::Vector3        m_introCamPos2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3        m_introCamTarg2 = DirectX::SimpleMath::Vector3(.9, -0.03, 0.0);
+
+    DirectX::SimpleMath::Vector3        m_introCamPos2 = DirectX::SimpleMath::Vector3(0.0, -0.03, 0.0);
+    //DirectX::SimpleMath::Vector3        m_introCamTarg2 = DirectX::SimpleMath::Vector3(1.1, -0.03, 0.0);
 
     //DirectX::SimpleMath::Vector3        m_startScreenCamPos = DirectX::SimpleMath::Vector3(-0.7, 0.2, 0.0);
     //DirectX::SimpleMath::Vector3        m_startScreenCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.0, 0.0);
@@ -393,7 +398,7 @@ private:
 
     float                               m_terrainColorDimmer = 0.0;
   
-    const float                         m_debugStartTime = -5.0;
+    const float                         m_debugStartTime = 20.0;
     
     
 };

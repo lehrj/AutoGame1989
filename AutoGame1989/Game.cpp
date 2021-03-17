@@ -66,7 +66,7 @@ Game::~Game()
     m_terrainVertexArray2 = 0;
     delete[] m_terrainVertexArrayBase2;
     m_terrainVertexArrayBase2 = 0;
-
+   
 }
 
 void Game::AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK aSFX)
@@ -1133,6 +1133,8 @@ void Game::DrawIntroScene()
     {
         // render nothing
         SetLighting(LightingState::LIGHTINGSTATE_BMW);
+        m_camera->SetPos(m_introCamPos2);
+        m_camera->SetTargetPos(m_introCamTarg2);
     }
     else if (timeStamp < fadeOutEnd2) // Render BMW Logo
     {
