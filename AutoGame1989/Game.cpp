@@ -1278,42 +1278,6 @@ void Game::DrawIntroScene()
 
         m_camera->SetPos(preZoomPos);
         m_camera->SetTargetPos(m_teaserCamTarg);
-
-
-
-        /*
-        float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_teaserCamTarg);
-        //float speed = distance / (fadeOutEnd4 - fadeOutStart4);
-        float speed = distance / (fadeInEnd4 - fadeInStart4);
-
-        m_camera->SetTransitionSpeed(speed);
-        m_camera->SetCameraStartPos(m_startScreenCamZoomPos);
-        m_camera->SetCameraEndPos(m_teaserCamPos);
-        m_camera->SetDestinationPos(m_teaserCamPos);
-        m_camera->SetTargetStartPos(m_startScreenZCamZoomTarg);
-        m_camera->SetTargetEndPos(m_teaserCamTarg);
-        m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
-        */
-
-
-        /*
-        m_camera->SetTransitionSpeed(0.9001);
-        m_camera->SetCameraStartPos(m_startScreenCamPos);
-        m_camera->SetCameraEndPos(m_teaserCamPos);
-        m_camera->SetDestinationPos(m_teaserCamPos);
-        m_camera->SetTargetStartPos(m_startScreenCamPos);
-        m_camera->SetTargetEndPos(m_teaserCamTarg);
-        m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
-        */
-
-        /*
-        SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
-        m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
-        
-        m_effect->SetTexture(m_textureTeaser.Get());
-        m_effect->SetNormalTexture(m_normalMapTeaser.Get());
-        m_effect->SetSpecularTexture(m_specularTeaser.Get());
-        */
     }
     else if (timeStamp < fadeOutEnd4)  // Render Teaser Screen
     {
@@ -1324,12 +1288,9 @@ void Game::DrawIntroScene()
         m_effect->SetNormalTexture(m_normalMapTeaser.Get());
         m_effect->SetSpecularTexture(m_specularTeaser.Get());
 
-        /*
-        m_effect->SetTexture(m_textureTeaser.Get());
-        m_effect->SetNormalTexture(m_normalMapTeaser.Get());
-        m_effect->SetSpecularTexture(m_specularTeaser.Get());
-        */
-        //m_effect->SetFogEnabled(false);
+        m_effect->SetFogEnabled(false);
+        m_effect2->SetFogEnabled(false);
+        m_effect3->SetFogEnabled(false);
         if (timeStamp < fadeInEnd4)  // fade in
         {
             float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_teaserCamPos);
@@ -1350,12 +1311,15 @@ void Game::DrawIntroScene()
             float colorIntensity = (timeStamp - fadeInStart4) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
+
+            /*
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
 
             SetFogVals(testFogTarget4, colorIntensity);
             SetFogVals2(testFogTarget4, colorIntensity);
             SetFogVals3(testFogTarget4, colorIntensity);
+            */
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -1367,13 +1331,14 @@ void Game::DrawIntroScene()
             float colorIntensity = (fadeOutEnd4 - timeStamp) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
+            /*
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
 
             SetFogVals(testFogTarget4, colorIntensity);
             SetFogVals2(testFogTarget4, colorIntensity);
             SetFogVals3(testFogTarget4, colorIntensity);
-
+            */
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
@@ -1386,8 +1351,6 @@ void Game::DrawIntroScene()
 
             m_effect2->SetFogEnabled(false);
 
-            int testBreak = 0;
-            ++testBreak;
             //m_effect->SetFogEnabled(false);
             //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
             //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
@@ -2396,6 +2359,14 @@ void Game::DrawUIIntroScreen()
         float textLinePosY = m_bitwiseFontPos.y;
         DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
         DirectX::SimpleMath::Vector2 textLineOrigin = m_titleFont->MeasureString(textLine.c_str()) / 2.f;
+        if (timeStamp < (fadeInStart1 * .5))
+        {
+            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_COINSFX);
+        }
+        else
+        {
+            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
+        }
 
         if (timeStamp < (fadeInStart1 * .3))  // fade in
         {
@@ -2407,11 +2378,11 @@ void Game::DrawUIIntroScreen()
             fadeColor.f[2] = colorIntensity;
             m_titleFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
-        else if (timeStamp > (fadeInStart1 * .6)) // fade out
+        else if (timeStamp > (fadeInStart1 * .8)) // fade out
         {
             AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
             //float colorIntensity = (fadeInStart1 - (timeStamp)) / (fadeDuration);
-            float colorIntensity = (fadeInStart1 - timeStamp) / (fadeInStart1 * .3);
+            float colorIntensity = (fadeInStart1 - timeStamp) / (fadeInStart1 * .2);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2419,7 +2390,7 @@ void Game::DrawUIIntroScreen()
         }
         else // display at full intesity
         {
-            
+
             m_titleFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
     }
@@ -2431,7 +2402,7 @@ void Game::DrawUIIntroScreen()
         float textLinePosY = m_bitwiseFontPos.y + 100;
         DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
         DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-
+        
         if (timeStamp < fadeInEnd1)  // fade in
         {
             

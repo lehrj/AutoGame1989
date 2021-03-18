@@ -389,7 +389,7 @@ private:
     DirectX::SimpleMath::Vector3        m_startScreenCamZoomPos = DirectX::SimpleMath::Vector3(1.2, 0.1, 0.0);
     DirectX::SimpleMath::Vector3        m_startScreenZCamZoomTarg = DirectX::SimpleMath::Vector3(2.3, 0.0, 0.0);
 
-    const float                         m_teaserScreenDistance = 5.0;
+    const float                         m_teaserScreenDistance = 30.0;
 
     DirectX::SimpleMath::Vector3        m_teaserCamPos = DirectX::SimpleMath::Vector3(m_teaserScreenDistance - 1.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector3        m_teaserCamTarg = DirectX::SimpleMath::Vector3(m_teaserScreenDistance, 0.0, 0.0);
@@ -398,7 +398,7 @@ private:
 
     float                               m_terrainColorDimmer = 0.0;
   
-    const float                         m_debugStartTime = 20.0;
+    const float                         m_debugStartTime = 55.0;
     
     
 };
