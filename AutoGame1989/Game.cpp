@@ -1210,10 +1210,12 @@ void Game::DrawIntroScene()
     }
     else if (timeStamp < fadeOutEnd3) // Render Start Screen
     {        
+        
         SetLighting(LightingState::LIGHTINGSTATE_STARTSCREEN);
         m_effect->SetTexture(m_textureAutoGame.Get());
         m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
         m_effect->SetSpecularTexture(m_specularAutoGame.Get());
+        
         if (timeStamp < fadeInEnd3)  // fade in
         {
             float colorIntensity = (timeStamp - fadeInStart3) / (fadeDuration);
@@ -1278,9 +1280,7 @@ void Game::DrawIntroScene()
 
         m_camera->SetPos(preZoomPos);
         m_camera->SetTargetPos(m_teaserCamTarg);
-    }
-    else if (timeStamp < fadeOutEnd4)  // Render Teaser Screen
-    {
+
         SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
         m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
 
@@ -1288,9 +1288,34 @@ void Game::DrawIntroScene()
         m_effect->SetNormalTexture(m_normalMapTeaser.Get());
         m_effect->SetSpecularTexture(m_specularTeaser.Get());
 
+        m_effect->SetFogStart(1.0);
+        m_effect->SetFogEnd(5.0);
+        m_effect->SetFogEnabled(true);
+
+        m_effect2->SetFogEnabled(false);
+        m_effect3->SetFogEnabled(false);
+    }
+    else if (timeStamp < fadeOutEnd4)  // Render Teaser Screen
+    {
+    /*
+        SetLighting(LightingState::LIGHTINGSTATE_TEASERSCREEN);
+        m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
+
+        m_effect->SetTexture(m_textureTeaser.Get());
+        m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+        m_effect->SetSpecularTexture(m_specularTeaser.Get());
+        
         m_effect->SetFogEnabled(false);
         m_effect2->SetFogEnabled(false);
         m_effect3->SetFogEnabled(false);
+        */
+        ///////////////////
+        /*
+        m_effect->SetFogStart(1.0);
+        m_effect->SetFogEnd(5.0);
+        m_effect->SetFogEnabled(true);
+        */
+        ///////////////////
         if (timeStamp < fadeInEnd4)  // fade in
         {
             float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_teaserCamPos);
@@ -1328,6 +1353,8 @@ void Game::DrawIntroScene()
         }
         else if (timeStamp > fadeOutStart4) // fade out
         {
+            DirectX::SimpleMath::Vector3 testCameraPos = m_camera->GetPos();
+
             float colorIntensity = (fadeOutEnd4 - timeStamp) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
@@ -1350,25 +1377,13 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
 
             m_effect2->SetFogEnabled(false);
-
-            //m_effect->SetFogEnabled(false);
-            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
-            //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
-            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
     }
 
-
-    /*
-    if (timeStamp > fadeOutEnd4 + logoDisplayGap)
+    if (timeStamp > fadeOutEnd4)
     {
-        float time = m_projectileTimer;
-
-        //m_projectileTimer = 0.0;
-        //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_MUSIC01);
-        //m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
+        ExitGame();
     }
-    */
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
@@ -1380,7 +1395,6 @@ void Game::DrawIntroScene()
     }
     else if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
     {
-        //DrawLogoScreen();
         DrawTeaserScreen();
     }
 }
@@ -1389,20 +1403,20 @@ void Game::DrawLightBar()
 {
     DirectX::XMVECTORF32 color1 = DirectX::Colors::Red;
     DirectX::XMVECTORF32 color2 = DirectX::Colors::Black;
-    //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     const float timeStamp = static_cast<float>(m_testTimer);
     float focusPoint = cosf(timeStamp * 3.) * .7;
 
     DirectX::SimpleMath::Vector3 normal = -DirectX::SimpleMath::Vector3::UnitX;
-    float x = m_teaserScreenDistance;
+    float x = m_teaserScreenDistance - 0.01;
     float y = -0.1;
     float z = .7;
     DirectX::SimpleMath::Vector3 left(x, y, -z);
     DirectX::SimpleMath::Vector3 right(x, y, z);
     DirectX::SimpleMath::Vector3 focus(x, y, focusPoint);
 
-    float spacing = .002;
-    for (int i = 0; i < 10; ++i)
+    const int lineCount = 10;
+    float spacing = .0035;
+    for (int i = 0; i < lineCount; ++i)
     {
         left.y += spacing;
         right.y += spacing;
@@ -2276,6 +2290,10 @@ void Game::DrawStartScreenOld()
 
 void Game::DrawTeaserScreen()
 {
+    m_effect->SetTexture(m_textureTeaser.Get());
+    m_effect->SetNormalTexture(m_normalMapTeaser.Get());
+    m_effect->SetSpecularTexture(m_specularTeaser.Get());
+
     const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const float height = .5f;
@@ -2390,13 +2408,11 @@ void Game::DrawUIIntroScreen()
         }
         else // display at full intesity
         {
-
             m_titleFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
     }
     else if (timeStamp < fadeOutEnd1)
-    {
-        
+    {      
         std::string textLine = "Proudly Presents";
         float textLinePosX = m_bitwiseFontPos.x;
         float textLinePosY = m_bitwiseFontPos.y + 100;
@@ -2404,13 +2420,11 @@ void Game::DrawUIIntroScreen()
         DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
         
         if (timeStamp < fadeInEnd1)  // fade in
-        {
-            
+        {          
             float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
-            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
             m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
         else if (timeStamp > fadeOutStart1) // fade out
@@ -2419,12 +2433,10 @@ void Game::DrawUIIntroScreen()
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
-            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
             m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
         else // display at full intesity
         {
-            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
             m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
     }
@@ -2474,7 +2486,6 @@ void Game::DrawUIIntroScreen()
         const std::string author = "By Lehr Jackson";
         const std::string startText = "Press Enter to Start";
 
-
         float fontTitlePosX = m_fontPos.x;
         float fontTitlePosY = m_fontPos.y / 2.f;
         DirectX::SimpleMath::Vector2 titlePos(fontTitlePosX, fontTitlePosY);
@@ -2487,14 +2498,6 @@ void Game::DrawUIIntroScreen()
         DirectX::SimpleMath::Vector2 authorOrigin = m_font->MeasureString(author.c_str()) / 2.f;
         DirectX::SimpleMath::Vector2 startTextOrigin = m_font->MeasureString(startText.c_str()) / 2.f;
 
-        ///////////////////////////
-        /*
-        std::string textLine = "Proudly Presents";
-        float textLinePosX = m_bitwiseFontPos.x;
-        float textLinePosY = m_bitwiseFontPos.y + 100;
-        DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
-        DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-        */
         DirectX::XMVECTORF32 fadeColor2 = DirectX::Colors::White;
         if (timeStamp < fadeInEnd3)  // fade in
         {
@@ -2506,8 +2509,6 @@ void Game::DrawUIIntroScreen()
             //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
             m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, fadeColor, 0.f, authorOrigin);
             m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
-
-
         }
         else if (timeStamp > fadeOutStart3) // fade out
         {
@@ -2517,11 +2518,9 @@ void Game::DrawUIIntroScreen()
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
 
-            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
-            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
-
-            m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, fadeColor, 0.f, authorOrigin);
-            m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
+            // For now toggle off this text with no fade
+            //m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, fadeColor, 0.f, authorOrigin);
+            //m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
         }
         else // display at full intesity
         {
@@ -2538,7 +2537,6 @@ void Game::DrawUIIntroScreen()
             m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
         }
     }
-
 
     if (timeStamp > fadeOutEnd2 + logoDisplayGap)
     {
@@ -3460,7 +3458,7 @@ void Game::Render()
     DrawLightFocus3();
     DrawWorld();
     */   
-    
+
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
 
