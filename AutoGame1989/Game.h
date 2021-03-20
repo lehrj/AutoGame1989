@@ -314,7 +314,6 @@ private:
     std::unique_ptr<ScrollingBackground>             m_road;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_backgroundTex;
 
-
     int                                         m_testDisplayCount = 0;
     const int                                   m_testDisplayCountMax = 3;
 
@@ -334,7 +333,6 @@ private:
     DirectX::VertexPositionNormalColor* m_terrainVertexArray2;
     DirectX::VertexPositionNormalColor* m_terrainVertexArrayBase2;
     int                                  m_terrainVertexCount2;
-
     
     void SetLighting(LightingState aLightState);
     void UpdateLighting();
@@ -399,6 +397,5 @@ private:
     float                               m_terrainColorDimmer = 0.0;
   
     const float                         m_debugStartTime = -5.0;
-    
     
 };

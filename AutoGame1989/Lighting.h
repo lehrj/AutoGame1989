@@ -25,12 +25,11 @@ public:
     void SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
     void SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
 
-
     void UpdateLighting();
+
 private:
 
     LightingState                               m_currentLightingState;
-
 
     DirectX::SimpleMath::Vector3                m_cameraFocusPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3                m_lightPos0 = DirectX::SimpleMath::Vector3::UnitX;
@@ -41,7 +40,6 @@ private:
     DirectX::SimpleMath::Vector3                m_lightEffect2Pos0 = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3                m_lightEffect2Pos1 = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3                m_lightEffect2Pos2 = DirectX::SimpleMath::Vector3::UnitX;
-
 
 };
 
