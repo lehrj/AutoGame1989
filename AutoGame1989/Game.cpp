@@ -3700,15 +3700,11 @@ void Game::UpdateLighting()
             float yaw = time * 0.4f;
             float pitch = time * 0.7f;
             float roll = -time * 1.1f;
-            /*
-            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 1.4, 0.0);
-            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + .4, 0.0);
-            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
-            */
+            roll = 0.0;
             auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
             auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll +3.14, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 1.25, 0.0);
-            //auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -1.0, 0.0);
+
             auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -roll, 0.0);
             //quat0 = quat;
             //quat1 = quat;
