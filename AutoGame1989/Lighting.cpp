@@ -7,6 +7,11 @@ Lighting::Lighting()
 
 }
 
+Lighting::LightingState Lighting::GetLightingState()
+{
+    return m_currentLightingState;
+}
+
 void Lighting::SetLighting(LightingState aLightState)
 {
     m_currentLightingState = aLightState;
@@ -28,7 +33,7 @@ void Lighting::SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, c
     aEffect->SetFogEnd(fogStart);
 }
 
-void Lighting::UpdateLighting(std::unique_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer)
+void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer)
 {
     //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     const float timeStamp = static_cast<float>(aTimer);
@@ -93,7 +98,7 @@ void Lighting::UpdateLighting(std::unique_ptr<DirectX::NormalMapEffect> aEffect,
             float yaw = time * 0.4f;
             float pitch = time * 0.7f;
             float roll = -time * 1.1f;
-            roll = 0.0;
+   
             auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
             auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 3.14, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 1.25, 0.0);

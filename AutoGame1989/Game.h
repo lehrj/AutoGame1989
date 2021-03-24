@@ -126,7 +126,8 @@ private:
     using VertexType3 = DirectX::VertexPositionColor;
 
     std::unique_ptr<DirectX::CommonStates>          m_states;   
-    std::unique_ptr<DirectX::NormalMapEffect>       m_effect;
+    //std::unique_ptr<DirectX::NormalMapEffect>       m_effect;
+    std::shared_ptr<DirectX::NormalMapEffect>       m_effect;
     std::unique_ptr<DirectX::BasicEffect>           m_effect2;
     std::unique_ptr<DirectX::BasicEffect>           m_effect3;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
@@ -261,7 +262,8 @@ private:
         UISTATE_SCORE
     };
     UiState                                     m_currentUiState;
-
+    
+    /*
     enum class LightingState
     {
         LIGHTINGSTATE_JI,
@@ -274,7 +276,11 @@ private:
         LIGHTINGSTATE_TEST01,
         LIGHTINGSTATE_,
     };
+    
     LightingState                               m_currentLightingState;
+    void SetLighting(LightingState aLightState);
+    void UpdateLighting();
+    */
 
     // audio 
     std::unique_ptr<DirectX::AudioEngine>       m_audioEngine;
@@ -332,8 +338,7 @@ private:
     DirectX::VertexPositionNormalColor* m_terrainVertexArrayBase2;
     int                                  m_terrainVertexCount2;
     
-    void SetLighting(LightingState aLightState);
-    void UpdateLighting();
+
 
     float                               m_debugValue1 = 0.0;
     float                               m_debugValue2 = 0.0;

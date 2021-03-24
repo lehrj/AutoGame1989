@@ -1,32 +1,36 @@
 #pragma once
 
-enum class LightingState
-{
-    LIGHTINGSTATE_JI,
-    LIGHTINGSTATE_BMW,
-    LIGHTINGSTATE_STARTSCREEN,
-    LIGHTINGSTATE_TEASERSCREEN,
-    LIGHTINGSTATE_MANUAL,
-    LIGHTINGSTATE_NULL,
-    LIGHTINGSTATE_STARTUP,
-    LIGHTINGSTATE_TEST01,
-    LIGHTINGSTATE_,
-};
+
 
 
 class Lighting
 {
 public:
-    Lighting();
-    void SetLighting(LightingState aLightState);
+    enum class LightingState
+    {
+        LIGHTINGSTATE_JI,
+        LIGHTINGSTATE_BMW,
+        LIGHTINGSTATE_STARTSCREEN,
+        LIGHTINGSTATE_TEASERSCREEN,
+        LIGHTINGSTATE_MANUAL,
+        LIGHTINGSTATE_NULL,
+        LIGHTINGSTATE_STARTUP,
+        LIGHTINGSTATE_TEST01,
+        LIGHTINGSTATE_,
+    };
 
+    Lighting();
+
+    LightingState GetLightingState();
+
+    void SetLighting(LightingState aLightState);  
     void SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
     void SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
     void SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
     //void SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
 
-    void UpdateLighting(std::unique_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer);
-
+    //void UpdateLighting(std::unique_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer);
+    void UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer);
 private:
 
     LightingState                               m_currentLightingState;
