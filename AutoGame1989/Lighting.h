@@ -17,15 +17,15 @@ enum class LightingState
 class Lighting
 {
 public:
-
+    Lighting();
     void SetLighting(LightingState aLightState);
 
-    void SetFogVals1(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    void SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
     void SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
     void SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
-    void SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    //void SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
 
-    void UpdateLighting();
+    void UpdateLighting(std::unique_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer);
 
 private:
 

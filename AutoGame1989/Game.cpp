@@ -1171,7 +1171,7 @@ void Game::DrawIntroScene()
 
     if (timeStamp > fadeOutEnd4)
     {
-        ExitGame();
+
     }
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
@@ -2823,7 +2823,7 @@ void Game::SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float
     m_effect->SetFogEnabled(true);
     m_effect->SetFogStart(fogEnd);
     m_effect->SetFogEnd(fogStart);
-    m_effect->Apply(m_d3dContext.Get());
+    //m_effect->Apply(m_d3dContext.Get());
 
 }
 
