@@ -55,10 +55,11 @@ private:
     void Clear();
     void CreateDevice();
     void CreateResources();
-  
+ 
     void DrawCameraFocus();
     void DrawCar();
     void DrawCar2();
+    void DrawCarTest();
     void DrawDebugLines();
     void DrawGridForStartScreen();   
     void DrawIntroScene();
@@ -79,6 +80,9 @@ private:
     void DrawWorld();
     void DrawWorldCube();
     void DrawWorldCubeTextured();
+
+    bool InitializeTerrainArray();
+    bool InitializeTerrainArray2();
     void InitializeWorldGrid();
     void OnDeviceLost();
     void Present();
@@ -327,18 +331,12 @@ private:
     DirectX::VertexPositionColor*               m_terrainVertexArray;
     DirectX::VertexPositionColor*               m_terrainVertexArrayBase;
     int                                         m_terrainVertexCount;
-    
-    bool InitializeTerrainArray();
-    bool InitializeTerrainArray2();
-    /////////////////////////////
 
     std::vector<DirectX::VertexPositionNormalColor>   m_terrainVector2;
 
     DirectX::VertexPositionNormalColor* m_terrainVertexArray2;
     DirectX::VertexPositionNormalColor* m_terrainVertexArrayBase2;
     int                                  m_terrainVertexCount2;
-    
-
 
     float                               m_debugValue1 = 0.0;
     float                               m_debugValue2 = 0.0;

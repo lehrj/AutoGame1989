@@ -35,8 +35,8 @@ Game::Game() noexcept :
     {
         m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
-    m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
-    //m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+    //m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
+    m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     //m_currentLightingState = LightingState::LIGHTINGSTATE_STARTUP;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTUP);
     m_currentUiState = UiState::UISTATE_SWING;
@@ -688,6 +688,33 @@ void Game::DrawCar2()
     VertexPositionNormalTexture v10(origin, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(.5f, 0));
     VertexPositionNormalTexture v11(backRight, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(1, 1));
     VertexPositionNormalTexture v12(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
+}
+
+void Game::DrawCarTest()
+{
+    DirectX::SimpleMath::Matrix testMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix world = m_world;
+    DirectX::SimpleMath::Matrix view = m_view;
+    DirectX::SimpleMath::Matrix proj = m_proj;
+
+    DirectX::SimpleMath::Matrix testView = DirectX::SimpleMath::Matrix::CreateLookAt(SimpleMath::Vector3::Zero, SimpleMath::Vector3(1.0, 1.0, 1.0), SimpleMath::Vector3::UnitY);
+
+    SimpleMath::Matrix testMat1 = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
+
+    //m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XM_PI / 4.f, static_cast<float>(m_clientWidth) / static_cast<float>(m_clientHeight), m_nearPlane, m_farPlane);
+    //m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+
+    SimpleMath::Vector3 transVec(0.5, 0.5, 1.5);
+    SimpleMath::Matrix transWorld = SimpleMath::Matrix::CreateWorld(SimpleMath::Vector3::Zero, SimpleMath::Vector3::UnitX, SimpleMath::Vector3::UnitY);
+
+    SimpleMath::Matrix transMat = SimpleMath::Matrix::CreateTranslation(transVec);
+    //proj += transMat;
+
+   // world = SimpleMath::Matrix::Transform(
+
+    m_shape->Draw(m_world, m_view, m_proj);
+    //m_shape->Draw(m_world, m_view, m_proj, Colors::White, m_textureBMW.Get());
+    //m_shape->Draw(transWorld, testMatrix, testMatrix);
 }
 
 void Game::DrawDebugLines()
@@ -2990,7 +3017,7 @@ void Game::Render()
     {
         //DrawIntroScene();
         //DrawStartScreen();
-        //DrawShape();
+        DrawShape();
         //DrawCar();
         //DrawWorldCubeTextured();
         if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
