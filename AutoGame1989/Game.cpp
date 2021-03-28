@@ -167,7 +167,7 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(device.As(&m_d3dDevice));
     DX::ThrowIfFailed(context.As(&m_d3dContext));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Texture3.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Texture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm8.png", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/specularJI.png", nullptr, m_specular.ReleaseAndGetAddressOf()));
     // test textures
@@ -272,23 +272,23 @@ void Game::CreateDevice()
     m_pacSprite = std::make_unique<AnimatedTexture>();
     m_pacSprite->Load(m_pacTexture.Get(), 4, 6);
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"ChacterSpriteSheet.png", nullptr, m_characterTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/ChacterSpriteSheet.png", nullptr, m_characterTexture.ReleaseAndGetAddressOf()));
     m_character = std::make_unique<AnimatedTexture>();
     m_character->Load(m_characterTexture.Get(), 4, 6);
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Chacter0SpriteSheet.png", nullptr, m_character0Texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Chacter0SpriteSheet.png", nullptr, m_character0Texture.ReleaseAndGetAddressOf()));
     m_character0 = std::make_unique<AnimatedTexture>();
     m_character0->Load(m_character0Texture.Get(), 4, 6);
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Chacter1SpriteSheet.png", nullptr, m_character1Texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Chacter1SpriteSheet.png", nullptr, m_character1Texture.ReleaseAndGetAddressOf()));
     m_character1 = std::make_unique<AnimatedTexture>();
     m_character1->Load(m_character1Texture.Get(), 4, 6);
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"Chacter2SpriteSheet.png", nullptr, m_character2Texture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Chacter2SpriteSheet.png", nullptr, m_character2Texture.ReleaseAndGetAddressOf()));
     m_character2 = std::make_unique<AnimatedTexture>();
     m_character2->Load(m_character2Texture.Get(), 4, 6);
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"CharacterBackground.png", resource.GetAddressOf(), m_characterBackgroundTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/CharacterBackground.png", resource.GetAddressOf(), m_characterBackgroundTexture.ReleaseAndGetAddressOf()));
     ComPtr<ID3D11Texture2D> characterBackground;
     DX::ThrowIfFailed(resource.As(&characterBackground));
     CD3D11_TEXTURE2D_DESC characterBackgroundDesc;
@@ -297,8 +297,8 @@ void Game::CreateDevice()
     m_characterBackgroundOrigin.y = float(characterBackgroundDesc.Height / 2);
 
     // Environment Select textures
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"EnvironmentSelectCalm.png", nullptr, m_environSelectCalmTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"EnvironmentSelectCalm.png", resource.GetAddressOf(), m_environSelectCalmTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/EnvironmentSelectCalm.png", nullptr, m_environSelectCalmTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/EnvironmentSelectCalm.png", resource.GetAddressOf(), m_environSelectCalmTexture.ReleaseAndGetAddressOf()));
     ComPtr<ID3D11Texture2D> pEnvironmentSelectCalm;
     DX::ThrowIfFailed(resource.As(&pEnvironmentSelectCalm));
     CD3D11_TEXTURE2D_DESC EnvironmentSelectCalmDesc;
@@ -306,8 +306,8 @@ void Game::CreateDevice()
     m_environSelectCalmOrigin.x = float(EnvironmentSelectCalmDesc.Width / 2);
     m_environSelectCalmOrigin.y = float(EnvironmentSelectCalmDesc.Height / 2);
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"EnvironmentSelectBreezy.png", nullptr, m_environSelectBreezyTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"EnvironmentSelectBreezy.png", resource.GetAddressOf(), m_environSelectBreezyTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/EnvironmentSelectBreezy.png", nullptr, m_environSelectBreezyTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/EnvironmentSelectBreezy.png", resource.GetAddressOf(), m_environSelectBreezyTexture.ReleaseAndGetAddressOf()));
     ComPtr<ID3D11Texture2D> pEnvironmentSelectBreezy;
     DX::ThrowIfFailed(resource.As(&pEnvironmentSelectBreezy));
     CD3D11_TEXTURE2D_DESC EnvironmentSelectBreezyDesc;
@@ -315,8 +315,8 @@ void Game::CreateDevice()
     m_environSelectBreezyOrigin.x = float(EnvironmentSelectBreezyDesc.Width / 2);
     m_environSelectBreezyOrigin.y = float(EnvironmentSelectBreezyDesc.Height / 2);
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"EnvironmentSelectAlien.jpg", nullptr, m_environSelectAlienTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"EnvironmentSelectAlien.jpg", resource.GetAddressOf(), m_environSelectAlienTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/EnvironmentSelectAlien.jpg", nullptr, m_environSelectAlienTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/EnvironmentSelectAlien.jpg", resource.GetAddressOf(), m_environSelectAlienTexture.ReleaseAndGetAddressOf()));
     ComPtr<ID3D11Texture2D> pEnvironmentSelectAlien;
     DX::ThrowIfFailed(resource.As(&pEnvironmentSelectAlien));
     CD3D11_TEXTURE2D_DESC EnvironmentSelectAlienDesc;
@@ -325,8 +325,8 @@ void Game::CreateDevice()
     m_environSelectAlienOrigin.y = float(EnvironmentSelectAlienDesc.Height / 2);
 
     // Intro screen textures
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoBMW.png", nullptr, m_bmwLogoTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoBMW.png", resource.GetAddressOf(), m_bmwLogoTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", nullptr, m_bmwLogoTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoBMW.png", resource.GetAddressOf(), m_bmwLogoTexture.ReleaseAndGetAddressOf()));
     ComPtr<ID3D11Texture2D> logoBMW;
     DX::ThrowIfFailed(resource.As(&logoBMW));
     CD3D11_TEXTURE2D_DESC logoBMWDesc;
@@ -334,8 +334,8 @@ void Game::CreateDevice()
     m_bmwLogoOrigin.x = float(logoBMWDesc.Width / 2);
     m_bmwLogoOrigin.y = float(logoBMWDesc.Height / 2);
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoJI.png", nullptr, m_jiLogoTexture.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"logoJI.png", resource.GetAddressOf(), m_jiLogoTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", nullptr, m_jiLogoTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/logoJI.png", resource.GetAddressOf(), m_jiLogoTexture.ReleaseAndGetAddressOf()));
     ComPtr<ID3D11Texture2D> logoJI;
     DX::ThrowIfFailed(resource.As(&logoJI));
     CD3D11_TEXTURE2D_DESC logoJIDesc;
@@ -482,7 +482,7 @@ void Game::CreateResources()
     m_character1Pos.y = backBufferHeight / 2.f;
     m_character2Pos.x = backBufferWidth / 2.f;
     m_character2Pos.y = backBufferHeight / 2.f;
-    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"CharacterBackground.png", nullptr, m_characterBackgroundTexture.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/CharacterBackground.png", nullptr, m_characterBackgroundTexture.ReleaseAndGetAddressOf()));
     m_characterBackgroundPos.x = backBufferWidth / 2.f;
     m_characterBackgroundPos.y = backBufferHeight / 2.f;
 
