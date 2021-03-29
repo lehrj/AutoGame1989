@@ -169,7 +169,7 @@ private:
     //std::unique_ptr<DirectX::IEffect>               m_lightEffect;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    m_shape;
-
+    std::unique_ptr<DirectX::GeometricPrimitive>    m_carShapeTest;
     //world start 
     DirectX::SimpleMath::Matrix                     m_world;
     DirectX::SimpleMath::Matrix                     m_view;

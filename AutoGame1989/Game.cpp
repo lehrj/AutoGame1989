@@ -247,7 +247,7 @@ void Game::CreateDevice()
 
     //CreateSphere(std::vector<VertexType>&vertices, std::vector<uint16_t>&indices, float diameter = 1, size_t tessellation = 16, bool rhcoords = true, bool invertn = false);
     m_shape = GeometricPrimitive::CreateSphere(m_d3dContext.Get());
-
+    m_carShapeTest = GeometricPrimitive::CreateCube(m_d3dContext.Get());
     CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
         D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
         D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, TRUE, FALSE, FALSE, TRUE);
@@ -715,6 +715,14 @@ void Game::DrawCarTest()
     m_shape->Draw(m_world, m_view, m_proj);
     //m_shape->Draw(m_world, m_view, m_proj, Colors::White, m_textureBMW.Get());
     //m_shape->Draw(transWorld, testMatrix, testMatrix);
+
+    DirectX::SimpleMath::Vector3 testVec(1.10, 1.10, 1.10);
+    //static void __cdecl CreateBox(std::vector<VertexType>&vertices, std::vector<uint16_t>&indices, const XMFLOAT3 & size, bool rhcoords = true, bool invertn = false);
+    //static std::unique_ptr<GeometricPrimitive> __cdecl CreateBox(_In_ ID3D11DeviceContext * deviceContext, const XMFLOAT3 & size, bool rhcoords = true, bool invertn = false);
+    
+    //m_shape = GeometricPrimitive::CreateCube(m_d3dContext.Get());
+    //m_shape->CreateBox(m_d3dContext.Get(), testVec);
+    m_carShapeTest->Draw(m_world, m_view, m_proj);
 }
 
 void Game::DrawDebugLines()
@@ -3017,8 +3025,8 @@ void Game::Render()
     {
         //DrawIntroScene();
         //DrawStartScreen();
-        DrawShape();
-        //DrawCar();
+        //DrawShape();
+        DrawCarTest();
         //DrawWorldCubeTextured();
         if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
         {
