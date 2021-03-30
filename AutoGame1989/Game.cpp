@@ -692,9 +692,12 @@ void Game::DrawCar2()
 
 void Game::DrawCarTest()
 {
+    DirectX::SimpleMath::Matrix transMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(static_cast<float>(m_timer.GetTotalSeconds()));
     DirectX::SimpleMath::Matrix testMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix world = m_world;
-    DirectX::SimpleMath::Matrix view = m_view;
+    //DirectX::SimpleMath::Matrix view = m_view;
+    DirectX::SimpleMath::Matrix view = m_camera->GetViewMatrix();
+    //view = view.CreateRotationX(static_cast<float>(m_timer.GetTotalSeconds()));
     DirectX::SimpleMath::Matrix proj = m_proj;
 
     DirectX::SimpleMath::Matrix testView = DirectX::SimpleMath::Matrix::CreateLookAt(SimpleMath::Vector3::Zero, SimpleMath::Vector3(1.0, 1.0, 1.0), SimpleMath::Vector3::UnitY);
@@ -712,7 +715,7 @@ void Game::DrawCarTest()
 
    // world = SimpleMath::Matrix::Transform(
 
-    m_shape->Draw(m_world, m_view, m_proj);
+    //m_shape->Draw(m_world, m_view, m_proj);
     //m_shape->Draw(m_world, m_view, m_proj, Colors::White, m_textureBMW.Get());
     //m_shape->Draw(transWorld, testMatrix, testMatrix);
 
@@ -722,7 +725,12 @@ void Game::DrawCarTest()
     
     //m_shape = GeometricPrimitive::CreateCube(m_d3dContext.Get());
     //m_shape->CreateBox(m_d3dContext.Get(), testVec);
-    m_carShapeTest->Draw(m_world, m_view, m_proj);
+    //m_carShapeTest->Draw(m_world, m_view, m_proj);
+
+
+    world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 1.5, 0.0));
+    m_carShapeTest->Draw(world, view, proj);
+
 }
 
 void Game::DrawDebugLines()
@@ -793,19 +801,8 @@ void Game::DrawDebugValue()
 
 void Game::DrawGridForStartScreen()
 {  
-    //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     float timeStamp = static_cast<float>(m_testTimer);
 
-    /*
-    m_terrainColorDimmer = abs(cosf(m_testTimer * 0.5));
-    //XMGLOBALCONST XMVECTORF32 LawnGreen = { { { 0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f } } };
-    //DirectX::XMVECTORF32 gridColor = DirectX::Colors::LawnGreen;
-    //DirectX::XMVECTORF32 gridColor = { 0.486274540f, 0.988235354f, 0.000000000f, m_terrainColorDimmer };
-    float a = .486274540f * (m_terrainColorDimmer);
-    float b = .988235354f * (m_terrainColorDimmer);
-    float c = 0.0 * (m_terrainColorDimmer);
-    DirectX::XMVECTORF32 gridColor = { a, b, c, 1.0 };
-    */
     DirectX::XMVECTORF32 gridColor = DirectX::Colors::LawnGreen;
     DirectX::XMVECTORF32 baseColor = DirectX::Colors::Black;
     DirectX::SimpleMath::Vector4 gridColor2 = DirectX::Colors::LawnGreen;
@@ -838,10 +835,8 @@ void Game::DrawGridForStartScreen()
     }
 
     DirectX::SimpleMath::Vector3 horizontalStart(xBase, yBase, zBase);
-    //horizontalStart.y -= 2.0;
     float horizontalLinePos = fmod(timeStamp, xLength) * .2;
     horizontalLinePos += 3.0;
-    //horizontalLinePos = 0;
     for (int i = 0; i < horizontalLineCount; ++i)
     {
         horizontalStart.x = - horizontalLinePos + (xSpacing * i);
@@ -850,8 +845,6 @@ void Game::DrawGridForStartScreen()
         horizontalEnd.z += zLength;
         DirectX::VertexPositionColor vertexStart(horizontalStart, gridColor2);
         DirectX::VertexPositionColor vertexEnd(horizontalEnd, gridColor2);
-
-        //m_batch3->DrawLine(vertexStart, vertexEnd);
 
         if (horizontalStart.x < xBase && horizontalStart.x > xBase - xLength)
         {
@@ -916,7 +909,6 @@ void Game::DrawIntroScene()
     const float fogGap1 = m_fogGap1;
     const float fogGap2 = m_fogGap2;
 
-    //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     float timeStamp = static_cast<float>(m_testTimer);
     timeStamp += m_debugStartTime;
 
@@ -957,8 +949,8 @@ void Game::DrawIntroScene()
 
     if (timeStamp < fadeInStart1)
     {
-        m_projectileTimer = 0.0;
         // Render nothing
+        m_projectileTimer = 0.0;
         m_effect->SetFogEnabled(true);
         m_effect->SetFogStart(0.0);
         m_effect->SetFogEnd(1.0);
@@ -1259,8 +1251,6 @@ void Game::DrawLightBar()
 void Game::DrawLightFocus1()
 {
     const float line = .25f;
-    //DirectX::SimpleMath::Vector3 focalPoint = m_camera->GetTargetPos();
-    //DirectX::SimpleMath::Vector3 focalPoint = m_lightPos0;
     DirectX::SimpleMath::Vector3 focalPoint = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 yLine = focalPoint;
     yLine.y += line;
@@ -1601,7 +1591,6 @@ void Game::DrawShape()
 
 void Game::DrawStartScreen()
 {
-    //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     const float timeStamp = static_cast<float>(m_testTimer);
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);   
     
@@ -1617,21 +1606,12 @@ void Game::DrawStartScreen()
     float yaw = time * 0.4f;
     float pitch = time * 0.7f;
     float roll = time * 1.1f;
-    //roll = cosf(-timeStamp ) +1.7;
-    //roll = 3.1f;
-    //auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
-    //auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, roll);
     auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
-    //auto norm01 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
-    //auto norm01 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitZ, quat0);
+
     auto norm01 = XMVector3Rotate(m_lightPos0, quat0);
     testNorm = norm01;
 
-    //DirectX::SimpleMath::Vector3 vertexNormal = testNorm;
     DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
-
-    //m_camera->SetPos(DirectX::SimpleMath::Vector3::Zero);
-    //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(distance, 0.0, 0.0));
 
     // start background drawing
     const float distance = 1.1f;
@@ -1648,11 +1628,11 @@ void Game::DrawStartScreen()
     float vStart = 0.25;
     float vStop = 1.0;
     /////////////////////////////
-    //DirectX::SimpleMath::Vector3 holdNorm = vertexNormal;
+
     vertexNormal = -m_lightPos0 + testNorm;
     
     vertexNormal = - m_lightPos0;
-    //vertexNormal = testNorm;
+
     vertexNormal.Normalize();
 
     vertexNormal = m_testNorm + m_lightPos0;
@@ -1670,11 +1650,6 @@ void Game::DrawStartScreen()
     VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
     VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
     VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
-
-    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
-    
-    //vertexNormal = holdNorm;
-    //vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
 
     // Start moon drawing
     const float moonHeight = 0.2;
@@ -1698,13 +1673,8 @@ void Game::DrawStartScreen()
     vStart = 0.0;
     vStop = 0.2824074074074074;
  
-    //vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
-    
-    //vertexNormal = -m_lightPos0 * cosf(timeStamp);
-    //vertexNormal = testNorm;
     vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
-    //vertexNormal =  - DirectX::SimpleMath::Vector3::UnitZ;
-    //vertexNormal = -m_lightPos0;
+
     vertTopLeft = VertexPositionNormalColorTexture (topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
     vertTopRight = VertexPositionNormalColorTexture (topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
     vertBottomRight = VertexPositionNormalColorTexture (bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
@@ -1717,9 +1687,7 @@ void Game::DrawStartScreen()
 
     ////////////////////////////////
     // Start Text drawing
-    //const float titleWidth = 0.4;
     const float titleWidth = 0.6;
-    //const float titleHeight = 0.2;
     const float titleHeight = titleWidth * 0.111864406779661;
     const float titleSize = 0.2;
     const float titleOriginY = 0.5;
@@ -1765,24 +1733,14 @@ void Game::DrawStartScreen()
         float yaw = time * 0.4f;
         float pitch = time * 0.7f;
         float roll = time * 1.1f;
-        /*
-        auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 1.4, 0.0);
-        auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + .4, 0.0);
-        auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
-        */
-        
+
         auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
         auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
         auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
         
         auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -roll, 0.0);
-        //quat0 = quat;
-        //quat1 = quat;
-        //quat2 = quat;
+
         DirectX::SimpleMath::Vector3 axis = -DirectX::SimpleMath::Vector3::UnitZ;
-        //auto light0 = XMVector3Rotate(axis, quat0);
-        //auto light1 = XMVector3Rotate(axis, quat1);
-        //auto light2 = XMVector3Rotate(axis, quat2);
 
         DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(axis, quat0);
         DirectX::SimpleMath::Vector3 light1 = XMVector3Rotate(axis, quat1);
@@ -1794,31 +1752,12 @@ void Game::DrawStartScreen()
         light1.Normalize();
         light2.x += 1.0;
         light2.Normalize();
-        
-        //testing start
-        /*
-        float offset = -0.0;
-        light0.x += offset;
-        light0.Normalize();
-        //light0 *= 20.0;
-        light1.x += offset;
-        light1.Normalize();
-        light2.x += offset;
-        light2.Normalize();
-        */
-        //testing end
 
         m_testNorm = XMVector3Rotate(light0, quat0);
         m_testNorm.Normalize();
         DirectX::SimpleMath::Vector3 light = XMVector3Rotate(axis, quat);
         light.x += 1.0;
-        //light.z += .5;
         light.Normalize();
-        //light0 = light;
-        //light1 = light;
-        //light2 = light;
-
-        //light = DirectX::SimpleMath::Vector3::UnitX;
 
         float val = 0.1;
         DirectX::SimpleMath::Vector4 test(val, val, val, 1.0);
@@ -1832,12 +1771,6 @@ void Game::DrawStartScreen()
         testLight0 = light0;
         testLight1 = light1;
         testLight2 = light2;
-        /*
-        m_lightPos0 = light0;
-        m_lightPos1 = light1;
-        m_lightPos2 = light2;
-        */
-
     }
     m_effect->Apply(m_d3dContext.Get());
 
@@ -1857,15 +1790,12 @@ void Game::DrawStartScreen()
 
     uStart = 0.0;
     uStop = 1.0;
-    //vStart = 0.25;
     vStart = 0.0;
     vStop = 1.0;
     /////////////////////////////
-    //DirectX::SimpleMath::Vector3 holdNorm = vertexNormal;
     vertexNormal = -m_lightPos0 + testNorm;
 
     vertexNormal = -m_lightPos0;
-    //vertexNormal = testNorm;
     vertexNormal.Normalize();
 
     vertexNormal = m_testNorm + m_lightPos0;
@@ -1876,7 +1806,6 @@ void Game::DrawStartScreen()
 
     /////////////////////////////
 
-    //vertexNormal = testNorm;
     vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
 
     vertTopLeft = VertexPositionNormalColorTexture (topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
@@ -1951,14 +1880,11 @@ void Game::DrawTerrain2()
 
 void Game::DrawTimer()
 {
-    // m_flightStepTimer
-    // m_projectileTimer
-    //std::string textLine = "Timer = " + std::to_string(m_projectileTimer);
     std::string textLine = "Timer = " + std::to_string(m_testTimer);
 
     float textLinePosX = m_bitwiseFontPos.x;
     float textLinePosY = m_bitwiseFontPos.y;
-    //float textLinePosY = m_bitwiseFontPos.y + 100;
+
     DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), m_fontPosDebug, Colors::White, 0.f, textLineOrigin);
@@ -1970,10 +1896,9 @@ void Game::DrawUIIntroScreen()
     float logoDisplayDuration = m_logoDisplayDuration;
     float logoDisplayGap = m_logoDisplayGap;
     float startDelay = m_startDelay;
-    //float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
+
     float timeStamp = static_cast<float>(m_testTimer);
     timeStamp += m_debugStartTime;
-
 
     float fadeInStart1 = startDelay;
     float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
