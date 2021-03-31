@@ -247,7 +247,8 @@ void Game::CreateDevice()
 
     //CreateSphere(std::vector<VertexType>&vertices, std::vector<uint16_t>&indices, float diameter = 1, size_t tessellation = 16, bool rhcoords = true, bool invertn = false);
     m_shape = GeometricPrimitive::CreateSphere(m_d3dContext.Get());
-    m_carShapeTest = GeometricPrimitive::CreateCube(m_d3dContext.Get());
+    m_carShapeTest = GeometricPrimitive::CreateBox(m_d3dContext.Get(), DirectX::SimpleMath::Vector3(0.3, 0.1, 0.2));
+
     CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
         D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
         D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, TRUE, FALSE, FALSE, TRUE);
@@ -692,7 +693,7 @@ void Game::DrawCar2()
 
 void Game::DrawCarTest()
 {
-    DirectX::SimpleMath::Matrix transMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(static_cast<float>(m_timer.GetTotalSeconds()));
+    DirectX::SimpleMath::Matrix transMatrix = DirectX::SimpleMath::Matrix::CreateRotationX(static_cast<float>(m_timer.GetTotalSeconds()));
     DirectX::SimpleMath::Matrix testMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix world = m_world;
     //DirectX::SimpleMath::Matrix view = m_view;
@@ -713,8 +714,6 @@ void Game::DrawCarTest()
     SimpleMath::Matrix transMat = SimpleMath::Matrix::CreateTranslation(transVec);
     //proj += transMat;
 
-   // world = SimpleMath::Matrix::Transform(
-
     //m_shape->Draw(m_world, m_view, m_proj);
     //m_shape->Draw(m_world, m_view, m_proj, Colors::White, m_textureBMW.Get());
     //m_shape->Draw(transWorld, testMatrix, testMatrix);
@@ -727,10 +726,11 @@ void Game::DrawCarTest()
     //m_shape->CreateBox(m_d3dContext.Get(), testVec);
     //m_carShapeTest->Draw(m_world, m_view, m_proj);
 
+    //world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.5, 0.0));
+    world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(m_timer.GetTotalSeconds())), 1.0, 1.0));
 
-    world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 1.5, 0.0));
+
     m_carShapeTest->Draw(world, view, proj);
-
 }
 
 void Game::DrawDebugLines()
