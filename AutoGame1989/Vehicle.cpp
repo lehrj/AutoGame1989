@@ -4,6 +4,11 @@
 
 Vehicle::Vehicle()
 {
+    InitializeVehicle();
+}
+
+void Vehicle::InitializeVehicle()
+{
 
 }
 
