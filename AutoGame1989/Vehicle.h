@@ -26,7 +26,7 @@ struct Car
     DirectX::SimpleMath::Vector3 position;         // world position
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
-    DirectX::SimpleMath::Vector3    m_velocity;     // direction the vehicle is traveling as it could be sliding or fishtailing
+    DirectX::SimpleMath::Vector3 velocity;     // direction the vehicle is traveling as it could be sliding or fishtailing
 };
 
 class Vehicle
@@ -47,7 +47,7 @@ private:
     float                           m_speed;        // speed vehicle is traveling
     DirectX::SimpleMath::Vector3    m_velocity;     // direction the vehicle is traveling
 
-    Vehicle m_vehicle;
+    Car m_car;
 
     DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
