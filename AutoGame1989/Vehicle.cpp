@@ -7,6 +7,22 @@ Vehicle::Vehicle()
     InitializeVehicle();
 }
 
+void Vehicle::GearDown()
+{
+    if (m_car.gearNumber > 0 && m_car.gearNumber <= m_car.numberOfGears)
+    {
+        --m_car.gearNumber;
+    }
+}
+
+void Vehicle::GearUp()
+{
+    if (m_car.gearNumber >= 0 && m_car.gearNumber < m_car.numberOfGears)
+    {
+        ++m_car.gearNumber;
+    }
+}
+
 void Vehicle::InitializeVehicle()
 {
     // roughly based on porsche boxster
@@ -43,8 +59,17 @@ void Vehicle::InitializeVehicle()
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
     m_car.velocity = DirectX::SimpleMath::Vector3::Zero;
-    
+}
 
+void Vehicle::ResetVehicle()
+{
+    m_car.gearNumber = 1;         
+
+    m_car.steeringAngle = 0.0;
+    m_car.position = DirectX::SimpleMath::Vector3::Zero;
+    m_car.heading = DirectX::SimpleMath::Vector3::Zero;
+    m_car.speed = 0.0;
+    m_car.velocity = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void Vehicle::UpdateVehicle()

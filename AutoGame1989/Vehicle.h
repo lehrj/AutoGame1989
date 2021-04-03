@@ -23,10 +23,13 @@ struct Car
 
     //////////////////////
     double steeringAngle;
+    double steeringAngleMax;
     DirectX::SimpleMath::Vector3 position;         // world position
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
     DirectX::SimpleMath::Vector3 velocity;     // direction the vehicle is traveling as it could be sliding or fishtailing
+
+    
 };
 
 class Vehicle
@@ -34,20 +37,25 @@ class Vehicle
 public:
     Vehicle();
 
-    DirectX::SimpleMath::Vector3 GetHeading() { return m_heading; };
-    DirectX::SimpleMath::Vector3 GetPos() { return m_pos; };
-    float GetSpeed() { return m_speed; };
-    DirectX::SimpleMath::Vector3 GetVelocity() { return m_velocity; };
-    void InitializeVehicle();
+    void GearDown();
+    void GearUp();
+    DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
+    DirectX::SimpleMath::Vector3 GetPos() { return m_car.position; };
+    float GetSpeed() { return m_car.speed; };
+    DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.velocity; };
+    
+    void ResetVehicle();
     void UpdateVehicle();
 
 private:
+    void InitializeVehicle();
+
+    Car m_car;
+
     DirectX::SimpleMath::Vector3    m_pos;          // world position
     DirectX::SimpleMath::Vector3    m_heading;   // direction the vehicle is facing
     float                           m_speed;        // speed vehicle is traveling
     DirectX::SimpleMath::Vector3    m_velocity;     // direction the vehicle is traveling
-
-    Car m_car;
 
     DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
