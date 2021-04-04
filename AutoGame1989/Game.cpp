@@ -245,7 +245,6 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType3::InputElements, VertexType3::InputElementCount, shaderByteCode3, byteCodeLength3, m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch3 = std::make_unique<PrimitiveBatch<VertexType3>>(m_d3dContext.Get());
 
-    //CreateSphere(std::vector<VertexType>&vertices, std::vector<uint16_t>&indices, float diameter = 1, size_t tessellation = 16, bool rhcoords = true, bool invertn = false);
     m_shape = GeometricPrimitive::CreateSphere(m_d3dContext.Get());
     m_carShapeTest = GeometricPrimitive::CreateBox(m_d3dContext.Get(), DirectX::SimpleMath::Vector3(0.3, 0.1, 0.2));
 
@@ -558,8 +557,6 @@ void Game::DrawCameraFocus()
 void Game::DrawCar()
 {
     DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
-    //origin += m_carPos;
-    //origin.y += .1;
 
     DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::UnitX;
 
@@ -633,8 +630,6 @@ void Game::DrawCar()
 void Game::DrawCar2()
 {
     DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
-    //origin += m_carPos;
-    //origin.y += .1;
     DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::UnitX;
 
     DirectX::SimpleMath::Vector3 leftFrontBumper = origin;
@@ -1155,11 +1150,9 @@ void Game::DrawIntroScene()
         if (timeStamp < fadeInEnd4)  // fade in
         {
             float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_teaserCamPos);
-            //float speed = distance / (fadeOutEnd4 - fadeOutStart4);
             float speed = distance / (fadeInEnd4 - fadeInStart4);
 
             m_camera->SetTransitionSpeed(speed);
-            //m_camera->SetCameraStartPos(m_startScreenCamZoomPos);
             m_camera->SetCameraStartPos(m_camera->GetPos());
             m_camera->SetCameraEndPos(m_teaserCamPos);
             m_camera->SetDestinationPos(m_teaserCamPos);
@@ -1926,17 +1919,16 @@ void Game::DrawUIIntroScreen()
         DirectX::SimpleMath::Vector2 textLineOrigin = m_titleFont->MeasureString(textLine.c_str()) / 2.f;
         if (timeStamp < (fadeInStart1 * .5))
         {
-            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_COINSFX);
+
         }
         else
         {
-            //AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
+
         }
 
         if (timeStamp < (fadeInStart1 * .3))  // fade in
         {
             AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_COINSFX);
-            //float colorIntensity = (timeStamp - 0.0) / fadeDuration;
             float colorIntensity = (timeStamp - 0.0) / (fadeInStart1 * .3);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
@@ -1946,7 +1938,6 @@ void Game::DrawUIIntroScreen()
         else if (timeStamp > (fadeInStart1 * .8)) // fade out
         {
             AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
-            //float colorIntensity = (fadeInStart1 - (timeStamp)) / (fadeDuration);
             float colorIntensity = (fadeInStart1 - timeStamp) / (fadeInStart1 * .2);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
@@ -2041,7 +2032,6 @@ void Game::DrawUIIntroScreen()
         DirectX::SimpleMath::Vector2 authorPos(fontAuthorPosX, fontAuthorPosY);
         DirectX::SimpleMath::Vector2 startTextPos(m_fontPos.x, m_fontPos.y + fontTitlePosY);
 
-        //DirectX::SimpleMath::Vector2 titleOrigin = m_titleFont->MeasureString(title.c_str()) / 2.f;
         DirectX::SimpleMath::Vector2 authorOrigin = m_font->MeasureString(author.c_str()) / 2.f;
         DirectX::SimpleMath::Vector2 startTextOrigin = m_font->MeasureString(startText.c_str()) / 2.f;
 
@@ -2155,9 +2145,6 @@ void Game::DrawWorldCube()
     DirectX::SimpleMath::Vector3 normZ = DirectX::SimpleMath::Vector3::UnitZ;
 
     DirectX::SimpleMath::Vector3 testNorm = DirectX::SimpleMath::Vector3::UnitX;
-    //normX = testNorm;
-    //normY = testNorm;
-    //normZ = testNorm;
 
     // Top
     VertexPositionNormalColor vTopFrontLeft(topFrontLeft, -normY, planeColor1);
@@ -2776,8 +2763,7 @@ void Game::SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float
     float fogStart = distanceToTarget - aDimmerVal;
     float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
     float testVal = fogEnd - distanceToTarget;
-    
-    //m_debugValue2 = testVal;
+
     m_debugValue3 = distanceToTarget;
     m_debugValue4 = testVal;
     m_debugValue5 = distanceToTarget - fogStart;
@@ -2785,8 +2771,6 @@ void Game::SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float
     m_effect->SetFogEnabled(true);
     m_effect->SetFogStart(fogEnd);
     m_effect->SetFogEnd(fogStart);
-    //m_effect->Apply(m_d3dContext.Get());
-
 }
 
 void Game::SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
@@ -2803,8 +2787,6 @@ void Game::SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const floa
     m_effect2->SetFogEnabled(true);
     m_effect2->SetFogStart(fogEnd);
     m_effect2->SetFogEnd(fogStart);
-    
-    //m_effect2->Apply(m_d3dContext.Get());
 }
 
 void Game::SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
@@ -2821,7 +2803,6 @@ void Game::SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const floa
     m_effect3->SetFogEnabled(true);
     m_effect3->SetFogStart(fogEnd);
     m_effect3->SetFogEnd(fogStart);
-    //m_effect3->Apply(m_d3dContext.Get());
 }
 
 void Game::SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
@@ -3031,7 +3012,7 @@ void Game::Render()
 
     m_spriteBatch->Begin();
     //DrawDebugValue();
-    //();
+
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
         DrawUIIntroScreen();

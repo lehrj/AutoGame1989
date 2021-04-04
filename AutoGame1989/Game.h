@@ -124,20 +124,17 @@ private:
     DX::StepTimer                                   m_flightStepTimer;
     double                                          m_projectileTimer = 0.0;
 
-    // WLJ add start
     using VertexType = DirectX::VertexPositionNormalColorTexture;   
     using VertexType2 = DirectX::VertexPositionNormalColor;
     using VertexType3 = DirectX::VertexPositionColor;
 
     std::unique_ptr<DirectX::CommonStates>          m_states;   
-    //std::unique_ptr<DirectX::NormalMapEffect>       m_effect;
     std::shared_ptr<DirectX::NormalMapEffect>       m_effect;
     std::unique_ptr<DirectX::BasicEffect>           m_effect2;
     std::unique_ptr<DirectX::BasicEffect>           m_effect3;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType2>> m_batch2;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType3>> m_batch3;
-
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMap;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
@@ -163,19 +160,16 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTeaser;
 
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
-    // End
 
     std::shared_ptr<DirectX::IEffect>               m_lightEffect;
-    //std::unique_ptr<DirectX::IEffect>               m_lightEffect;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    m_shape;
     std::unique_ptr<DirectX::GeometricPrimitive>    m_carShapeTest;
-    //world start 
+
     DirectX::SimpleMath::Matrix                     m_world;
     DirectX::SimpleMath::Matrix                     m_view;
     DirectX::SimpleMath::Matrix                     m_proj;
     Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_raster; // WLJ anti-aliasing
-    //world end
 
     // WLJ added for drawing projectile and swing  
     int                                             m_swingPathStep = 0;
@@ -266,25 +260,6 @@ private:
         UISTATE_SCORE
     };
     UiState                                     m_currentUiState;
-    
-    /*
-    enum class LightingState
-    {
-        LIGHTINGSTATE_JI,
-        LIGHTINGSTATE_BMW,
-        LIGHTINGSTATE_STARTSCREEN,
-        LIGHTINGSTATE_TEASERSCREEN,
-        LIGHTINGSTATE_MANUAL,
-        LIGHTINGSTATE_NULL,
-        LIGHTINGSTATE_STARTUP,
-        LIGHTINGSTATE_TEST01,
-        LIGHTINGSTATE_,
-    };
-    
-    LightingState                               m_currentLightingState;
-    void SetLighting(LightingState aLightState);
-    void UpdateLighting();
-    */
 
     // audio 
     std::unique_ptr<DirectX::AudioEngine>       m_audioEngine;

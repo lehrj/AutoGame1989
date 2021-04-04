@@ -35,7 +35,6 @@ void Lighting::SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, c
 
 void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer)
 {
-    //const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
     const float timeStamp = static_cast<float>(aTimer);
 
     aEffect->EnableDefaultLighting();
@@ -177,7 +176,6 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             light1 = light;
             light2 = light;
 
-            //aEffect->Apply(m_d3dContext.Get());
             ilights->SetLightDirection(0, light0);
             ilights->SetLightDirection(1, light1);
             ilights->SetLightDirection(2, light2);
@@ -185,7 +183,6 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             m_lightPos0 = light0;
             m_lightPos1 = light1;
             m_lightPos2 = light2;
-
         }
     }
     else if (m_currentLightingState == LightingState::LIGHTINGSTATE_TEASERSCREEN)

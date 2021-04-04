@@ -39,6 +39,8 @@ public:
 
     void GearDown();
     void GearUp();
+
+
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
     DirectX::SimpleMath::Vector3 GetPos() { return m_car.position; };
     float GetSpeed() { return m_car.speed; };
