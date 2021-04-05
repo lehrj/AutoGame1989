@@ -17,7 +17,7 @@ struct Car
     double wheelRadius;
     int gearNumber;     //  gear the car is in
     int numberOfGears;  //  total number of gears
-    char* mode;
+    //char* mode;
     double gearRatio[7];  //  gear ratios
     std::vector<double> testRation[6];
 

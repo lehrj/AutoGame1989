@@ -73,7 +73,12 @@ struct Fixture
     FixtureType                     fixtureType;  // think of a better name later
     float                           animationVariation;
     float                           distanceToCamera;
+};
 
+enum class EnvironmentType
+{
+    ENIVRONMENTTYPE_STARTUP,
+    ENVIRONMENTTYPE_CLEANTEST,
 };
 
 // Class to handle environment and gameplay world needs
@@ -117,7 +122,7 @@ public:
     double GetWindZ() const { return m_currentEnviron.wind.z; };
     std::string GetWindZString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].windZStr; };    
 
-    bool InitializeTerrain();
+    bool InitializeTerrain(EnvironmentType aEnviron);
 
     void SortFixtureBucketByDistance();
     void UpdateEnvironment(const int aIndex);
@@ -137,7 +142,7 @@ private:
     void LoadFixtureBucket();
     void LoadFixtureBucket12th();
 
-    bool LoadHeightMap();
+    bool LoadHeightMap(EnvironmentType aEnviron);
 
     void SetLandingHeight(double aLandingHeight);
     void SetLauchHeight(double aLaunchHeight);
@@ -173,8 +178,6 @@ private:
     const double                        m_maxGravity = 28.0;    // approximate value for the mass of the sun
     const double                        m_minMaxHeight = 450.0; // Launch & Landing min/max heights is just above the largest elevation change (>400 meters) of any real golf course which is the Extreme 19 in Limpopo Province South Africa
     const double                        m_minMaxWind = 667.0;   // highest know wind speed on Neptune
-
-
 
     std::vector<DirectX::VertexPositionNormal> m_heightMap;
     const float                         m_heightScale = 0.007;

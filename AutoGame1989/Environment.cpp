@@ -9,7 +9,7 @@
 
 Environment::Environment()
 {
-    bool result = InitializeTerrain();
+    bool result = InitializeTerrain(EnvironmentType::ENIVRONMENTTYPE_STARTUP);
 
     LoadEnvironmentData();
     CreateDataStrings();
@@ -284,9 +284,9 @@ double Environment::GetWindDirection() const
     return direction;
 }
 
-bool Environment::InitializeTerrain()
+bool Environment::InitializeTerrain(EnvironmentType aEnviron)
 {
-    bool result = LoadHeightMap();
+    bool result = LoadHeightMap(aEnviron);
     if (!result)
     {
         return false;
@@ -828,12 +828,22 @@ void Environment::LoadFixtureBucket12th()
     m_fixtureBucket.push_back(fixt);
 }
 
-bool Environment::LoadHeightMap()
+bool Environment::LoadHeightMap(EnvironmentType aEnviron)
 {
     FILE* filePtr;
-    //char* filename = "heightmapTest.bmp";
-    // L"../AutoGame1989/Art/Test/TestNorm7.png"
-    char* filename = "../AutoGame1989/Art/HeightMaps/heightmapTest.bmp";
+    char* filename;
+    if (aEnviron == EnvironmentType::ENIVRONMENTTYPE_STARTUP)
+    {
+        filename = "../AutoGame1989/Art/HeightMaps/heightmapStartScreen.bmp";
+    }
+    if (aEnviron == EnvironmentType::ENVIRONMENTTYPE_CLEANTEST)
+    {
+        filename = "../AutoGame1989/Art/HeightMaps/heightmapCleanTest.bmp";
+    }
+    else
+    {
+        filename = "../AutoGame1989/Art/HeightMaps/heightmapCleanTest.bmp";
+    }
 
     // Open the height map file 
     int error = fopen_s(&filePtr, filename, "rb");

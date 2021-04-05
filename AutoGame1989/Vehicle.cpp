@@ -37,7 +37,7 @@ void Vehicle::InitializeVehicle()
     m_car.muR = 0.015;             //  coefficient of rolling friction
     m_car.omegaE = 1000.0;         //  engine rpm
     m_car.gearNumber = 1;          //  gear the car is in
-    m_car.mode = "accelerating";   //  accelerating, cruising, or braking
+    //m_car.mode = "accelerating";   //  accelerating, cruising, or braking
     m_car.gearRatio[1] = 3.82;
     m_car.gearRatio[2] = 2.20;
     m_car.gearRatio[3] = 1.52;
