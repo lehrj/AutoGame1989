@@ -2980,6 +2980,7 @@ void Game::Render()
         DrawLightFocus2();
         DrawLightFocus3();
         DrawWorld();
+        DrawTerrain2();
         //DrawWorldCube();
     }
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)

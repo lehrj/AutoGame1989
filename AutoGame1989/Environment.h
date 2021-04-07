@@ -147,7 +147,7 @@ private:
     void SetLandingHeight(double aLandingHeight);
     void SetLauchHeight(double aLaunchHeight);
 
-    void ScaleTerrain();
+    void ScaleTerrain(EnvironmentType aEnviron);
     
     Environ                             m_currentEnviron;
     std::vector<Environ>                m_environs;
@@ -180,10 +180,28 @@ private:
     const double                        m_minMaxWind = 667.0;   // highest know wind speed on Neptune
 
     std::vector<DirectX::VertexPositionNormal> m_heightMap;
-    const float                         m_heightScale = 0.007;
+    
     int                                 m_terrainHeight = 0;
     int                                 m_terrainLength = 0;
     int                                 m_terrainWidth = 0;
     std::vector<DirectX::VertexPositionNormal> m_terrainModel;
+
+    // scaling variables for different types of heightmaps
+    const float                         m_heightScale = 0.007;
+    const double                        m_heightScaleStartScreen = 0.007;
+
+    const double                        m_elevationScaleStartScreen = 0.007;
+    const double                        m_mapScaleStartScreen = 0.2;
+    const double                        m_mapXtransformStartScreen = -2.101;
+    const double                        m_mapYtransformStartScreen = -0.02;
+    const double                        m_mapZtransformStartScreen = -0.02;
+
+    const double                        m_elevationScaleGamePlay = 0.007;
+    const double                        m_mapScaleGamePlay = 1.0;
+    const double                        m_mapXtransformGamePlay = 0.0;
+    const double                        m_mapYtransformGamePlay = 0.0;
+    const double                        m_mapZtransformGamePlay = 0.0;
+
+
 };
 

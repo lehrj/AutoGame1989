@@ -9,8 +9,8 @@
 
 Environment::Environment()
 {
-    bool result = InitializeTerrain(EnvironmentType::ENIVRONMENTTYPE_STARTUP);
-
+    //bool result = InitializeTerrain(EnvironmentType::ENIVRONMENTTYPE_STARTUP);
+    bool result = InitializeTerrain(EnvironmentType::ENVIRONMENTTYPE_CLEANTEST);
     LoadEnvironmentData();
     CreateDataStrings();
     const int startEnviron = 0;  // ToDo: add error checking 
@@ -304,7 +304,7 @@ bool Environment::InitializeTerrain(EnvironmentType aEnviron)
         return false;
     }
 
-    ScaleTerrain();
+    ScaleTerrain(aEnviron);
 
     return true;
 }
@@ -949,15 +949,26 @@ bool Environment::LoadHeightMap(EnvironmentType aEnviron)
     return true;
 }
 
-void Environment::ScaleTerrain()
+void Environment::ScaleTerrain(EnvironmentType aEnviron)
 {
-    const float scale = .2;
-    //const float scale = 10.0;
-    //const float xTransform = -1.4f;
-    const float xTransform = -2.101f;
-    const float yTransform = - 0.02f;
-    //const float zTransform = -3.2f;
-    const float zTransform = -1.6f;
+    double scale = 1.0;
+    double xTransform = 0.0;
+    double yTransform = 0.0;
+    double zTransform = 0.0;
+    if (aEnviron == EnvironmentType::ENIVRONMENTTYPE_STARTUP)
+    {
+        scale = m_mapScaleStartScreen;
+        xTransform = m_mapXtransformStartScreen;
+        yTransform = m_mapYtransformStartScreen;
+        zTransform = m_mapZtransformStartScreen;
+    }
+    else if (aEnviron == EnvironmentType::ENVIRONMENTTYPE_CLEANTEST)
+    {
+        scale = m_mapScaleGamePlay;
+        xTransform = m_mapXtransformGamePlay;
+        yTransform = m_mapYtransformGamePlay;
+        zTransform = m_mapZtransformGamePlay;
+    }
 
     for (int i = 0; i < m_heightMap.size(); ++i)
     {
