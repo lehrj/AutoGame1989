@@ -22,14 +22,14 @@ struct Car
     std::vector<double> testRation[6];
 
     //////////////////////
+    double maxAccelerationRate;
+    double maxBrakeRate;
     double steeringAngle;
     double steeringAngleMax;
     DirectX::SimpleMath::Vector3 position;         // world position
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
     DirectX::SimpleMath::Vector3 velocity;     // direction the vehicle is traveling as it could be sliding or fishtailing
-
-    
 };
 
 class Vehicle
@@ -39,7 +39,6 @@ public:
 
     void GearDown();
     void GearUp();
-
 
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
     DirectX::SimpleMath::Vector3 GetPos() { return m_car.position; };
@@ -56,17 +55,16 @@ private:
 
     DirectX::SimpleMath::Vector3    m_pos;          // world position
     DirectX::SimpleMath::Vector3    m_heading;   // direction the vehicle is facing
-    float                           m_speed;        // speed vehicle is traveling
+    double                          m_speed;        // speed vehicle is traveling
     DirectX::SimpleMath::Vector3    m_velocity;     // direction the vehicle is traveling
 
-    DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-    DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-    DirectX::SimpleMath::Vector4    m_defaultRight = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-    DirectX::SimpleMath::Vector4    m_right = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+    DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
+    DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
+    DirectX::SimpleMath::Vector4    m_defaultRight = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0.0);
+    DirectX::SimpleMath::Vector4    m_right = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0.0);
 
-    float                           m_moveBackForward = 0.0f;
-    float                           m_moveLeftRight = 0.0f;
-    float                           m_moveUpDown = 0.0f;
-
+    double                          m_moveBackForward = 0.0;
+    double                          m_moveLeftRight = 0.0;
+    double                          m_moveUpDown = 0.0;
 };
 

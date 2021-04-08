@@ -202,6 +202,5 @@ private:
     const double                        m_mapYtransformGamePlay = 0.0;
     const double                        m_mapZtransformGamePlay = 0.0;
 
-
 };
 

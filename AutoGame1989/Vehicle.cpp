@@ -54,6 +54,8 @@ void Vehicle::InitializeVehicle()
     m_car.q[4] = 0.0;   //  vz 
     m_car.q[5] = 0.0;   //  z  
 
+    m_car.maxAccelerationRate = 1.0;
+    m_car.maxBrakeRate = 1.0;
     m_car.steeringAngle = 0.0;
     m_car.position = DirectX::SimpleMath::Vector3::Zero;
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
