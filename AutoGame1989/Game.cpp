@@ -246,7 +246,10 @@ void Game::CreateDevice()
     m_batch3 = std::make_unique<PrimitiveBatch<VertexType3>>(m_d3dContext.Get());
 
     m_shape = GeometricPrimitive::CreateSphere(m_d3dContext.Get());
-    m_carShapeTest = GeometricPrimitive::CreateBox(m_d3dContext.Get(), DirectX::SimpleMath::Vector3(0.3, 0.1, 0.2));
+    //m_carShapeTest = GeometricPrimitive::CreateBox(m_d3dContext.Get(), DirectX::SimpleMath::Vector3(0.3, 0.1, 0.2));
+    m_carShapeTest = GeometricPrimitive::CreateSphere(m_d3dContext.Get());
+    m_carShapeTest->CreateInputLayout(m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf());
+
 
     CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
         D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
@@ -688,6 +691,10 @@ void Game::DrawCar2()
 
 void Game::DrawCarTest()
 {
+    m_effect->SetTexture(m_textureJI.Get());
+    m_effect->SetNormalTexture(m_normalMapJI.Get());
+    m_effect->SetSpecularTexture(m_specularJI.Get());
+
     DirectX::SimpleMath::Matrix transMatrix = DirectX::SimpleMath::Matrix::CreateRotationX(static_cast<float>(m_timer.GetTotalSeconds()));
     DirectX::SimpleMath::Matrix testMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix world = m_world;
@@ -721,11 +728,11 @@ void Game::DrawCarTest()
     //m_shape->CreateBox(m_d3dContext.Get(), testVec);
     //m_carShapeTest->Draw(m_world, m_view, m_proj);
 
-    //world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.5, 0.0));
-    world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(m_timer.GetTotalSeconds())), 1.0, 1.0));
+    world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.5, 0.0));
+    //world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(m_timer.GetTotalSeconds())), 1.0, 1.0));
 
-
-    m_carShapeTest->Draw(world, view, proj);
+    m_carShapeTest->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_carShapeTest->Draw(world, view, proj);
 }
 
 void Game::DrawDebugLines()
@@ -2911,8 +2918,8 @@ void Game::Render()
     
     m_effect->Apply(m_d3dContext.Get());
   
-    auto sampler = m_states->LinearClamp();
-    m_d3dContext->PSSetSamplers(0, 1, &sampler);
+    //auto sampler = m_states->LinearClamp();
+    //m_d3dContext->PSSetSamplers(0, 1, &sampler);
 
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
 
@@ -2963,17 +2970,14 @@ void Game::Render()
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
     m_batch2->Begin();
     //DrawLightBar();
-    /*
-    DrawCameraFocus();
-    DrawLightFocus1();
-    DrawLightFocus2();
-    DrawLightFocus3();
-    DrawWorld();
-    */   
+    //DrawCameraFocus();
+    //DrawLightFocus1();
+    //DrawLightFocus2();
+    //DrawLightFocus3();
+    //DrawWorld(); 
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-
         //DrawLightBar();
         DrawCameraFocus();
         DrawLightFocus1();
@@ -2991,6 +2995,70 @@ void Game::Render()
     {
         DrawLightBar();
     }
+
+    //////////////////////////////////////////////////////////////////
+    // Start testing draws
+
+    
+    m_effect2->EnableDefaultLighting();
+
+    auto ilights2 = dynamic_cast<DirectX::IEffectLights*>(m_effect2.get());
+    if (ilights2)
+    {
+        ilights2->SetLightEnabled(0, true);
+
+        auto time = static_cast<float>(m_timer.GetTotalSeconds());
+
+        float yaw = time * 0.4f;
+        float pitch = time * 0.7f;
+        float roll = time * 1.1f;
+
+        auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, yaw, roll);
+
+        auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
+
+
+        //light2 = m_lightPos1;
+        //light2 = DirectX::SimpleMath::Vector3::UnitY;
+        ilights2->SetLightDirection(0, light2);
+        ilights2->SetLightDirection(2, light2);
+    }
+
+    m_effect2->Apply(m_d3dContext.Get());
+    
+
+    /////////////////////////////////////////////////////////////////
+
+    DirectX::SimpleMath::Vector3 p0(0.0, 0.3, 0.0);
+    DirectX::SimpleMath::Vector3 p1(0.0, 0.3, -5.0);
+    DirectX::SimpleMath::Vector3 p2(5.0, 0.3, 0.0);
+    DirectX::SimpleMath::Vector3 p3 = p0;
+    p3.y += 1.0;
+    //p0 = testCamPos;
+    //p2 = testCamTarg;
+
+    DirectX::XMVECTORF32 color0 = DirectX::Colors::White;
+
+    VertexPositionNormalColor v0(p0, -DirectX::SimpleMath::Vector3::UnitY, color0);
+    VertexPositionNormalColor v1(p1, -DirectX::SimpleMath::Vector3::UnitY, color0);
+    VertexPositionNormalColor v2(p2, -DirectX::SimpleMath::Vector3::UnitY, color0);
+    VertexPositionNormalColor v3(p3, -DirectX::SimpleMath::Vector3::UnitZ, color0);
+
+    /*
+    VertexPositionColor v0(p0, color0);
+    VertexPositionColor v1(p1, color0);
+    VertexPositionColor v2(p2, color0);
+    VertexPositionColor v3(p3, color0);
+    */
+    m_batch2->DrawTriangle(v0, v1, v2);
+    m_batch2->DrawTriangle(v0, v2, v3);
+    m_batch2->DrawLine(v0, v2);
+    m_batch2->DrawLine(v0, v3);
+
+
+    // End testing draws
+    //////////////////////////////////////////////////////////////////
+
     m_batch2->End();
 
     void const* shaderByteCode3;

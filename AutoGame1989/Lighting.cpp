@@ -316,9 +316,6 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             DirectX::SimpleMath::Vector3 light = XMVector3Rotate(axis, quat);
 
             light.Normalize();
-            light0 = light;
-            light1 = light;
-            light2 = light;
 
             light0 = light;
             light1 = light;
@@ -451,3 +448,4 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
     m_effect2->EnableDefaultLighting();
     */
 }
+

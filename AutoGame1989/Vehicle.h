@@ -49,6 +49,9 @@ public:
     void UpdateVehicle();
 
 private:
+    void carRightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
+    void carRungeKutta4(struct Car* car, double ds);
+
     void InitializeVehicle();
 
     Car m_car;

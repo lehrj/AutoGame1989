@@ -149,11 +149,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="AudioBank.xwb" />
-    <None Include="bitwise24.spritefont" />
-    <None Include="bitwise20.spritefont" />
-    <None Include="bitwise16.spritefont" />
     <None Include="titleFont.spritefont" />
     <None Include="myfile.spritefont" />
+    <None Include="bitwise24.spritefont">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="bitwise20.spritefont">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="bitwise16.spritefont">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="AudioBank.xwb">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
 </Project>
