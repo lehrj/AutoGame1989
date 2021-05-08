@@ -4,15 +4,14 @@
 
 Vehicle::Vehicle()
 {
-    InitializeVehicle();
+    //InitializeVehicle();
 }
 
 //*************************************************************
 //  This method loads the right-hand sides for the car ODEs
 //*************************************************************
-void Vehicle::carRightHandSide(struct Car* car,
-    double* q, double* deltaQ, double ds,
-    double qScale, double* dq) {
+void Vehicle::carRightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq) 
+{
     //  q[0] = vx = dxdt
     //  q[1] = x
     //  q[2] = vy = dydt
@@ -62,21 +61,25 @@ void Vehicle::carRightHandSide(struct Car* car,
 
     //  Compute the intermediate values of the 
     //  dependent variables.
-    for (i = 0; i < 6; ++i) {
+    for (i = 0; i < 6; ++i) 
+    {
         newQ[i] = q[i] + qScale * deltaQ[i];
     }
 
     //  Compute the constants that define the
     //  torque curve line.
-    if (omegaE <= 1000.0) {
+    if (omegaE <= 1000.0) 
+    {
         b = 0.0;
         d = 220.0;
     }
-    else if (omegaE < 4600.0) {
+    else if (omegaE < 4600.0) 
+    {
         b = 0.025;
         d = 195.0;
     }
-    else {
+    else 
+    {
         b = -0.032;
         d = 457.2;
     }
@@ -105,24 +108,31 @@ void Vehicle::carRightHandSide(struct Car* car,
     //  The acceleration of the car is determined by 
     //  whether the car is accelerating, cruising, or
     //  braking. The braking acceleration is assumed to
-    //  be a constant -5.0 m/s^2.
-    if (!strcmp(car->mode, "accelerating")) {
+    //  be a constant -5.0 m/s^2.   
+    //if (!strcmp(car->mode, "accelerating")) 
+    if (m_car.accelerationInput < m_car.inputDeadZone)
+    {
         c1 = -Fd / mass;
         tmp = gearRatio * finalDriveRatio / wheelRadius;
         c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
         c3 = (tmp * d + Fr) / mass;
         dq[0] = ds * (c1 + c2 + c3);
     }
-    else if (!strcmp(car->mode, "braking")) {
+    //else if (!strcmp(car->mode, "braking")) 
+    if(m_car.brakeInput < m_car.inputDeadZone)
+    {
         //  Only brake if the velocity is positive.
-        if (newQ[0] > 0.1) {
-            dq[0] = ds * (-5.0);
+        if (newQ[0] > 0.1) 
+        {
+            dq[0] = ds * (-m_car.maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
         }
-        else {
+        else 
+        {
             dq[0] = 0.0;
         }
     }
-    else {
+    else 
+    {
         dq[0] = 0.0;
     }
 
@@ -140,7 +150,8 @@ void Vehicle::carRightHandSide(struct Car* car,
 //  This method solves for the car motion using a
 //  4th-order Runge-Kutta solver
 //************************************************************
-void Vehicle::carRungeKutta4(struct Car* car, double ds) {
+void Vehicle::carRungeKutta4(struct Car* car, double ds) 
+{
 
     int j;
     int numEqns;
@@ -165,7 +176,8 @@ void Vehicle::carRungeKutta4(struct Car* car, double ds) {
     //  Retrieve the current values of the dependent
     //  and independent variables.
     s = car->s;
-    for (j = 0; j < numEqns; ++j) {
+    for (j = 0; j < numEqns; ++j) 
+    {
         q[j] = car->q[j];
     }
 
@@ -182,7 +194,8 @@ void Vehicle::carRungeKutta4(struct Car* car, double ds) {
     //  values in the ODE object arrays.
     car->s = car->s + ds;
 
-    for (j = 0; j < numEqns; ++j) {
+    for (j = 0; j < numEqns; ++j) 
+    {
         q[j] = q[j] + (dq1[j] + 2.0 * dq2[j] + 2.0 * dq3[j] + dq4[j]) / 6.0;
         car->q[j] = q[j];
     }
@@ -195,6 +208,36 @@ void Vehicle::carRungeKutta4(struct Car* car, double ds) {
     free(dq4);
 
     return;
+}
+
+void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
+{
+    DirectX::SimpleMath::Matrix transMatrix = DirectX::SimpleMath::Matrix::CreateRotationX(static_cast<float>(aTimer));
+    DirectX::SimpleMath::Matrix testMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix world = aWorld;
+
+    DirectX::SimpleMath::Matrix view = aView;
+
+    DirectX::SimpleMath::Matrix proj = aProj;
+
+    DirectX::SimpleMath::Matrix testView = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0), DirectX::SimpleMath::Vector3::UnitY);
+
+    DirectX::SimpleMath::Matrix testMat1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
+
+    DirectX::SimpleMath::Vector3 transVec(0.5, 0.5, 1.5);
+    DirectX::SimpleMath::Matrix transWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    DirectX::SimpleMath::Matrix transMat = DirectX::SimpleMath::Matrix::CreateTranslation(transVec);
+
+
+    DirectX::SimpleMath::Vector3 testVec(1.10, 1.10, 1.10);
+    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(aTimer)), 1.0, 1.0));
+
+    m_carModel.body->Draw(world, view, proj);
+    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(-aTimer)), 3.0, 1.0));
+    m_carModel.frontAxel->Draw(world, view, proj);
+    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(1.0), 1.0, 1.0));
+    m_carModel.rearAxel->Draw(world, view, proj);
 }
 
 void Vehicle::GearDown()
@@ -213,7 +256,19 @@ void Vehicle::GearUp()
     }
 }
 
-void Vehicle::InitializeVehicle()
+void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
+{
+    //const XMFLOAT3& size, bool rhcoords = true, bool invertn = false);
+    DirectX::SimpleMath::Vector3 carBodySize(1.0, 1.0, 1.0);
+    m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
+    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get());
+    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get());
+    
+    //m_carModel.body = DirectX::GeometricPrimitive::CreateSphere(aContext.Get());
+    //m_carShapeTest = GeometricPrimitive::CreateSphere(m_d3dContext.Get());
+}
+
+void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
     // roughly based on porsche boxster
     m_car.mass = 1393.0;
@@ -244,6 +299,9 @@ void Vehicle::InitializeVehicle()
     m_car.q[4] = 0.0;   //  vz 
     m_car.q[5] = 0.0;   //  z  
 
+    m_car.inputDeadZone = 0.05;
+    m_car.accelerationInput = 0.0;
+    m_car.brakeInput = 0.0;
     m_car.maxAccelerationRate = 1.0;
     m_car.maxBrakeRate = 1.0;
     m_car.steeringAngle = 0.0;
@@ -251,6 +309,8 @@ void Vehicle::InitializeVehicle()
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
     m_car.velocity = DirectX::SimpleMath::Vector3::Zero;
+
+    InitializeModel(aContext);
 }
 
 void Vehicle::ResetVehicle()

@@ -728,11 +728,11 @@ void Game::DrawCarTest()
     //m_shape->CreateBox(m_d3dContext.Get(), testVec);
     //m_carShapeTest->Draw(m_world, m_view, m_proj);
 
-    world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.5, 0.0));
-    //world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(m_timer.GetTotalSeconds())), 1.0, 1.0));
+    //world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.5, 0.0));
+    world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(m_timer.GetTotalSeconds())), 1.0, 1.0));
 
-    m_carShapeTest->Draw(m_effect.get(), m_inputLayout.Get());
-    //m_carShapeTest->Draw(world, view, proj);
+    //m_carShapeTest->Draw(m_effect.get(), m_inputLayout.Get());
+    m_carShapeTest->Draw(world, view, proj);
 }
 
 void Game::DrawDebugLines()
@@ -2325,7 +2325,7 @@ void Game::Initialize(HWND window, int width, int height)
         int errorBreak = 0;
         errorBreak++;
     }
-
+    m_vehicle->InitializeVehicle(m_d3dContext);
     // testing new terrain map
     m_terrainVector.clear();
 }
@@ -2940,6 +2940,9 @@ void Game::Render()
         //DrawStartScreen();
         //DrawShape();
         DrawCarTest();
+        m_vehicle->DrawModel(m_world, m_camera->GetViewMatrix(), m_proj, static_cast<float>(m_timer.GetTotalSeconds()));
+
+        //DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
         //DrawWorldCubeTextured();
         if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
         {

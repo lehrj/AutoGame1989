@@ -22,6 +22,9 @@ struct Car
     std::vector<double> testRation[6];
 
     //////////////////////
+    double inputDeadZone;  // small deadzone to ignore gas and brake peddle input
+    double accelerationInput;
+    double brakeInput;
     double maxAccelerationRate;
     double maxBrakeRate;
     double steeringAngle;
@@ -32,10 +35,20 @@ struct Car
     DirectX::SimpleMath::Vector3 velocity;     // direction the vehicle is traveling as it could be sliding or fishtailing
 };
 
+struct CarModel
+{
+    std::unique_ptr<DirectX::GeometricPrimitive>    body;
+    std::unique_ptr<DirectX::GeometricPrimitive>    frontAxel;
+    std::unique_ptr<DirectX::GeometricPrimitive>    rearAxel;
+
+};
+
 class Vehicle
 {
 public:
     Vehicle();
+
+    void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
 
     void GearDown();
     void GearUp();
@@ -44,7 +57,9 @@ public:
     DirectX::SimpleMath::Vector3 GetPos() { return m_car.position; };
     float GetSpeed() { return m_car.speed; };
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.velocity; };
-    
+
+    void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+
     void ResetVehicle();
     void UpdateVehicle();
 
@@ -52,9 +67,11 @@ private:
     void carRightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
     void carRungeKutta4(struct Car* car, double ds);
 
-    void InitializeVehicle();
+    
+    void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
-    Car m_car;
+    Car                             m_car;
+    CarModel                        m_carModel;
 
     DirectX::SimpleMath::Vector3    m_pos;          // world position
     DirectX::SimpleMath::Vector3    m_heading;   // direction the vehicle is facing
