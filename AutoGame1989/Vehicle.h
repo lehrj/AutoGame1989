@@ -39,10 +39,12 @@ struct Car
 struct CarModel
 {
     std::unique_ptr<DirectX::GeometricPrimitive>    body;
+    std::unique_ptr<DirectX::GeometricPrimitive>    bodyTop;
     std::unique_ptr<DirectX::GeometricPrimitive>    frontAxel;
     std::unique_ptr<DirectX::GeometricPrimitive>    rearAxel;
 
     DirectX::SimpleMath::Matrix bodyMatrix;
+    DirectX::SimpleMath::Matrix bodyTopMatrix;
     DirectX::SimpleMath::Matrix frontAxelMatrix;
     DirectX::SimpleMath::Matrix rearAxelMatrix;
 
