@@ -410,6 +410,10 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             light.Normalize();
             light0 = light;
 
+            light0 = DirectX::SimpleMath::Vector3::UnitY;
+            light1 = DirectX::SimpleMath::Vector3::UnitY;
+            light2 = DirectX::SimpleMath::Vector3::UnitY;
+
             ilights->SetLightDirection(0, light0);
             ilights->SetLightDirection(1, light1);
             ilights->SetLightDirection(2, light2);

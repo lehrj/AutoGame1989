@@ -37,8 +37,9 @@ Game::Game() noexcept :
     }
     //m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
-    //m_currentLightingState = LightingState::LIGHTINGSTATE_STARTUP;
-    m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTUP);
+
+    //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTUP);
+    m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
     InitializeWorldGrid();
 }
@@ -2971,6 +2972,7 @@ void Game::Render()
 
     //m_d3dContext->PSSetSamplers(0, 1, &sampler);
     m_d3dContext->IASetInputLayout(m_inputLayout.Get());
+
     m_batch2->Begin();
     //DrawLightBar();
     //DrawCameraFocus();
@@ -3020,6 +3022,7 @@ void Game::Render()
 
         auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
 
+        light2 = - DirectX::SimpleMath::Vector3::UnitY;
 
         //light2 = m_lightPos1;
         //light2 = DirectX::SimpleMath::Vector3::UnitY;

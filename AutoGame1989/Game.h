@@ -81,6 +81,7 @@ private:
     void DrawWorldCube();
     void DrawWorldCubeTextured();
 
+    void InitializeDebugWorldGrid();
     bool InitializeTerrainArray();
     bool InitializeTerrainArray2();
     void InitializeWorldGrid();
@@ -287,6 +288,7 @@ private:
     DirectX::SimpleMath::Vector3                m_lightEffect2Pos2 = DirectX::SimpleMath::Vector3::UnitX;
 
     std::vector<std::pair<DirectX::VertexPositionNormalColor,DirectX::VertexPositionNormalColor>>   m_worldGrid;
+    std::vector<std::pair<DirectX::VertexPositionColor, DirectX::VertexPositionColor>>   m_debugWorldGrid;
 
     bool                                        m_moveLightWithCameraFocus1 = false;
     bool                                        m_moveLightWithCameraFocus2 = false;

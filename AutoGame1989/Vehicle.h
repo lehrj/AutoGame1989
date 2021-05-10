@@ -66,7 +66,9 @@ public:
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
     void ResetVehicle();
+    void UpdateModel(const double aTimer);
     void UpdateVehicle();
+
 
 private:
     void carRightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
