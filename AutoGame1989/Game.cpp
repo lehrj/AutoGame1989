@@ -2939,7 +2939,7 @@ void Game::Render()
         //DrawIntroScene();
         //DrawStartScreen();
         //DrawShape();
-        DrawCarTest();
+        //DrawCarTest();
         m_vehicle->DrawModel(m_world, m_camera->GetViewMatrix(), m_proj, static_cast<float>(m_timer.GetTotalSeconds()));
 
         //DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
@@ -3029,38 +3029,6 @@ void Game::Render()
 
     m_effect2->Apply(m_d3dContext.Get());
     
-
-    /////////////////////////////////////////////////////////////////
-
-    DirectX::SimpleMath::Vector3 p0(0.0, 0.3, 0.0);
-    DirectX::SimpleMath::Vector3 p1(0.0, 0.3, -5.0);
-    DirectX::SimpleMath::Vector3 p2(5.0, 0.3, 0.0);
-    DirectX::SimpleMath::Vector3 p3 = p0;
-    p3.y += 1.0;
-    //p0 = testCamPos;
-    //p2 = testCamTarg;
-
-    DirectX::XMVECTORF32 color0 = DirectX::Colors::White;
-
-    VertexPositionNormalColor v0(p0, -DirectX::SimpleMath::Vector3::UnitY, color0);
-    VertexPositionNormalColor v1(p1, -DirectX::SimpleMath::Vector3::UnitY, color0);
-    VertexPositionNormalColor v2(p2, -DirectX::SimpleMath::Vector3::UnitY, color0);
-    VertexPositionNormalColor v3(p3, -DirectX::SimpleMath::Vector3::UnitZ, color0);
-
-    /*
-    VertexPositionColor v0(p0, color0);
-    VertexPositionColor v1(p1, color0);
-    VertexPositionColor v2(p2, color0);
-    VertexPositionColor v3(p3, color0);
-    */
-    m_batch2->DrawTriangle(v0, v1, v2);
-    m_batch2->DrawTriangle(v0, v2, v3);
-    m_batch2->DrawLine(v0, v2);
-    m_batch2->DrawLine(v0, v3);
-
-
-    // End testing draws
-    //////////////////////////////////////////////////////////////////
 
     m_batch2->End();
 

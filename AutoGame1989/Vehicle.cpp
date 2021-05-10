@@ -212,6 +212,39 @@ void Vehicle::carRungeKutta4(struct Car* car, double ds)
 
 void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
 {
+    DirectX::SimpleMath::Matrix world = aWorld;
+
+    DirectX::SimpleMath::Matrix view = aView;
+    DirectX::SimpleMath::Matrix proj = aProj;
+    /*
+    DirectX::SimpleMath::Matrix transWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(aTimer)), 1.0, 1.0));
+    m_carModel.body->Draw(world, view, proj);
+    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(-aTimer)), 3.0, 1.0));
+    m_carModel.frontAxel->Draw(world, view, proj);
+    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(1.0), 1.0, 1.0));
+    const float testVal = cos(aTimer);
+    auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(testVal, 0.0, 0.0);
+    world = DirectX::SimpleMath::Matrix::Transform(world, quat);
+    
+    m_carModel.rearAxel->Draw(world, view, proj);
+
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+    transWorld *= rotMat;
+
+    m_carModel.rearAxel->Draw(transWorld, view, proj);
+    */
+
+    
+    m_carModel.body->Draw(world, view, proj);
+    m_carModel.rearAxel->Draw(world, view, proj);
+    m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj);
+    
+}
+
+void Vehicle::DrawModel2(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
+{
     DirectX::SimpleMath::Matrix transMatrix = DirectX::SimpleMath::Matrix::CreateRotationX(static_cast<float>(aTimer));
     DirectX::SimpleMath::Matrix testMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix world = aWorld;
@@ -229,15 +262,22 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
 
     DirectX::SimpleMath::Matrix transMat = DirectX::SimpleMath::Matrix::CreateTranslation(transVec);
 
-
-    DirectX::SimpleMath::Vector3 testVec(1.10, 1.10, 1.10);
     world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(aTimer)), 1.0, 1.0));
-
     m_carModel.body->Draw(world, view, proj);
     world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(-aTimer)), 3.0, 1.0));
     m_carModel.frontAxel->Draw(world, view, proj);
     world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(1.0), 1.0, 1.0));
+    const float testVal = cos(aTimer);
+    auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(testVal, 0.0, 0.0);
+    world = DirectX::SimpleMath::Matrix::Transform(world, quat);
+
     m_carModel.rearAxel->Draw(world, view, proj);
+
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+    transWorld *= rotMat;
+
+    m_carModel.rearAxel->Draw(transWorld, view, proj);
+
 }
 
 void Vehicle::GearDown()
@@ -258,14 +298,20 @@ void Vehicle::GearUp()
 
 void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
-    //const XMFLOAT3& size, bool rhcoords = true, bool invertn = false);
-    DirectX::SimpleMath::Vector3 carBodySize(1.0, 1.0, 1.0);
+    // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
+    DirectX::SimpleMath::Vector3 carBodySize(4.3942, 1.27 - 0.3186, 1.8034);
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
-    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get());
-    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get());
-    
-    //m_carModel.body = DirectX::GeometricPrimitive::CreateSphere(aContext.Get());
-    //m_carShapeTest = GeometricPrimitive::CreateSphere(m_d3dContext.Get());
+    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), 1.9034, .508 , 16);
+    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), 1.9034, 0.3186, 16);
+
+    m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.frontAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.rearAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+
+    //m_carModel.rearAxelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
+    m_carModel.rearAxelMatrix *= rotMat;
 }
 
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)

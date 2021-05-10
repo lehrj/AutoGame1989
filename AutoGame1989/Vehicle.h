@@ -1,4 +1,5 @@
 #pragma once
+#include "Utility.h"
 
 struct Car
 {
@@ -41,6 +42,10 @@ struct CarModel
     std::unique_ptr<DirectX::GeometricPrimitive>    frontAxel;
     std::unique_ptr<DirectX::GeometricPrimitive>    rearAxel;
 
+    DirectX::SimpleMath::Matrix bodyMatrix;
+    DirectX::SimpleMath::Matrix frontAxelMatrix;
+    DirectX::SimpleMath::Matrix rearAxelMatrix;
+
 };
 
 class Vehicle
@@ -49,7 +54,7 @@ public:
     Vehicle();
 
     void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
-
+    void DrawModel2(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
     void GearDown();
     void GearUp();
 
