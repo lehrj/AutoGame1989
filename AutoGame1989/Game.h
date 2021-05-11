@@ -122,8 +122,6 @@ private:
     
     // Rendering loop timer.
     DX::StepTimer                                   m_timer;
-    DX::StepTimer                                   m_flightStepTimer;
-    double                                          m_projectileTimer = 0.0;
 
     using VertexType = DirectX::VertexPositionNormalColorTexture;   
     using VertexType2 = DirectX::VertexPositionNormalColor;

@@ -1,5 +1,7 @@
 #pragma once
+#include "pch.h"
 #include "Utility.h"
+
 
 struct Car
 {
@@ -56,7 +58,6 @@ public:
     Vehicle();
 
     void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
-    void DrawModel2(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
     void GearDown();
     void GearUp();
 
@@ -69,9 +70,9 @@ public:
 
     void ResetVehicle();
     void UpdateModel(const double aTimer);
-    void UpdateVehicle();
-
-
+    void UpdateVehicle(const double aTimer, const double aTimeDelta);
+    
+    
 private:
     void carRightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
     void carRungeKutta4(struct Car* car, double ds);

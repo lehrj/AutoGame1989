@@ -953,7 +953,6 @@ void Game::DrawIntroScene()
     if (timeStamp < fadeInStart1)
     {
         // Render nothing
-        m_projectileTimer = 0.0;
         m_effect->SetFogEnabled(true);
         m_effect->SetFogStart(0.0);
         m_effect->SetFogEnd(1.0);
@@ -2951,7 +2950,7 @@ void Game::Render()
         }
         if (m_camera->GetCameraState() == CameraState::CAMERASTATE_PRESWINGVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
         {
-            m_flightStepTimer.ResetElapsedTime();
+
         }
         if (m_isInDebugMode == true)
         {
@@ -3094,7 +3093,6 @@ void Game::Render()
 void Game::ResetGamePlay()
 {
     //pAuto->ZeroUIandRenderData();
-    m_projectileTimer = 0;
     m_swingPathStep = 0;
     m_projectilePathStep = 0;
 }
@@ -3107,10 +3105,6 @@ void Game::Tick()
             Update(m_timer);
         });
 
-    m_flightStepTimer.Tick([&]()
-        {
-        });
-
     Render();
 }
 
@@ -3121,7 +3115,6 @@ void Game::Update(DX::StepTimer const& aTimer)
     double elapsedTime = double(aTimer.GetElapsedSeconds());
     m_testTimer = m_timer.GetTotalSeconds() + m_testTimerOffset;
 
-    m_projectileTimer += elapsedTime;
     // TODO: Add your game logic here.
     m_road->Update(elapsedTime * 500);
     m_pacSprite->Update(elapsedTime);
@@ -3179,6 +3172,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect3->SetView(viewMatrix);
     m_camera->UpdateCamera(aTimer);
     UpdateInput(aTimer);
+    m_vehicle->UpdateVehicle(aTimer.GetTotalSeconds(), aTimer.GetElapsedSeconds());
 }
 
 void Game::UpdateInput(DX::StepTimer const& aTimer)

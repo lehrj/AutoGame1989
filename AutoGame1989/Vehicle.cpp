@@ -110,7 +110,8 @@ void Vehicle::carRightHandSide(struct Car* car, double* q, double* deltaQ, doubl
     //  braking. The braking acceleration is assumed to
     //  be a constant -5.0 m/s^2.   
     //if (!strcmp(car->mode, "accelerating")) 
-    if (m_car.accelerationInput < m_car.inputDeadZone)
+    //if (m_car.accelerationInput < m_car.inputDeadZone)
+    if (1 == 1)
     {
         c1 = -Fd / mass;
         tmp = gearRatio * finalDriveRatio / wheelRadius;
@@ -119,7 +120,8 @@ void Vehicle::carRightHandSide(struct Car* car, double* q, double* deltaQ, doubl
         dq[0] = ds * (c1 + c2 + c3);
     }
     //else if (!strcmp(car->mode, "braking")) 
-    if(m_car.brakeInput < m_car.inputDeadZone)
+    //if(m_car.brakeInput < m_car.inputDeadZone)
+    else if(1 == 0)
     {
         //  Only brake if the velocity is positive.
         if (newQ[0] > 0.1) 
@@ -212,72 +214,15 @@ void Vehicle::carRungeKutta4(struct Car* car, double ds)
 
 void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
 {
-    UpdateModel(aTimer);
     DirectX::SimpleMath::Matrix world = aWorld;
 
     DirectX::SimpleMath::Matrix view = aView;
     DirectX::SimpleMath::Matrix proj = aProj;
-    /*
-    DirectX::SimpleMath::Matrix transWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-
-    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(aTimer)), 1.0, 1.0));
-    m_carModel.body->Draw(world, view, proj);
-    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(-aTimer)), 3.0, 1.0));
-    m_carModel.frontAxel->Draw(world, view, proj);
-    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(1.0), 1.0, 1.0));
-    const float testVal = cos(aTimer);
-    auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(testVal, 0.0, 0.0);
-    world = DirectX::SimpleMath::Matrix::Transform(world, quat);
-    
-    m_carModel.rearAxel->Draw(world, view, proj);
-
-    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
-    transWorld *= rotMat;
-
-    m_carModel.rearAxel->Draw(transWorld, view, proj);
-    */
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj);
     m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj);
     m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj);
-}
-
-void Vehicle::DrawModel2(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
-{
-    DirectX::SimpleMath::Matrix transMatrix = DirectX::SimpleMath::Matrix::CreateRotationX(static_cast<float>(aTimer));
-    DirectX::SimpleMath::Matrix testMatrix = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix world = aWorld;
-
-    DirectX::SimpleMath::Matrix view = aView;
-
-    DirectX::SimpleMath::Matrix proj = aProj;
-
-    DirectX::SimpleMath::Matrix testView = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0), DirectX::SimpleMath::Vector3::UnitY);
-
-    DirectX::SimpleMath::Matrix testMat1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
-
-    DirectX::SimpleMath::Vector3 transVec(0.5, 0.5, 1.5);
-    DirectX::SimpleMath::Matrix transWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-
-    DirectX::SimpleMath::Matrix transMat = DirectX::SimpleMath::Matrix::CreateTranslation(transVec);
-
-    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(aTimer)), 1.0, 1.0));
-    m_carModel.body->Draw(world, view, proj);
-    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(-aTimer)), 3.0, 1.0));
-    m_carModel.frontAxel->Draw(world, view, proj);
-    world = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(1.0), 1.0, 1.0));
-    const float testVal = cos(aTimer);
-    auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(testVal, 0.0, 0.0);
-    world = DirectX::SimpleMath::Matrix::Transform(world, quat);
-
-    m_carModel.rearAxel->Draw(world, view, proj);
-
-    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
-    transWorld *= rotMat;
-
-    m_carModel.rearAxel->Draw(transWorld, view, proj);
-
 }
 
 void Vehicle::GearDown()
@@ -324,11 +269,12 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.rearAxelMatrix *= rotMat;
     m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelDiameter * 0.5, 0.0));
     
+    const float topIndent = 0.2;
     const float topHeight = height - wheelDiameter;
     const float topLength = length * .6;
     const float roofHeightAlignment = height + wheelDiameter + topHeight + topHeight;
-    const float roofLengthAlignment = length - topLength;
-    DirectX::SimpleMath::Vector3 carBodyTopSize(topLength, topHeight, width);
+    const float roofLengthAlignment = length - topLength - topIndent;
+    DirectX::SimpleMath::Vector3 carBodyTopSize(topLength, topHeight, width - topIndent);
     m_carModel.bodyTop = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodyTopSize);
     m_carModel.bodyTopMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.bodyTopMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3( - roofLengthAlignment, roofHeightAlignment, 0.0));
@@ -392,15 +338,43 @@ void Vehicle::ResetVehicle()
 
 void Vehicle::UpdateModel(const double aTimer)
 {
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(cos(aTimer) * 0.021);
     DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(aTimer) * 0.02, 0.0, 0.0));
-    
+    updateMatrix *= rotMat;
     m_carModel.bodyTopMatrix *= updateMatrix;
     m_carModel.bodyMatrix *= updateMatrix;
     m_carModel.frontAxelMatrix *= updateMatrix;
     m_carModel.rearAxelMatrix *= updateMatrix;
 }
 
-void Vehicle::UpdateVehicle()
+void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {
+    double testV1 = m_car.speed;
+    carRungeKutta4(&m_car, aTimeDelta);
 
+    double testV2 = m_car.speed;
+    double time = m_car.s;
+    double x = m_car.q[1];
+    double vx = m_car.q[0];
+    int gear = m_car.gearNumber;
+    double rpm = m_car.omegaE;
+
+    double oldGearRatio;
+    double newGearRatio;
+    //  Compute the new engine rpm value
+    int gearNumber = m_car.gearNumber;
+    double gearRatio = m_car.gearRatio[gearNumber];
+    m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+
+    //  If the engine is at the redline rpm value,
+    //  shift gears upward.
+    if (m_car.omegaE > m_car.redline) 
+    {
+        oldGearRatio = gearRatio;
+        ++m_car.gearNumber;
+        newGearRatio = m_car.gearRatio[m_car.gearNumber];
+        m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
+    }
+
+    UpdateModel(aTimer);
 }
