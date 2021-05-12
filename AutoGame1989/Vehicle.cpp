@@ -219,8 +219,8 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Matrix view = aView;
     DirectX::SimpleMath::Matrix proj = aProj;
 
-    m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj);
-    m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj);
+    m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, DirectX::Colors::DarkRed);
+    m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, DirectX::Colors::Red);
     m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj);
     m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj);
 }
@@ -278,6 +278,12 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.bodyTop = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodyTopSize);
     m_carModel.bodyTopMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.bodyTopMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3( - roofLengthAlignment, roofHeightAlignment, 0.0));
+
+
+    m_carModel.localBodyMatrix = m_carModel.bodyMatrix;
+    m_carModel.localBodyTopMatrix = m_carModel.bodyTopMatrix;
+    m_carModel.localFrontAxelMatrix = m_carModel.frontAxelMatrix;
+    m_carModel.localRearAxelMatrix = m_carModel.rearAxelMatrix;
 }
 
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
@@ -340,11 +346,27 @@ void Vehicle::UpdateModel(const double aTimer)
 {
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(cos(aTimer) * 0.021);
     DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(aTimer) * 0.02, 0.0, 0.0));
-    updateMatrix *= rotMat;
-    m_carModel.bodyTopMatrix *= updateMatrix;
-    m_carModel.bodyMatrix *= updateMatrix;
-    m_carModel.frontAxelMatrix *= updateMatrix;
-    m_carModel.rearAxelMatrix *= updateMatrix;
+
+    DirectX::SimpleMath::Vector3 posUpdate(m_car.q[1], m_car.q[3], m_car.q[5]);
+    updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(posUpdate);
+    //updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q[0], m_car.q[2], m_car.q[4]);
+    //updateMatrix = DirectX::SimpleMath::Matrix::CreateWorld(posUpdate, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    DirectX::SimpleMath::Vector3 testScale;
+    DirectX::SimpleMath::Quaternion testQuat;
+    DirectX::SimpleMath::Vector3 testTran;
+    updateMatrix.Decompose(testScale, testQuat, testTran);
+
+    //updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(1.1, 0.0, 0.0);
+
+    m_carModel.bodyTopMatrix.CreateTranslation(posUpdate);
+    //DirectX::SimpleMath::Matrix::Decompose
+    //updateMatrix *= rotMat;
+    
+    m_carModel.bodyMatrix = updateMatrix * m_carModel.localBodyMatrix;;
+    m_carModel.bodyTopMatrix = updateMatrix * m_carModel.localBodyTopMatrix;;
+    m_carModel.frontAxelMatrix = updateMatrix * m_carModel.localFrontAxelMatrix;;
+    m_carModel.rearAxelMatrix = updateMatrix * m_carModel.localRearAxelMatrix;;
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)

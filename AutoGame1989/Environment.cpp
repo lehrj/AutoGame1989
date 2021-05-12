@@ -993,7 +993,6 @@ void Environment::ScaleTerrain(EnvironmentType aEnviron)
     }
 }
 
-
 void Environment::SetLandingHeight(double aLandingHeight)
 {
     m_landingHeight = aLandingHeight;

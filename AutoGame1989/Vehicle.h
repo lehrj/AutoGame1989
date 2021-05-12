@@ -8,6 +8,14 @@ struct Car
     int numEqns;
     double s;
     double q[6];
+    /*
+    m_car.q[0] = 0.0;   //  vx 
+    m_car.q[1] = 0.0;   //  x  
+    m_car.q[2] = 0.0;   //  vy 
+    m_car.q[3] = 0.0;   //  y  
+    m_car.q[4] = 0.0;   //  vz 
+    m_car.q[5] = 0.0;   //  z  
+    */
     double mass;
     double area;
     double density;
@@ -50,6 +58,10 @@ struct CarModel
     DirectX::SimpleMath::Matrix frontAxelMatrix;
     DirectX::SimpleMath::Matrix rearAxelMatrix;
 
+    DirectX::SimpleMath::Matrix localBodyMatrix;
+    DirectX::SimpleMath::Matrix localBodyTopMatrix;
+    DirectX::SimpleMath::Matrix localFrontAxelMatrix;
+    DirectX::SimpleMath::Matrix localRearAxelMatrix;
 };
 
 class Vehicle
@@ -96,5 +108,10 @@ private:
     double                          m_moveBackForward = 0.0;
     double                          m_moveLeftRight = 0.0;
     double                          m_moveUpDown = 0.0;
+
+    DirectX::SimpleMath::Matrix     m_testBody;
+    DirectX::SimpleMath::Matrix     m_testBodyTop;
+    DirectX::SimpleMath::Matrix     m_testFrontAxle;
+    DirectX::SimpleMath::Matrix     m_testRearAxle;
 };
 

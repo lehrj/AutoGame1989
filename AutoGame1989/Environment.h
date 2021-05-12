@@ -197,7 +197,7 @@ private:
     const double                        m_mapZtransformStartScreen = -0.02;
 
     const double                        m_elevationScaleGamePlay = 0.007;
-    const double                        m_mapScaleGamePlay = 1.0;
+    const double                        m_mapScaleGamePlay = 10.0;
     const double                        m_mapXtransformGamePlay = 0.0;
     const double                        m_mapYtransformGamePlay = 0.0;
     const double                        m_mapZtransformGamePlay = 0.0;
