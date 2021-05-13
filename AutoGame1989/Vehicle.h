@@ -1,4 +1,5 @@
 #pragma once
+#include "Camera.h"
 #include "pch.h"
 #include "Utility.h"
 
@@ -68,6 +69,7 @@ class Vehicle
 {
 public:
     Vehicle();
+    ~Vehicle();
 
     void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
     void GearDown();
@@ -80,6 +82,8 @@ public:
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
+    void LinkCamera(Camera const* aCamera);
+
     void ResetVehicle();
     void UpdateModel(const double aTimer);
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
@@ -88,9 +92,8 @@ public:
 private:
     void carRightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
     void carRungeKutta4(struct Car* car, double ds);
-
-    
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+    void UpdateVehicleCamera();
 
     Car                             m_car;
     CarModel                        m_carModel;
@@ -113,5 +116,7 @@ private:
     DirectX::SimpleMath::Matrix     m_testBodyTop;
     DirectX::SimpleMath::Matrix     m_testFrontAxle;
     DirectX::SimpleMath::Matrix     m_testRearAxle;
+
+    Camera const* m_vehicleCamera;
 };
 

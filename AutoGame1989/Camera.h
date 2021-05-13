@@ -11,7 +11,8 @@ enum class CameraState
     CAMERASTATE_PROJECTILEFLIGHTVIEW,
     CAMERASTATE_SWINGVIEW,
     CAMERASTATE_RESET,
-    CAMERASTATE_TRANSTONEWSHOT
+    CAMERASTATE_TRANSTONEWSHOT,
+    CAMERASTATE_FOLLOWVEHICLE,
 };
 
 // Class to manage game camera
@@ -50,6 +51,12 @@ public:
     
     void SetCameraState(const CameraState aCameraState);
     void SetDestinationPos(const DirectX::SimpleMath::Vector3 aDestPos);
+
+    void SetFollowCamDirection(const DirectX::SimpleMath::Vector3 aDirection);
+    void SetFollowCamPos(const DirectX::SimpleMath::Vector3 aPos);
+    void SetFollowCamTarget(const DirectX::SimpleMath::Vector3 aTarg);   
+    void SetFollowCamUp(const DirectX::SimpleMath::Vector3 aUp);
+
     void SetHomePos(const DirectX::SimpleMath::Vector3 aHomePos);
     void SetTargetPos(const DirectX::SimpleMath::Vector3 aTarget);
     void SetPos(const DirectX::SimpleMath::Vector3 aPos);
@@ -79,6 +86,8 @@ private:
     void InitializeOrthoganalMatrix(); //Pavel
     void InitializeProjectionMatrix(); //Pavel
     void InitializeViewMatrix(); //Pavel
+
+    void UpdateFollowCamera();
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
     void UpdateViewMatrix();
@@ -137,5 +146,13 @@ private:
     DX::StepTimer                   m_cameraTimer;
 
     bool                            m_isFpYaxisInverted = true; // toggle of turning on/off inverting the firstperson camera y axis control, set to true because I am weirdo that likes an inverted y axis
+
+    DirectX::SimpleMath::Vector3 m_followCamDirection = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 m_followCamPos = - DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 m_followCamTarget = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_followCamUp = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 m_followCamPosOffset = DirectX::SimpleMath::Vector3(-1.0, 1.0, 0.0);
+    DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 0.2, 0.0);
+    double                       m_followCamDistance = 1.0;
 };
 

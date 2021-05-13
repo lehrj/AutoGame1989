@@ -7,6 +7,11 @@ Vehicle::Vehicle()
     //InitializeVehicle();
 }
 
+Vehicle::~Vehicle()
+{
+    delete m_vehicleCamera;
+}
+
 //*************************************************************
 //  This method loads the right-hand sides for the car ODEs
 //*************************************************************
@@ -331,6 +336,11 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     InitializeModel(aContext);
 }
 
+void Vehicle::LinkCamera(Camera const* aCamera)
+{
+    m_vehicleCamera = aCamera;
+}
+
 void Vehicle::ResetVehicle()
 {
     m_car.gearNumber = 1;         
@@ -399,4 +409,10 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     }
 
     UpdateModel(aTimer);
+    UpdateVehicleCamera();
+}
+
+void Vehicle::UpdateVehicleCamera()
+{
+
 }

@@ -251,6 +251,26 @@ void Camera::SetDestinationPos(const DirectX::SimpleMath::Vector3 aDestPos)
 	m_destinationPosition = aDestPos;
 }
 
+void Camera::SetFollowCamDirection(const DirectX::SimpleMath::Vector3 aDirection)
+{
+	m_followCamDirection = aDirection;
+}
+
+void Camera::SetFollowCamPos(const DirectX::SimpleMath::Vector3 aPos)
+{
+	m_followCamPos = aPos;
+}
+
+void Camera::SetFollowCamTarget(const DirectX::SimpleMath::Vector3 aTarg)
+{
+	m_followCamTarget = aTarg;
+}
+
+void Camera::SetFollowCamUp(const DirectX::SimpleMath::Vector3 aUp)
+{
+	m_followCamUp = aUp;
+}
+
 void Camera::SetHomePos(DirectX::SimpleMath::Vector3 aHomePos)
 {
 	if (aHomePos == m_target)
@@ -436,6 +456,10 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 			m_isCameraAtDestination = false;
 		}
 	}
+	if (m_cameraState == CameraState::CAMERASTATE_FOLLOWVEHICLE)
+	{
+		UpdateFollowCamera();
+	}
 
 	m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 }
@@ -469,6 +493,13 @@ void Camera::UpdateFirstPersonCamera()
 	m_moveUpDown = 0.0f;
 
 	m_target = m_position + m_target;
+}
+
+void Camera::UpdateFollowCamera()
+{
+	SetUpPos(m_followCamUp);
+	SetTargetPos(m_followCamTarget + m_followCamTargOffset);
+	SetPos(m_followCamTarget - m_followCamDirection);
 }
 
 void Camera::UpdatePitchYaw(const float aPitch, const float aYaw)
