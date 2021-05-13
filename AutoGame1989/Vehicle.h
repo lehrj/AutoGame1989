@@ -82,7 +82,8 @@ public:
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
-    void LinkCamera(Camera const* aCamera);
+    //void LinkCamera(Camera const* aCamera);
+    void LinkCamera(Camera* aCamera);
 
     void ResetVehicle();
     void UpdateModel(const double aTimer);
@@ -93,6 +94,7 @@ private:
     void carRightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
     void carRungeKutta4(struct Car* car, double ds);
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+    DirectX::SimpleMath::Vector3 GetVehicleDirection();
     void UpdateVehicleCamera();
 
     Car                             m_car;
@@ -117,6 +119,7 @@ private:
     DirectX::SimpleMath::Matrix     m_testFrontAxle;
     DirectX::SimpleMath::Matrix     m_testRearAxle;
 
-    Camera const* m_vehicleCamera;
+    //Camera const* m_vehicleCamera;
+    Camera* m_vehicleCamera;
 };
 

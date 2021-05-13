@@ -9,6 +9,7 @@ Vehicle::Vehicle()
 
 Vehicle::~Vehicle()
 {
+    m_vehicleCamera = nullptr;
     delete m_vehicleCamera;
 }
 
@@ -246,6 +247,40 @@ void Vehicle::GearUp()
     }
 }
 
+DirectX::SimpleMath::Vector3 Vehicle::GetVehicleDirection()
+{
+    DirectX::SimpleMath::Vector3 frontAxelPos;
+    DirectX::SimpleMath::Vector3 tempVec;
+    DirectX::SimpleMath::Quaternion tempQuat;
+    m_carModel.frontAxelMatrix.Decompose(tempVec, tempQuat, frontAxelPos);
+    DirectX::SimpleMath::Vector3 rearAxelPos;
+    m_carModel.rearAxelMatrix.Decompose(tempVec, tempQuat, rearAxelPos);
+    DirectX::SimpleMath::Vector3 direction = rearAxelPos - frontAxelPos;
+    direction.Normalize();
+
+    // temp for camera testing
+    m_car.position = frontAxelPos;
+
+    /*
+    DirectX::SimpleMath::Vector3 testPos;
+    m_carModel.bodyTopMatrix.Decompose(tempVec, tempQuat, testPos);
+    m_car.position = testPos;
+    //m_car.position = m_carModel.body->
+    */
+    /*
+    m_car.q[0] = 0.0;   //  vx 
+    m_car.q[1] = 0.0;   //  x  
+    m_car.q[2] = 0.0;   //  vy 
+    m_car.q[3] = 0.0;   //  y  
+    m_car.q[4] = 0.0;   //  vz 
+    m_car.q[5] = 0.0;   //  z 
+    */
+    DirectX::SimpleMath::Vector3 testPos(m_car.q[1], m_car.q[3], m_car.q[5]);
+    m_car.position = testPos;
+
+    return direction;
+}
+
 void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
     // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
@@ -336,7 +371,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     InitializeModel(aContext);
 }
 
-void Vehicle::LinkCamera(Camera const* aCamera)
+//void Vehicle::LinkCamera(Camera const* aCamera)
+void Vehicle::LinkCamera(Camera* aCamera)
 {
     m_vehicleCamera = aCamera;
 }
@@ -414,5 +450,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
 void Vehicle::UpdateVehicleCamera()
 {
+    m_vehicleCamera->SetFollowCamUp(DirectX::SimpleMath::Vector3::UnitY);
+    m_vehicleCamera->SetFollowCamTarget(m_car.position);
+    m_vehicleCamera->SetFollowCamDirection(GetVehicleDirection());
 
 }

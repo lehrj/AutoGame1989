@@ -26,7 +26,9 @@ Camera::Camera(int aWidth, int aHeight)
 	m_nearPlane = .1f;
 	m_farPlane = 80.f;
 
-	m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
+	//m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
+	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
+
 	Reset();
 	InitializeViewMatrix();
 	InitializeProjectionMatrix();
@@ -499,7 +501,12 @@ void Camera::UpdateFollowCamera()
 {
 	SetUpPos(m_followCamUp);
 	SetTargetPos(m_followCamTarget + m_followCamTargOffset);
-	SetPos(m_followCamTarget - m_followCamDirection);
+
+	DirectX::SimpleMath::Vector3 testPos(0.0, 1.0, -4.0);
+	testPos += m_followCamTarget;
+	//SetPos(m_followCamTarget - m_followCamDirection);
+	SetPos(testPos);
+	//SetPos(m_followCamDirection - m_followCamTarget + m_followCamPosOffset);
 }
 
 void Camera::UpdatePitchYaw(const float aPitch, const float aYaw)
