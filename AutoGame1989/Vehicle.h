@@ -75,6 +75,7 @@ public:
     void GearDown();
     void GearUp();
 
+    DirectX::SimpleMath::Vector3 GetDebugPoint() { return  m_debugPoint; };
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
     DirectX::SimpleMath::Vector3 GetPos() { return m_car.position; };
     float GetSpeed() { return m_car.speed; };
@@ -88,14 +89,15 @@ public:
     void ResetVehicle();
     void UpdateModel(const double aTimer);
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
-    
+    void UpdateVehicle2(const double aTimer, const double aTimeDelta);
     
 private:
-    void carRightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
-    void carRungeKutta4(struct Car* car, double ds);
+    void RightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
+    void RungeKutta4(struct Car* car, double ds);
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
     void UpdateVehicleCamera();
+    void DebugTestMove(const double aTimer, const double aTimeDelta);
 
     Car                             m_car;
     CarModel                        m_carModel;
@@ -121,5 +123,7 @@ private:
 
     //Camera const* m_vehicleCamera;
     Camera* m_vehicleCamera;
+
+    DirectX::SimpleMath::Vector3 m_debugPoint = DirectX::SimpleMath::Vector3::Zero;
 };
 

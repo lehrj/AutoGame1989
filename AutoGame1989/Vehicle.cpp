@@ -16,7 +16,7 @@ Vehicle::~Vehicle()
 //*************************************************************
 //  This method loads the right-hand sides for the car ODEs
 //*************************************************************
-void Vehicle::carRightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq) 
+void Vehicle::RightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq) 
 {
     //  q[0] = vx = dxdt
     //  q[1] = x
@@ -158,7 +158,7 @@ void Vehicle::carRightHandSide(struct Car* car, double* q, double* deltaQ, doubl
 //  This method solves for the car motion using a
 //  4th-order Runge-Kutta solver
 //************************************************************
-void Vehicle::carRungeKutta4(struct Car* car, double ds) 
+void Vehicle::RungeKutta4(struct Car* car, double ds) 
 {
 
     int j;
@@ -192,10 +192,10 @@ void Vehicle::carRungeKutta4(struct Car* car, double ds)
     // Compute the four Runge-Kutta steps, The return 
     // value of carRightHandSide method is an array
     // of delta-q values for each of the four steps.
-    carRightHandSide(car, q, q, ds, 0.0, dq1);
-    carRightHandSide(car, q, dq1, ds, 0.5, dq2);
-    carRightHandSide(car, q, dq2, ds, 0.5, dq3);
-    carRightHandSide(car, q, dq3, ds, 1.0, dq4);
+    RightHandSide(car, q, q, ds, 0.0, dq1);
+    RightHandSide(car, q, dq1, ds, 0.5, dq2);
+    RightHandSide(car, q, dq2, ds, 0.5, dq3);
+    RightHandSide(car, q, dq3, ds, 1.0, dq4);
 
     //  Update the dependent and independent variable values
     //  at the new dependent variable location and store the
@@ -221,14 +221,14 @@ void Vehicle::carRungeKutta4(struct Car* car, double ds)
 void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
 {
     DirectX::SimpleMath::Matrix world = aWorld;
-
     DirectX::SimpleMath::Matrix view = aView;
     DirectX::SimpleMath::Matrix proj = aProj;
-
+    
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, DirectX::Colors::DarkRed);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, DirectX::Colors::Red);
     m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj);
     m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj);
+    
 }
 
 void Vehicle::GearDown()
@@ -250,33 +250,20 @@ void Vehicle::GearUp()
 DirectX::SimpleMath::Vector3 Vehicle::GetVehicleDirection()
 {
     DirectX::SimpleMath::Vector3 frontAxelPos;
-    DirectX::SimpleMath::Vector3 tempVec;
+    DirectX::SimpleMath::Vector3 tempScale;
     DirectX::SimpleMath::Quaternion tempQuat;
-    m_carModel.frontAxelMatrix.Decompose(tempVec, tempQuat, frontAxelPos);
+    m_carModel.frontAxelMatrix.Decompose(tempScale, tempQuat, frontAxelPos);
     DirectX::SimpleMath::Vector3 rearAxelPos;
-    m_carModel.rearAxelMatrix.Decompose(tempVec, tempQuat, rearAxelPos);
+    m_carModel.rearAxelMatrix.Decompose(tempScale, tempQuat, rearAxelPos);
     DirectX::SimpleMath::Vector3 direction = rearAxelPos - frontAxelPos;
     direction.Normalize();
 
     // temp for camera testing
     m_car.position = frontAxelPos;
-
-    /*
+   
     DirectX::SimpleMath::Vector3 testPos;
-    m_carModel.bodyTopMatrix.Decompose(tempVec, tempQuat, testPos);
-    m_car.position = testPos;
-    //m_car.position = m_carModel.body->
-    */
-    /*
-    m_car.q[0] = 0.0;   //  vx 
-    m_car.q[1] = 0.0;   //  x  
-    m_car.q[2] = 0.0;   //  vy 
-    m_car.q[3] = 0.0;   //  y  
-    m_car.q[4] = 0.0;   //  vz 
-    m_car.q[5] = 0.0;   //  z 
-    */
-    DirectX::SimpleMath::Vector3 testPos(m_car.q[1], m_car.q[3], m_car.q[5]);
-    m_car.position = testPos;
+    m_carModel.bodyTopMatrix.Decompose(tempScale, tempQuat, testPos);
+    m_debugPoint = testPos;
 
     return direction;
 }
@@ -390,35 +377,35 @@ void Vehicle::ResetVehicle()
 
 void Vehicle::UpdateModel(const double aTimer)
 {
-    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(cos(aTimer) * 0.021);
-    DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(aTimer) * 0.02, 0.0, 0.0));
+    DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.position);
+    DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, 0.0);
 
-    DirectX::SimpleMath::Vector3 posUpdate(m_car.q[1], m_car.q[3], m_car.q[5]);
-    updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(posUpdate);
-    //updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q[0], m_car.q[2], m_car.q[4]);
-    //updateMatrix = DirectX::SimpleMath::Matrix::CreateWorld(posUpdate, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-
-    DirectX::SimpleMath::Vector3 testScale;
-    DirectX::SimpleMath::Quaternion testQuat;
-    DirectX::SimpleMath::Vector3 testTran;
-    updateMatrix.Decompose(testScale, testQuat, testTran);
-
-    //updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(1.1, 0.0, 0.0);
-
-    m_carModel.bodyTopMatrix.CreateTranslation(posUpdate);
-    //DirectX::SimpleMath::Matrix::Decompose
-    //updateMatrix *= rotMat;
     
-    m_carModel.bodyMatrix = updateMatrix * m_carModel.localBodyMatrix;;
-    m_carModel.bodyTopMatrix = updateMatrix * m_carModel.localBodyTopMatrix;;
-    m_carModel.frontAxelMatrix = updateMatrix * m_carModel.localFrontAxelMatrix;;
-    m_carModel.rearAxelMatrix = updateMatrix * m_carModel.localRearAxelMatrix;;
+    m_carModel.bodyMatrix.Transform(updateMatrix, testQuat, m_carModel.bodyMatrix);
+    m_carModel.bodyTopMatrix.Transform(updateMatrix, testQuat, m_carModel.bodyTopMatrix);
+    m_carModel.frontAxelMatrix.Transform(updateMatrix, testQuat, m_carModel.frontAxelMatrix);
+    m_carModel.rearAxelMatrix.Transform(updateMatrix, testQuat, m_carModel.rearAxelMatrix);
+  
+    m_carModel.bodyMatrix *= m_carModel.localBodyMatrix;
+    m_carModel.bodyTopMatrix *= m_carModel.localBodyTopMatrix;
+    m_carModel.frontAxelMatrix *= m_carModel.localFrontAxelMatrix;
+    m_carModel.rearAxelMatrix *=  m_carModel.localRearAxelMatrix;
+    
+    
+    /*
+    m_carModel.bodyMatrix = updateMatrix * m_carModel.localBodyMatrix;
+    m_carModel.bodyTopMatrix = updateMatrix * m_carModel.localBodyTopMatrix;
+    m_carModel.frontAxelMatrix = updateMatrix * m_carModel.localFrontAxelMatrix;
+    m_carModel.rearAxelMatrix = updateMatrix * m_carModel.localRearAxelMatrix;  
+    */
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {
+    /*
     double testV1 = m_car.speed;
-    carRungeKutta4(&m_car, aTimeDelta);
+    RungeKutta4(&m_car, aTimeDelta);
+    //carRungeKutta4(&m_car, .51);
 
     double testV2 = m_car.speed;
     double time = m_car.s;
@@ -444,8 +431,58 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
         m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
     }
 
+    m_car.position = DirectX::SimpleMath::Vector3(m_car.q[1], m_car.q[3], m_car.q[5]);
+    */
+
+    //m_car.q[1] += 0.1;
+    m_car.position = DirectX::SimpleMath::Vector3(m_car.q[1], m_car.q[3], m_car.q[5]);
+
+    DebugTestMove(aTimer, aTimeDelta);
     UpdateModel(aTimer);
     UpdateVehicleCamera();
+}
+
+void Vehicle::UpdateVehicle2(const double aTimer, const double aTimeDelta)
+{
+    double testV1 = m_car.speed;
+    RungeKutta4(&m_car, aTimeDelta);
+    //carRungeKutta4(&m_car, .51);
+
+    double testV2 = m_car.speed;
+    double time = m_car.s;
+    double x = m_car.q[1];
+    double vx = m_car.q[0];
+    int gear = m_car.gearNumber;
+    double rpm = m_car.omegaE;
+
+    double oldGearRatio;
+    double newGearRatio;
+    //  Compute the new engine rpm value
+    int gearNumber = m_car.gearNumber;
+    double gearRatio = m_car.gearRatio[gearNumber];
+    m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+
+    //  If the engine is at the redline rpm value,
+    //  shift gears upward.
+    if (m_car.omegaE > m_car.redline)
+    {
+        oldGearRatio = gearRatio;
+        ++m_car.gearNumber;
+        newGearRatio = m_car.gearRatio[m_car.gearNumber];
+        m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
+    }
+
+    m_car.position = DirectX::SimpleMath::Vector3(m_car.q[1], m_car.q[3], m_car.q[5]);
+    //m_car.position = DirectX::SimpleMath::Vector3(m_car.q[0], m_car.q[2], m_car.q[4]);
+    UpdateModel(aTimer);
+    UpdateVehicleCamera();
+}
+
+void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
+{
+    float move = 3.3;
+    m_car.q[1] += move;
+    m_car.position.x += move;
 }
 
 void Vehicle::UpdateVehicleCamera()
@@ -453,5 +490,4 @@ void Vehicle::UpdateVehicleCamera()
     m_vehicleCamera->SetFollowCamUp(DirectX::SimpleMath::Vector3::UnitY);
     m_vehicleCamera->SetFollowCamTarget(m_car.position);
     m_vehicleCamera->SetFollowCamDirection(GetVehicleDirection());
-
 }

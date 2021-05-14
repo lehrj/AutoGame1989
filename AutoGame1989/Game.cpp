@@ -537,6 +537,7 @@ void Game::DrawCameraFocus()
         posNormalized.Normalize();
         m_lightPos0 = posNormalized;
     }
+
     DirectX::SimpleMath::Vector3 yLine = focalPoint;
     yLine.y += line;
     DirectX::SimpleMath::Vector3 xLine = focalPoint;
@@ -737,15 +738,31 @@ void Game::DrawCarTest()
     m_carShapeTest->Draw(world, view, proj);
 }
 
-void Game::DrawDebugLines()
+void Game::DrawDebugLines(const  DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor)
 {
-    /*
-    std::vector<std::pair<DirectX::VertexPositionColor, DirectX::VertexPositionColor>> debugLines = pAuto->GetBallDebugLines();
-    for (int i = 0; i < debugLines.size(); ++i)
-    {
-        m_batch->DrawLine(debugLines[i].first, debugLines[i].second);
-    }
-    */
+    const float line = .25f;
+    DirectX::XMVECTORF32 lineColor = aColor;
+    DirectX::SimpleMath::Vector3 focalPoint = aPos;
+
+    DirectX::SimpleMath::Vector3 yLine = focalPoint;
+    yLine.y += line;
+    DirectX::SimpleMath::Vector3 xLine = focalPoint;
+    xLine.x += line;
+    DirectX::SimpleMath::Vector3 zLine = focalPoint;
+    zLine.z += line;
+
+    DirectX::SimpleMath::Vector3 negZLine = focalPoint;
+    negZLine.z -= line;
+    DirectX::SimpleMath::Vector3 negXLine = focalPoint;
+    negXLine.x -= line;
+
+    VertexPositionColor origin(focalPoint, lineColor);
+    VertexPositionColor yOffset(yLine, lineColor);
+    VertexPositionColor xOffset(xLine, lineColor);
+    VertexPositionColor zOffset(zLine, lineColor);
+    m_batch3->DrawLine(origin, yOffset);
+    m_batch3->DrawLine(origin, xOffset);
+    m_batch3->DrawLine(origin, zOffset);
 }
 
 void Game::DrawDebugValue()
@@ -3046,6 +3063,12 @@ void Game::Render()
 
     m_batch3->Begin();
    
+    DrawDebugLines(m_vehicle->GetPos(), DirectX::Colors::White);
+    DrawDebugLines(m_vehicle->GetDebugPoint(), DirectX::Colors::Yellow);
+    DrawDebugLines(m_camera->GetTargetPos(), DirectX::Colors::Blue);
+
+    float distance = DirectX::SimpleMath::Vector3::Distance(m_vehicle->GetPos(), m_vehicle->GetDebugPoint());
+
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
         DrawGridForStartScreen();
@@ -3171,9 +3194,10 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect->SetView(viewMatrix);
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
-    m_camera->UpdateCamera(aTimer);
+    
     UpdateInput(aTimer);
     m_vehicle->UpdateVehicle(aTimer.GetTotalSeconds(), aTimer.GetElapsedSeconds());
+    m_camera->UpdateCamera(aTimer);
 }
 
 void Game::UpdateInput(DX::StepTimer const& aTimer)
