@@ -767,6 +767,10 @@ void Game::DrawDebugLines(const  DirectX::SimpleMath::Vector3 aPos, const Direct
 
 void Game::DrawDebugValue()
 {
+
+    m_debugValue1 = m_vehicle->GetSpeed();
+    //m_debugValue1 = m_vehicle->GetVelocity().Length();
+
     std::string textLine = "Value1 = " + std::to_string(m_debugValue1);
     float textLinePosX = m_bitwiseFontPos.x - 250.;
     float textLinePosY = m_bitwiseFontPos.y;
@@ -780,6 +784,7 @@ void Game::DrawDebugValue()
     //m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), m_fontPosDebug, Colors::White, 0.f, textLineOrigin);
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
+    /*
     textLine = "Value2 = " + std::to_string(m_debugValue2);
     textLinePosX = m_bitwiseFontPos.x;
     //textLinePosY += 300;
@@ -818,6 +823,7 @@ void Game::DrawDebugValue()
     textLinePos.x += 2.0;
     textLinePos.y += 2.0;
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    */
 }
 
 void Game::DrawGridForStartScreen()
@@ -3079,7 +3085,7 @@ void Game::Render()
     m_batch3->End();
 
     m_spriteBatch->Begin();
-    //DrawDebugValue();
+    DrawDebugValue();
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
@@ -3557,7 +3563,20 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             }
         }
     }
-
+    if (m_kbStateTracker.pressed.P)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->ToggleGas();
+        }
+    }
+    if (m_kbStateTracker.pressed.L)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->ToggleBrake();
+        }
+    }
 
     auto mouse = m_mouse->GetState();
 

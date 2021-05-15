@@ -29,9 +29,7 @@ struct Car
     double wheelRadius;
     int gearNumber;     //  gear the car is in
     int numberOfGears;  //  total number of gears
-    //char* mode;
     double gearRatio[7];  //  gear ratios
-    std::vector<double> testRation[6];
 
     //////////////////////
     double inputDeadZone;  // small deadzone to ignore gas and brake peddle input
@@ -45,6 +43,9 @@ struct Car
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
     DirectX::SimpleMath::Vector3 velocity;     // direction the vehicle is traveling as it could be sliding or fishtailing
+
+    bool isAccelerating;
+    bool isBraking;
 };
 
 struct CarModel
@@ -89,9 +90,11 @@ public:
     void LinkCamera(Camera* aCamera);
 
     void ResetVehicle();
+    void ToggleGas();
+    void ToggleBrake();
+
     void UpdateModel(const double aTimer);
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
-    void UpdateVehicle2(const double aTimer, const double aTimeDelta);
     
 private:
     void DebugTestMove(const double aTimer, const double aTimeDelta);

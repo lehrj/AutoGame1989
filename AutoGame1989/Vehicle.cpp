@@ -115,9 +115,9 @@ void Vehicle::RightHandSide(struct Car* car, double* q, double* deltaQ, double d
     //  whether the car is accelerating, cruising, or
     //  braking. The braking acceleration is assumed to
     //  be a constant -5.0 m/s^2.   
-    //if (!strcmp(car->mode, "accelerating")) 
+    // Accelerating
     //if (m_car.accelerationInput < m_car.inputDeadZone)
-    if (1 == 1)
+    if (m_car.isAccelerating == true)
     {
         c1 = -Fd / mass;
         tmp = gearRatio * finalDriveRatio / wheelRadius;
@@ -125,9 +125,8 @@ void Vehicle::RightHandSide(struct Car* car, double* q, double* deltaQ, double d
         c3 = (tmp * d + Fr) / mass;
         dq[0] = ds * (c1 + c2 + c3);
     }
-    //else if (!strcmp(car->mode, "braking")) 
-    //if(m_car.brakeInput < m_car.inputDeadZone)
-    else if(1 == 0)
+    // braking
+    else if (m_car.isBraking == true)
     {
         //  Only brake if the velocity is positive.
         if (newQ[0] > 0.1) 
@@ -373,12 +372,15 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.accelerationInput = 0.0;
     m_car.brakeInput = 0.0;
     m_car.maxAccelerationRate = 1.0;
-    m_car.maxBrakeRate = 1.0;
+    m_car.maxBrakeRate = 5.0;
     m_car.steeringAngle = 0.0;
     m_car.position = DirectX::SimpleMath::Vector3::Zero;
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
     m_car.velocity = DirectX::SimpleMath::Vector3::Zero;
+
+    m_car.isAccelerating = false;
+    m_car.isBraking = true;
 
     InitializeModel(aContext);
 }
@@ -400,6 +402,30 @@ void Vehicle::ResetVehicle()
     m_car.velocity = DirectX::SimpleMath::Vector3::Zero;
 }
 
+void Vehicle::ToggleGas()
+{
+    if (m_car.isAccelerating == true)
+    {
+        m_car.isAccelerating = false;
+    }
+    else
+    {
+        m_car.isAccelerating = true;
+    }
+}
+
+void Vehicle::ToggleBrake()
+{
+    if (m_car.isBraking == true)
+    {
+        m_car.isBraking = false;
+    }
+    else
+    {
+        m_car.isBraking = true;
+    }
+}
+
 void Vehicle::UpdateModel(const double aTimer)
 {
     double wheelTurnRads = GetWheelRotationRadians(aTimer) + m_testRotation;
@@ -419,7 +445,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.frontAxelMatrix *= m_carModel.localFrontAxelMatrix;
 
     DirectX::SimpleMath::Matrix testAxel = DirectX::SimpleMath::Matrix::Identity;
-    testAxel *= rotMatrix;
+    testAxel = rotMatrix;
     testAxel *= m_carModel.localRearAxelMatrix;
     testAxel *= updateMatrix;
     m_carModel.rearAxelMatrix = testAxel;
@@ -473,45 +499,11 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     }
 
     m_car.position = DirectX::SimpleMath::Vector3(m_car.q[1], m_car.q[3], m_car.q[5]);
+    m_car.velocity = DirectX::SimpleMath::Vector3(m_car.q[0], m_car.q[2], m_car.q[4]);
+    m_car.speed = m_car.velocity.Length();
 
     //DebugTestMove(aTimer, aTimeDelta);
     UpdateModel(aTimeDelta);
-    UpdateVehicleCamera();
-}
-
-void Vehicle::UpdateVehicle2(const double aTimer, const double aTimeDelta)
-{
-    double testV1 = m_car.speed;
-    RungeKutta4(&m_car, aTimeDelta);
-    //carRungeKutta4(&m_car, .51);
-
-    double testV2 = m_car.speed;
-    double time = m_car.s;
-    double x = m_car.q[1];
-    double vx = m_car.q[0];
-    int gear = m_car.gearNumber;
-    double rpm = m_car.omegaE;
-
-    double oldGearRatio;
-    double newGearRatio;
-    //  Compute the new engine rpm value
-    int gearNumber = m_car.gearNumber;
-    double gearRatio = m_car.gearRatio[gearNumber];
-    m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
-
-    //  If the engine is at the redline rpm value,
-    //  shift gears upward.
-    if (m_car.omegaE > m_car.redline)
-    {
-        oldGearRatio = gearRatio;
-        ++m_car.gearNumber;
-        newGearRatio = m_car.gearRatio[m_car.gearNumber];
-        m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
-    }
-
-    m_car.position = DirectX::SimpleMath::Vector3(m_car.q[1], m_car.q[3], m_car.q[5]);
-    //m_car.position = DirectX::SimpleMath::Vector3(m_car.q[0], m_car.q[2], m_car.q[4]);
-    UpdateModel(aTimer);
     UpdateVehicleCamera();
 }
 
