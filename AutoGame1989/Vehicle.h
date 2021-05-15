@@ -63,6 +63,8 @@ struct CarModel
     DirectX::SimpleMath::Matrix localBodyTopMatrix;
     DirectX::SimpleMath::Matrix localFrontAxelMatrix;
     DirectX::SimpleMath::Matrix localRearAxelMatrix;
+
+    DirectX::SimpleMath::Matrix zeroRearAxelMatrix;
 };
 
 class Vehicle
@@ -92,12 +94,15 @@ public:
     void UpdateVehicle2(const double aTimer, const double aTimeDelta);
     
 private:
-    void RightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
-    void RungeKutta4(struct Car* car, double ds);
+    void DebugTestMove(const double aTimer, const double aTimeDelta);
+
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
+    double GetWheelRotationRadians(const double aTimeDelta);
+    void RightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
+    void RungeKutta4(struct Car* car, double ds);
     void UpdateVehicleCamera();
-    void DebugTestMove(const double aTimer, const double aTimeDelta);
+    
 
     Car                             m_car;
     CarModel                        m_carModel;
@@ -125,5 +130,7 @@ private:
     Camera* m_vehicleCamera;
 
     DirectX::SimpleMath::Vector3 m_debugPoint = DirectX::SimpleMath::Vector3::Zero;
+
+    double m_testRotation = 0.0;
 };
 

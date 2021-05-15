@@ -3001,7 +3001,7 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         //DrawLightBar();
-        DrawCameraFocus();
+        //DrawCameraFocus();
         DrawLightFocus1();
         DrawLightFocus2();
         DrawLightFocus3();
@@ -3063,11 +3063,13 @@ void Game::Render()
 
     m_batch3->Begin();
    
+    /*
     DrawDebugLines(m_vehicle->GetPos(), DirectX::Colors::White);
     DrawDebugLines(m_vehicle->GetDebugPoint(), DirectX::Colors::Yellow);
     DrawDebugLines(m_camera->GetTargetPos(), DirectX::Colors::Blue);
 
     float distance = DirectX::SimpleMath::Vector3::Distance(m_vehicle->GetPos(), m_vehicle->GetDebugPoint());
+    */
 
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
