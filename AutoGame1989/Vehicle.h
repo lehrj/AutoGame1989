@@ -15,21 +15,10 @@ struct Car
     int numEqns;
     double s;
     Motion q;
-    double q2[6];
-
-    /*
-    m_car.q[0] = 0.0;   //  vx 
-    m_car.q[1] = 0.0;   //  x  
-    m_car.q[2] = 0.0;   //  vy 
-    m_car.q[3] = 0.0;   //  y  
-    m_car.q[4] = 0.0;   //  vz 
-    m_car.q[5] = 0.0;   //  z  
-    */
     double mass;
     double area;
     double density;
     double Cd;
-
     double muR;
     double omegaE;
     double redline;
@@ -38,6 +27,7 @@ struct Car
     int gearNumber;     //  gear the car is in
     int numberOfGears;  //  total number of gears
     double gearRatio[7];  //  gear ratios
+    double gravity;
 
     //////////////////////
     double inputDeadZone;  // small deadzone to ignore gas and brake peddle input
@@ -47,10 +37,8 @@ struct Car
     double maxBrakeRate;
     double steeringAngle;
     double steeringAngleMax;
-    DirectX::SimpleMath::Vector3 position2;         // world position
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
-    DirectX::SimpleMath::Vector3 velocity2;     // direction the vehicle is traveling as it could be sliding or fishtailing
 
     bool isAccelerating;
     bool isBraking;
@@ -85,14 +73,15 @@ public:
     void GearUp();
 
     DirectX::SimpleMath::Vector3 GetDebugPoint() { return  m_debugPoint; };
+    int GetGear() { return m_car.gearNumber; };
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
-    DirectX::SimpleMath::Vector3 GetPos() { return m_car.position2; };
+    DirectX::SimpleMath::Vector3 GetPos() { return m_car.q.position; };
     float GetSpeed() { return m_car.speed; };
-    DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.velocity2; };
+    double GetTime() { return m_car.s; };
+    DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
-    //void LinkCamera(Camera const* aCamera);
     void LinkCamera(Camera* aCamera);
 
     void ResetVehicle();
@@ -101,7 +90,6 @@ public:
 
     void UpdateModel(const double aTimer);
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
-    void UpdateVehicle2(const double aTimer, const double aTimeDelta);
 
 private:
     void DebugTestMove(const double aTimer, const double aTimeDelta);
@@ -109,12 +97,9 @@ private:
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
     double GetWheelRotationRadians(const double aTimeDelta);
-    double GetWheelRotationRadians2(const double aTimeDelta);
 
     void RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double ds, double qScale, Motion* dq);
     void RungeKutta4(struct Car* car, double ds);
-    void RightHandSide2(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
-    void RungeKutta42(struct Car* car, double ds);
     void UpdateVehicleCamera();
     
 

@@ -784,7 +784,8 @@ void Game::DrawDebugValue()
     //m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), m_fontPosDebug, Colors::White, 0.f, textLineOrigin);
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
-    /*
+    
+    m_debugValue2 = m_vehicle->GetTime();
     textLine = "Value2 = " + std::to_string(m_debugValue2);
     textLinePosX = m_bitwiseFontPos.x;
     //textLinePosY += 300;
@@ -794,7 +795,8 @@ void Game::DrawDebugValue()
     textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
-    textLine = "Value3 = " + std::to_string(m_debugValue3);
+    int gear = m_vehicle->GetGear();
+    textLine = "Value3 = " + std::to_string(gear);
     textLinePosX = m_bitwiseFontPos.x;
     //textLinePosY = m_bitwiseFontPos.y + 200;
     //float textLinePosY = m_bitwiseFontPos.y + 100;
@@ -802,6 +804,7 @@ void Game::DrawDebugValue()
     textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
+    /*
     textLine = "ColorVal4 = " + std::to_string(m_debugValue4);
     textLinePosX = m_bitwiseFontPos.x;
     //textLinePosY = m_bitwiseFontPos.y + 200;
