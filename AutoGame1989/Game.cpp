@@ -3531,6 +3531,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_lightPos2.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
+    /*
     if (kb.L)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -3538,6 +3539,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_lightPos2.z += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
+    */
     if (kb.U)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)

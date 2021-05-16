@@ -4,11 +4,19 @@
 #include "Utility.h"
 
 
+struct Motion
+{
+    DirectX::SimpleMath::Vector3 position;
+    DirectX::SimpleMath::Vector3 velocity;
+};
+
 struct Car
 {
     int numEqns;
     double s;
-    double q[6];
+    Motion q;
+    double q2[6];
+
     /*
     m_car.q[0] = 0.0;   //  vx 
     m_car.q[1] = 0.0;   //  x  
@@ -39,10 +47,10 @@ struct Car
     double maxBrakeRate;
     double steeringAngle;
     double steeringAngleMax;
-    DirectX::SimpleMath::Vector3 position;         // world position
+    DirectX::SimpleMath::Vector3 position2;         // world position
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
-    DirectX::SimpleMath::Vector3 velocity;     // direction the vehicle is traveling as it could be sliding or fishtailing
+    DirectX::SimpleMath::Vector3 velocity2;     // direction the vehicle is traveling as it could be sliding or fishtailing
 
     bool isAccelerating;
     bool isBraking;
@@ -78,9 +86,9 @@ public:
 
     DirectX::SimpleMath::Vector3 GetDebugPoint() { return  m_debugPoint; };
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
-    DirectX::SimpleMath::Vector3 GetPos() { return m_car.position; };
+    DirectX::SimpleMath::Vector3 GetPos() { return m_car.position2; };
     float GetSpeed() { return m_car.speed; };
-    DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.velocity; };
+    DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.velocity2; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
@@ -93,15 +101,20 @@ public:
 
     void UpdateModel(const double aTimer);
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
-    
+    void UpdateVehicle2(const double aTimer, const double aTimeDelta);
+
 private:
     void DebugTestMove(const double aTimer, const double aTimeDelta);
 
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
     double GetWheelRotationRadians(const double aTimeDelta);
-    void RightHandSide(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
+    double GetWheelRotationRadians2(const double aTimeDelta);
+
+    void RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double ds, double qScale, Motion* dq);
     void RungeKutta4(struct Car* car, double ds);
+    void RightHandSide2(struct Car* car, double* q, double* deltaQ, double ds, double qScale, double* dq);
+    void RungeKutta42(struct Car* car, double ds);
     void UpdateVehicleCamera();
     
 
