@@ -258,7 +258,7 @@ DirectX::SimpleMath::Vector3 Vehicle::GetVehicleDirection()
     direction.Normalize();
 
     // temp for camera testing
-    m_car.position = frontAxelPos;
+    //m_car.position = frontAxelPos;
    
     DirectX::SimpleMath::Vector3 testPos;
     m_carModel.bodyTopMatrix.Decompose(tempScale, tempQuat, testPos);
@@ -292,44 +292,42 @@ double Vehicle::GetWheelRotationRadians(const double aTimeDelta)
 void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
     // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
-    //const float wheelDiameter = 0.508;
-    const float wheelDiameter = m_car.wheelRadius;
+    const float wheelRadius = m_car.wheelRadius;
     const float length = 4.3942;
     const float width = 1.8034;
-    const float height = 1.27;
+    const float heightTotal = 1.27;
+    const float height = heightTotal * 0.6;
+     
     const float axelLength = width + 0.6;
     const float wheelBase = 2.47396;
-    DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelDiameter, width);
+    DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
-    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelDiameter, 16);
-    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelDiameter, 7);
+    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelRadius, 6);
+    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelRadius, 6);
 
     m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.frontAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.rearAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
 
-    m_carModel.bodyMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, (height + (wheelDiameter)), 0.0));
+    m_carModel.bodyMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, (height + (wheelRadius)), 0.0));
 
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
 
     m_carModel.frontAxelMatrix *= rotMat;    
-    m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelDiameter * 0.5, 0.0));
+    m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius * 0.5, 0.0));
     m_carModel.rearAxelMatrix *= rotMat;
-    //m_carModel.zeroRearAxelMatrix = m_carModel.rearAxelMatrix;
-    m_carModel.zeroRearAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelDiameter * 0.5, 0.0));
+    m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius * 0.5, 0.0));
     
-    const float topIndent = 0.2;
-    const float topHeight = height - wheelDiameter;
+    const float topIndent = 0.2;   
+    const float topHeight = heightTotal * 0.4;
     const float topLength = length * .6;
-    const float roofHeightAlignment = height + wheelDiameter + topHeight + topHeight;
+    const float roofHeightAlignment = height + wheelRadius + wheelRadius + topHeight;
     const float roofLengthAlignment = length - topLength - topIndent;
     DirectX::SimpleMath::Vector3 carBodyTopSize(topLength, topHeight, width - topIndent);
     m_carModel.bodyTop = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodyTopSize);
     m_carModel.bodyTopMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.bodyTopMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3( - roofLengthAlignment, roofHeightAlignment, 0.0));
-
 
     m_carModel.localBodyMatrix = m_carModel.bodyMatrix;
     m_carModel.localBodyTopMatrix = m_carModel.bodyTopMatrix;
@@ -351,7 +349,6 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.muR = 0.015;             //  coefficient of rolling friction
     m_car.omegaE = 1000.0;         //  engine rpm
     m_car.gearNumber = 1;          //  gear the car is in
-    //m_car.mode = "accelerating";   //  accelerating, cruising, or braking
     m_car.gearRatio[1] = 3.82;
     m_car.gearRatio[2] = 2.20;
     m_car.gearRatio[3] = 1.52;
@@ -446,9 +443,15 @@ void Vehicle::UpdateModel(const double aTimer)
 
     DirectX::SimpleMath::Matrix testAxel = DirectX::SimpleMath::Matrix::Identity;
     testAxel = rotMatrix;
-    testAxel *= m_carModel.localRearAxelMatrix;
     testAxel *= updateMatrix;
     m_carModel.rearAxelMatrix = testAxel;
+    m_carModel.rearAxelMatrix *= m_carModel.localRearAxelMatrix;
+
+    m_carModel.frontAxelMatrix = testAxel;
+    m_carModel.frontAxelMatrix *= m_carModel.localFrontAxelMatrix;
+    ///m_carModel.rearAxelMatrix = testAxel;
+
+
     /*
     m_carModel.zeroRearAxelMatrix *= rotMatrix;
     m_carModel.rearAxelMatrix = updateMatrix * m_carModel.localRearAxelMatrix * m_carModel.zeroRearAxelMatrix;

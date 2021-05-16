@@ -64,8 +64,6 @@ struct CarModel
     DirectX::SimpleMath::Matrix localBodyTopMatrix;
     DirectX::SimpleMath::Matrix localFrontAxelMatrix;
     DirectX::SimpleMath::Matrix localRearAxelMatrix;
-
-    DirectX::SimpleMath::Matrix zeroRearAxelMatrix;
 };
 
 class Vehicle
