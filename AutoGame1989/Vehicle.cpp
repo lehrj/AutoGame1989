@@ -99,7 +99,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
-    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelRadius, 6);
+    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelRadius, 3);
     m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelRadius, 6);
 
     m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -108,11 +108,11 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     m_carModel.bodyMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, (height + (wheelRadius)), 0.0));
 
-    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+    DirectX::SimpleMath::Matrix axelRotation = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
 
-    m_carModel.frontAxelMatrix *= rotMat;    
+    m_carModel.frontAxelMatrix *= axelRotation;
     m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius * 0.5, 0.0));
-    m_carModel.rearAxelMatrix *= rotMat;
+    m_carModel.rearAxelMatrix *= axelRotation;
     m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius * 0.5, 0.0));
     
     const float topIndent = 0.2;   
@@ -125,10 +125,15 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.bodyTopMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.bodyTopMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3( - roofLengthAlignment, roofHeightAlignment, 0.0));
 
+    
     m_carModel.localBodyMatrix = m_carModel.bodyMatrix;
     m_carModel.localBodyTopMatrix = m_carModel.bodyTopMatrix;
-    m_carModel.localFrontAxelMatrix = m_carModel.frontAxelMatrix;
-    m_carModel.localRearAxelMatrix = m_carModel.rearAxelMatrix;
+
+    m_carModel.frontAxelRotation *= axelRotation;
+    m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius * 0.5, 0.0));
+
+    m_carModel.rearAxelRotation = axelRotation;
+    m_carModel.rearAxelTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius * 0.5, 0.0));
 }
 
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
@@ -145,6 +150,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.muR = 0.015;             //  coefficient of rolling friction
     m_car.omegaE = 1000.0;         //  engine rpm
     m_car.gearNumber = 1;          //  gear the car is in
+    m_car.gearRatio[0] = 0.0;
     m_car.gearRatio[1] = 3.82;
     m_car.gearRatio[2] = 2.20;
     m_car.gearRatio[3] = 1.52;
@@ -153,7 +159,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.gearRatio[6] = 0.84;
     m_car.gravity = - 9.81;
     m_car.numEqns = 6;
-    m_car.time = 0.0;      //  time 
+    m_car.time = 0.0;  
     m_car.q.position = DirectX::SimpleMath::Vector3::Zero;
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 
@@ -166,7 +172,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
 
-    m_car.isAccelerating = true;
+    m_car.isAccelerating = false;
     m_car.isBraking = false;
 
     InitializeModel(aContext);
@@ -299,6 +305,14 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     }
 
     //  Compute right-hand side values.
+    /*
+    aDQ->position.z = aTimeDelta * newQ.velocity.z;
+    aDQ->velocity.y = 0.0;
+    aDQ->position.y = 0.0;
+    aDQ->velocity.x = 0.0;
+    aDQ->position.x = 0.0;
+    */
+
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
     aDQ->velocity.y = 0.0;
     aDQ->position.y = 0.0;
@@ -399,48 +413,19 @@ void Vehicle::UpdateModel(const double aTimer)
     m_testRotation = wheelTurnRads;
     DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
     DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, 0.0);
-    DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(wheelTurnRads, 0.0, 0.0);
-    DirectX::SimpleMath::Matrix rotMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRads);
 
     m_carModel.bodyMatrix.Transform(updateMatrix, testQuat, m_carModel.bodyMatrix);
-    m_carModel.bodyTopMatrix.Transform(updateMatrix, testQuat, m_carModel.bodyTopMatrix);
-    m_carModel.frontAxelMatrix.Transform(updateMatrix, testQuat, m_carModel.frontAxelMatrix);
-    
-  
+    m_carModel.bodyTopMatrix.Transform(updateMatrix, testQuat, m_carModel.bodyTopMatrix);   
+
     m_carModel.bodyMatrix *= m_carModel.localBodyMatrix;
     m_carModel.bodyTopMatrix *= m_carModel.localBodyTopMatrix;
-    m_carModel.frontAxelMatrix *= m_carModel.localFrontAxelMatrix;
+    
+    DirectX::SimpleMath::Matrix wheelSpinMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads);
+    m_carModel.frontAxelMatrix = m_carModel.frontAxelRotation * wheelSpinMat;
+    m_carModel.frontAxelMatrix *= m_carModel.frontAxelTranslation * updateMatrix;
 
-    DirectX::SimpleMath::Matrix testAxel = DirectX::SimpleMath::Matrix::Identity;
-    testAxel = rotMatrix;
-    testAxel *= updateMatrix;
-    m_carModel.rearAxelMatrix = testAxel;
-    m_carModel.rearAxelMatrix *= m_carModel.localRearAxelMatrix;
-
-    m_carModel.frontAxelMatrix = testAxel;
-    m_carModel.frontAxelMatrix *= m_carModel.localFrontAxelMatrix;
-    ///m_carModel.rearAxelMatrix = testAxel;
-
-
-    /*
-    m_carModel.zeroRearAxelMatrix *= rotMatrix;
-    m_carModel.rearAxelMatrix = updateMatrix * m_carModel.localRearAxelMatrix * m_carModel.zeroRearAxelMatrix;
-    m_carModel.rearAxelMatrix = updateMatrix * m_carModel.localRearAxelMatrix * rotMatrix;
-    */
-
-    /*
-    m_carModel.rearAxelMatrix *= m_carModel.localRearAxelMatrix;
-    m_carModel.rearAxelMatrix.Transform(updateMatrix, rotQuat, m_carModel.rearAxelMatrix);
-    m_carModel.rearAxelMatrix *= rotMatrix;
-    */
-
-
-    /*
-    m_carModel.bodyMatrix = updateMatrix * m_carModel.localBodyMatrix;
-    m_carModel.bodyTopMatrix = updateMatrix * m_carModel.localBodyTopMatrix;
-    m_carModel.frontAxelMatrix = updateMatrix * m_carModel.localFrontAxelMatrix;
-    m_carModel.rearAxelMatrix = updateMatrix * m_carModel.localRearAxelMatrix;  
-    */
+    m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinMat;
+    m_carModel.rearAxelMatrix *= m_carModel.rearAxelTranslation * updateMatrix;
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
@@ -452,6 +437,9 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     double x = m_car.q.position.x;
     double vx = m_car.q.velocity.x;
 
+    double z = m_car.q.position.z;
+    double vz = m_car.q.velocity.z;
+
     int gear = m_car.gearNumber;
     double rpm = m_car.omegaE;
 
@@ -460,7 +448,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     //  Compute the new engine rpm value
     int gearNumber = m_car.gearNumber;
     double gearRatio = m_car.gearRatio[gearNumber];
-    m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    //m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    m_car.omegaE = vz * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
 
     //  If the engine is at the redline rpm value,
     //  shift gears upward.

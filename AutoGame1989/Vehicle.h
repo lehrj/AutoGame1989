@@ -54,13 +54,18 @@ struct CarModel
 
     DirectX::SimpleMath::Matrix bodyMatrix;
     DirectX::SimpleMath::Matrix bodyTopMatrix;
+
     DirectX::SimpleMath::Matrix frontAxelMatrix;
     DirectX::SimpleMath::Matrix rearAxelMatrix;
 
     DirectX::SimpleMath::Matrix localBodyMatrix;
     DirectX::SimpleMath::Matrix localBodyTopMatrix;
-    DirectX::SimpleMath::Matrix localFrontAxelMatrix;
-    DirectX::SimpleMath::Matrix localRearAxelMatrix;
+
+    DirectX::SimpleMath::Matrix frontAxelRotation;
+    DirectX::SimpleMath::Matrix frontAxelTranslation;
+
+    DirectX::SimpleMath::Matrix rearAxelRotation;
+    DirectX::SimpleMath::Matrix rearAxelTranslation;
 };
 
 class Vehicle
@@ -88,19 +93,20 @@ public:
     void ResetVehicle();
     void ToggleGas();
     void ToggleBrake();
-
-    void UpdateModel(const double aTimer);
+  
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
 
 private:
     void DebugTestMove(const double aTimer, const double aTimeDelta);
 
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+    void InitializeModel2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
     double GetWheelRotationRadians(const double aTimeDelta);
 
     void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
+    void UpdateModel(const double aTimer);
     void UpdateVehicleCamera();
     
     Car                             m_car;
