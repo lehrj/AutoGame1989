@@ -13,7 +13,8 @@ struct Motion
 struct Car
 {
     int numEqns;
-    double s;
+    //double s;
+    double time;
     Motion q;
     double mass;
     double area;
@@ -77,7 +78,7 @@ public:
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
     DirectX::SimpleMath::Vector3 GetPos() { return m_car.q.position; };
     float GetSpeed() { return m_car.speed; };
-    double GetTime() { return m_car.s; };
+    double GetTime() { return m_car.time; };
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
@@ -98,18 +99,15 @@ private:
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
     double GetWheelRotationRadians(const double aTimeDelta);
 
-    void RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double ds, double qScale, Motion* dq);
-    void RungeKutta4(struct Car* car, double ds);
+    void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
+    void RungeKutta4(struct Car* aCar, double aTimeDelta);
     void UpdateVehicleCamera();
     
-
     Car                             m_car;
     CarModel                        m_carModel;
 
-    DirectX::SimpleMath::Vector3    m_pos;          // world position
     DirectX::SimpleMath::Vector3    m_heading;   // direction the vehicle is facing
     double                          m_speed;        // speed vehicle is traveling
-    DirectX::SimpleMath::Vector3    m_velocity;     // direction the vehicle is traveling
 
     DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);

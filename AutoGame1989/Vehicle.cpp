@@ -153,7 +153,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.gearRatio[6] = 0.84;
     m_car.gravity = - 9.81;
     m_car.numEqns = 6;
-    m_car.s = 0.0;      //  time 
+    m_car.time = 0.0;      //  time 
     m_car.q.position = DirectX::SimpleMath::Vector3::Zero;
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 
@@ -192,12 +192,11 @@ void Vehicle::ResetVehicle()
 //*************************************************************
 //  This method loads the right-hand sides for the car ODEs
 //*************************************************************
-void Vehicle::RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double ds, double aQScale, Motion* dq)
+void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ)
 {
     //  Compute the intermediate values of the 
     //  dependent variables.
     Motion newQ;
-    //DirectX::SimpleMath::Vector3 newQ;
     /*
     newQ.position.x = q->position.x + static_cast<float>(aQScale) * deltaQ->position.x;
     newQ.position.y = q->position.y + static_cast<float>(aQScale) * deltaQ->position.y;
@@ -206,16 +205,14 @@ void Vehicle::RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double d
     newQ.velocity.y = q->velocity.y + static_cast<float>(aQScale) * deltaQ->velocity.y;
     newQ.velocity.z = q->velocity.z + static_cast<float>(aQScale) * deltaQ->velocity.z;
     */
-    newQ.position = q->velocity + static_cast<float>(aQScale) * deltaQ->position;
-    newQ.velocity = q->velocity + static_cast<float>(aQScale) * deltaQ->velocity;
-
-    //newQ = q->velocity + static_cast<float>(aQScale) * deltaQ->velocity;
+    newQ.position = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->position;
+    newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
 
     //  Compute the constants that define the
     //  torque curve line.
     double b;
     double d;
-    double omegaE = car->omegaE;
+    double omegaE = aCar->omegaE;
     if (omegaE <= 1000.0)
     {
         b = 0.0;
@@ -234,7 +231,6 @@ void Vehicle::RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double d
 
     //  Declare some convenience variables representing
     //  the intermediate values of velocity.
-
     double vx = newQ.velocity.x;
     double vy = newQ.velocity.y;
     double vz = newQ.velocity.z;
@@ -245,17 +241,17 @@ void Vehicle::RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double d
     double v = sqrt(vx * vx + vy * vy + vz * vz) + 1.0e-8;
 
     //  Compute the total drag force.
-    double density = car->density;
-    double Cd = car->Cd;
-    double area = car->area;
+    double density = aCar->density;
+    double Cd = aCar->Cd;
+    double area = aCar->area;
     double Fd = 0.5 * density * area * Cd * v * v;
 
     //  Compute the force of rolling friction. Because
     //  the G constant has a negative sign, the value 
     //  computed here will be negative
-    double gravity = car->gravity;
-    double muR = car->muR;
-    double mass = car->mass;
+    double gravity = aCar->gravity;
+    double muR = aCar->muR;
+    double mass = aCar->mass;
     double Fr = muR * mass * gravity;
 
     //  Compute the right-hand sides of the six ODEs
@@ -265,10 +261,10 @@ void Vehicle::RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double d
     //  braking. The braking acceleration is assumed to
     //  be a constant -5.0 m/s^2.   
     // Accelerating
-    int gearNumber = car->gearNumber;
-    double gearRatio = car->gearRatio[gearNumber];
-    double finalDriveRatio = car->finalDriveRatio;
-    double wheelRadius = car->wheelRadius;
+    int gearNumber = aCar->gearNumber;
+    double gearRatio = aCar->gearRatio[gearNumber];
+    double finalDriveRatio = aCar->finalDriveRatio;
+    double wheelRadius = aCar->wheelRadius;
     double pi = acos(-1.0);
     //if (m_car.accelerationInput < m_car.inputDeadZone)
     if (m_car.isAccelerating == true)
@@ -278,7 +274,7 @@ void Vehicle::RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double d
         double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
         double c3 = (tmp * d + Fr) / mass;
         //dq[0] = ds * (c1 + c2 + c3);
-        dq->velocity.x = ds * (c1 + c2 + c3); // ToDo: update 3D x, y, z motion;
+        aDQ->velocity.x = aTimeDelta * (c1 + c2 + c3); // ToDo: update 3D x, y, z motion;
     }
     // braking
     else if (m_car.isBraking == true)
@@ -288,26 +284,26 @@ void Vehicle::RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double d
         if (newQ.velocity.Length() > 0.1)
         {
             //dq[0] = ds * (-m_car.maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
-            dq->velocity.x = ds * (-m_car.maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
+            aDQ->velocity.x = aTimeDelta * (-aCar->maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
         }
         else
         {
             //dq[0] = 0.0;
-            dq->velocity.x = 0.0;
+            aDQ->velocity.x = 0.0;
         }
     }
     else
     {
         //dq[0] = 0.0;
-        dq->velocity.x = 0.0;
+        aDQ->velocity.x = 0.0;
     }
 
     //  Compute right-hand side values.
-    dq->position.x = ds * newQ.velocity.x;
-    dq->velocity.y = 0.0;
-    dq->position.y = 0.0;
-    dq->velocity.z = 0.0;
-    dq->position.z = 0.0;
+    aDQ->position.x = aTimeDelta * newQ.velocity.x;
+    aDQ->velocity.y = 0.0;
+    aDQ->position.y = 0.0;
+    aDQ->velocity.z = 0.0;
+    aDQ->position.z = 0.0;
 
     return;
 }
@@ -316,16 +312,16 @@ void Vehicle::RightHandSide(struct Car* car, Motion* q, Motion* deltaQ, double d
 //  This method solves for the car motion using a
 //  4th-order Runge-Kutta solver
 //************************************************************
-void Vehicle::RungeKutta4(struct Car* car, double ds)
+void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
 {
     //  Define a convenience variable to make the
     //  code more readable
-    int numEqns = car->numEqns;
+    int numEqns = aCar->numEqns;
 
     //  Retrieve the current values of the dependent
     //  and independent variables.
-    double s = car->s;
-    Motion q = car->q;
+    //double time = car->time;
+    Motion q = aCar->q;
 
     Motion dq1;
     Motion dq2;
@@ -335,27 +331,40 @@ void Vehicle::RungeKutta4(struct Car* car, double ds)
     // Compute the four Runge-Kutta steps, The return 
     // value of carRightHandSide method is an array
     // of delta-q values for each of the four steps.
-    RightHandSide(car, &q, &q, ds, 0.0, &dq1);
-    RightHandSide(car, &q, &dq1, ds, 0.5, &dq2);
-    RightHandSide(car, &q, &dq2, ds, 0.5, &dq3);
-    RightHandSide(car, &q, &dq3, ds, 1.0, &dq4);
+    RightHandSide(aCar, &q, &q, aTimeDelta, 0.0, &dq1);
+    RightHandSide(aCar, &q, &dq1, aTimeDelta, 0.5, &dq2);
+    RightHandSide(aCar, &q, &dq2, aTimeDelta, 0.5, &dq3);
+    RightHandSide(aCar, &q, &dq3, aTimeDelta, 1.0, &dq4);
 
     //  Update the dependent and independent variable values
     //  at the new dependent variable location and store the
     //  values in the ODE object arrays.
-    car->s = car->s + ds;
+    aCar->time = aCar->time + aTimeDelta;
+
+    /*
     q.position.x = static_cast<float>(q.position.x + (dq1.position.x + 2.0 * dq2.position.x + 2.0 * dq3.position.x + dq4.position.x) / numEqns);
-    car->q.position.x = q.position.x;
+    aCar->q.position.x = q.position.x; 
     q.position.y = static_cast<float>(q.position.y + (dq1.position.y + 2.0 * dq2.position.y + 2.0 * dq3.position.y + dq4.position.y) / numEqns);
-    car->q.position.y = q.position.y;
+    aCar->q.position.y = q.position.y;
     q.position.z = static_cast<float>(q.position.z + (dq1.position.z + 2.0 * dq2.position.z + 2.0 * dq3.position.z + dq4.position.z) / numEqns);
-    car->q.position.z = q.position.z;
+    aCar->q.position.z = q.position.z;
     q.velocity.x = static_cast<float>(q.velocity.x + (dq1.velocity.x + 2.0 * dq2.velocity.x + 2.0 * dq3.velocity.x + dq4.velocity.x) / numEqns);
-    car->q.velocity.x = q.velocity.x;
+    aCar->q.velocity.x = q.velocity.x;
     q.velocity.y = static_cast<float>(q.velocity.y + (dq1.velocity.y + 2.0 * dq2.velocity.y + 2.0 * dq3.velocity.y + dq4.velocity.y) / numEqns);
-    car->q.velocity.y = q.velocity.y;
+    aCar->q.velocity.y = q.velocity.y;
     q.velocity.z = static_cast<float>(q.velocity.z + (dq1.velocity.z + 2.0 * dq2.velocity.z + 2.0 * dq3.velocity.z + dq4.velocity.z) / numEqns);
-    car->q.velocity.z = q.velocity.z;
+    aCar->q.velocity.z = q.velocity.z;
+    */
+
+    q.position.x = static_cast<float>(q.position.x + (dq1.position.x + 2.0 * dq2.position.x + 2.0 * dq3.position.x + dq4.position.x) / numEqns);
+    q.position.y = static_cast<float>(q.position.y + (dq1.position.y + 2.0 * dq2.position.y + 2.0 * dq3.position.y + dq4.position.y) / numEqns);
+    q.position.z = static_cast<float>(q.position.z + (dq1.position.z + 2.0 * dq2.position.z + 2.0 * dq3.position.z + dq4.position.z) / numEqns);
+    q.velocity.x = static_cast<float>(q.velocity.x + (dq1.velocity.x + 2.0 * dq2.velocity.x + 2.0 * dq3.velocity.x + dq4.velocity.x) / numEqns);
+    q.velocity.y = static_cast<float>(q.velocity.y + (dq1.velocity.y + 2.0 * dq2.velocity.y + 2.0 * dq3.velocity.y + dq4.velocity.y) / numEqns);
+    q.velocity.z = static_cast<float>(q.velocity.z + (dq1.velocity.z + 2.0 * dq2.velocity.z + 2.0 * dq3.velocity.z + dq4.velocity.z) / numEqns);
+
+    aCar->q.position = q.position;
+    aCar->q.velocity = q.velocity;
 
     return;
 }
@@ -439,7 +448,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     RungeKutta4(&m_car, aTimeDelta);
 
     double testV2 = m_car.speed;
-    double time = m_car.s;
+    double time = m_car.time;
     double x = m_car.q.position.x;
     double vx = m_car.q.velocity.x;
 
