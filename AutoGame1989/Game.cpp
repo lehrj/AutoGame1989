@@ -804,8 +804,8 @@ void Game::DrawDebugValue()
     textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
-    /*
-    textLine = "ColorVal4 = " + std::to_string(m_debugValue4);
+    double rpm = m_vehicle->GetRPM();
+    textLine = "ColorVal4 = " + std::to_string(rpm);
     textLinePosX = m_bitwiseFontPos.x;
     //textLinePosY = m_bitwiseFontPos.y + 200;
     //float textLinePosY = m_bitwiseFontPos.y + 100;
@@ -816,6 +816,7 @@ void Game::DrawDebugValue()
     textLinePos.y += 2.0;
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
+    /*
     textLine = "ColorVal5 = " + std::to_string(m_debugValue5);
     textLinePosX = m_bitwiseFontPos.x;
     //textLinePosY = m_bitwiseFontPos.y + 200;

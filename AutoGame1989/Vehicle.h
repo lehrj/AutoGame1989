@@ -36,6 +36,7 @@ struct Car
     double brakeInput;
     double maxAccelerationRate;
     double maxBrakeRate;
+    double steeringInRads;
     double steeringAngle;
     double steeringAngleMax;
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
@@ -82,6 +83,7 @@ public:
     int GetGear() { return m_car.gearNumber; };
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
     DirectX::SimpleMath::Vector3 GetPos() { return m_car.q.position; };
+    double GetRPM() { return m_car.omegaE; };
     float GetSpeed() { return m_car.speed; };
     double GetTime() { return m_car.time; };
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };

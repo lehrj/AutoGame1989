@@ -150,7 +150,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.muR = 0.015;             //  coefficient of rolling friction
     m_car.omegaE = 1000.0;         //  engine rpm
     m_car.gearNumber = 1;          //  gear the car is in
-    m_car.gearRatio[0] = 0.0;
+    //m_car.gearRatio[0] = 0.0;
     m_car.gearRatio[1] = 3.82;
     m_car.gearRatio[2] = 2.20;
     m_car.gearRatio[3] = 1.52;
@@ -168,6 +168,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.brakeInput = 0.0;
     m_car.maxAccelerationRate = 1.0;
     m_car.maxBrakeRate = 5.0;
+    m_car.steeringInRads = 0.0;
     m_car.steeringAngle = 0.0;
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
@@ -219,6 +220,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double b;
     double d;
     double omegaE = aCar->omegaE;
+
     if (omegaE <= 1000.0)
     {
         b = 0.0;
@@ -312,12 +314,24 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     aDQ->velocity.x = 0.0;
     aDQ->position.x = 0.0;
     */
-
+    /*
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
     aDQ->velocity.y = 0.0;
     aDQ->position.y = 0.0;
     aDQ->velocity.z = 0.0;
     aDQ->position.z = 0.0;
+    */
+    aDQ->position.x = aTimeDelta * newQ.velocity.x;
+    aDQ->velocity.y = 0.0;
+    aDQ->position.y = aTimeDelta * newQ.velocity.y;
+    aDQ->velocity.z = 0.0;
+    aDQ->position.z = aTimeDelta * newQ.velocity.z;
+
+    DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.steeringInRads);
+    //DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0));
+    //aDQ->velocity.Transform(aDQ->velocity, testTurn, aDQ->velocity);
+    //aDQ->velocity = DirectX::SimpleMath::Vector3::Transform(aDQ->velocity, testTurn, aDQ->velocity);
+    aDQ->velocity = DirectX::SimpleMath::Vector3::Transform(aDQ->velocity, testTurn);
 
     return;
 }
@@ -369,7 +383,7 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     q.velocity.z = static_cast<float>(q.velocity.z + (dq1.velocity.z + 2.0 * dq2.velocity.z + 2.0 * dq3.velocity.z + dq4.velocity.z) / numEqns);
     aCar->q.velocity.z = q.velocity.z;
     */
-
+    
     q.position.x = static_cast<float>(q.position.x + (dq1.position.x + 2.0 * dq2.position.x + 2.0 * dq3.position.x + dq4.position.x) / numEqns);
     q.position.y = static_cast<float>(q.position.y + (dq1.position.y + 2.0 * dq2.position.y + 2.0 * dq3.position.y + dq4.position.y) / numEqns);
     q.position.z = static_cast<float>(q.position.z + (dq1.position.z + 2.0 * dq2.position.z + 2.0 * dq3.position.z + dq4.position.z) / numEqns);
@@ -379,7 +393,7 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
 
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
-
+    
     return;
 }
 
@@ -412,6 +426,7 @@ void Vehicle::UpdateModel(const double aTimer)
     double wheelTurnRads = GetWheelRotationRadians(aTimer) + m_testRotation;
     m_testRotation = wheelTurnRads;
     DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
+    /*
     DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, 0.0);
 
     m_carModel.bodyMatrix.Transform(updateMatrix, testQuat, m_carModel.bodyMatrix);
@@ -419,13 +434,46 @@ void Vehicle::UpdateModel(const double aTimer)
 
     m_carModel.bodyMatrix *= m_carModel.localBodyMatrix;
     m_carModel.bodyTopMatrix *= m_carModel.localBodyTopMatrix;
+    */
+    /////////////////////////////
+
+    //DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(cos(m_car.time));
+    DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.steeringInRads);
     
+    /*
+    m_carModel.bodyMatrix = testTurn;
+    m_carModel.bodyMatrix *= m_carModel.localBodyMatrix * updateMatrix;
+    */
+    m_carModel.bodyMatrix = m_carModel.localBodyMatrix;
+    m_carModel.bodyMatrix *= testTurn;
+    m_carModel.bodyMatrix *=  updateMatrix;
+
+    m_carModel.bodyTopMatrix = m_carModel.localBodyTopMatrix;
+    m_carModel.bodyTopMatrix *= testTurn;
+    m_carModel.bodyTopMatrix *= updateMatrix;
+    ///////
+
     DirectX::SimpleMath::Matrix wheelSpinMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads);
+    /*
     m_carModel.frontAxelMatrix = m_carModel.frontAxelRotation * wheelSpinMat;
     m_carModel.frontAxelMatrix *= m_carModel.frontAxelTranslation * updateMatrix;
+    */
 
+    DirectX::SimpleMath::Matrix stearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringInRads);
+    m_carModel.frontAxelMatrix = m_carModel.frontAxelRotation * wheelSpinMat * stearingTurn;
+    m_carModel.frontAxelMatrix *= m_carModel.frontAxelTranslation;
+    m_carModel.frontAxelMatrix *= testTurn;
+    m_carModel.frontAxelMatrix *= updateMatrix;
+
+    /*
     m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinMat;
     m_carModel.rearAxelMatrix *= m_carModel.rearAxelTranslation * updateMatrix;
+    */
+
+    m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinMat;
+    m_carModel.rearAxelMatrix *= m_carModel.rearAxelTranslation;
+    m_carModel.rearAxelMatrix *= testTurn;
+    m_carModel.rearAxelMatrix *= updateMatrix;
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
@@ -448,8 +496,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     //  Compute the new engine rpm value
     int gearNumber = m_car.gearNumber;
     double gearRatio = m_car.gearRatio[gearNumber];
-    //m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
-    m_car.omegaE = vz * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    //m_car.omegaE = vz * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
 
     //  If the engine is at the redline rpm value,
     //  shift gears upward.
@@ -465,6 +513,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     UpdateModel(aTimeDelta);
     UpdateVehicleCamera();
+
+    m_car.steeringInRads = cos(m_car.time * 0.3);
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
