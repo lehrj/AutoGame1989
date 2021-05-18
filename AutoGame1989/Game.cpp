@@ -2452,12 +2452,21 @@ bool Game::InitializeTerrainArray2()
     //XMGLOBALCONST XMVECTORF32 DarkGreen            = { { { 0.000000000f, 0.392156899f, 0.000000000f, 1.000000000f } } };
     for (int i = 0; i < m_terrainVertexCount2; ++i)
     {
+        DirectX::SimpleMath::Vector3 flipNormal = vertexPC[i].normal;
         m_terrainVertexArray2[i].position = vertexPC[i].position;
-        m_terrainVertexArray2[i].normal = vertexPC[i].normal;
+        //m_terrainVertexArray2[i].normal = vertexPC[i].normal;
+        // Flip normals around for lighting;
+        m_terrainVertexArray2[i].normal.x = - flipNormal.x;
+        m_terrainVertexArray2[i].normal.y = -flipNormal.y;
+        m_terrainVertexArray2[i].normal.z = -flipNormal.z;
         m_terrainVertexArray2[i].color = lineColor;
         
         m_terrainVertexArrayBase2[i].position = vertexPC[i].position;
-        m_terrainVertexArrayBase2[i].normal = vertexPC[i].normal;
+        //m_terrainVertexArrayBase2[i].normal = vertexPC[i].normal;
+        // flip normals around for lighting
+        m_terrainVertexArrayBase2[i].normal.x = - flipNormal.x;
+        m_terrainVertexArrayBase2[i].normal.y = -flipNormal.y;
+        m_terrainVertexArrayBase2[i].normal.z = -flipNormal.z;
         if (i % 2 == 0)
         {
             m_terrainVertexArrayBase2[i].color = baseColor;
