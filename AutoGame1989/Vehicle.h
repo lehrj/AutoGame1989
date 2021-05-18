@@ -36,12 +36,13 @@ struct Car
     double brakeInput;
     double maxAccelerationRate;
     double maxBrakeRate;
-    double steeringInRads;
+    //double steeringInRads;
     double steeringAngle;
     double steeringAngleMax;
+    double carRotation;
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
-
+    double wheelBase;
     bool isAccelerating;
     bool isBraking;
 };
@@ -86,6 +87,7 @@ public:
     double GetRPM() { return m_car.omegaE; };
     float GetSpeed() { return m_car.speed; };
     double GetTime() { return m_car.time; };
+    
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
@@ -102,7 +104,10 @@ private:
     void DebugTestMove(const double aTimer, const double aTimeDelta);
 
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
-    void InitializeModel2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+    double GetCarRotation();
+    double GetCarRotation2();
+    double GetTurnRadius();
+    double GetYawRate(double aTimeDelta);
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
     double GetWheelRotationRadians(const double aTimeDelta);
 
@@ -137,5 +142,8 @@ private:
     DirectX::SimpleMath::Vector3 m_debugPoint = DirectX::SimpleMath::Vector3::Zero;
 
     double m_testRotation = 0.0;
+
+    double m_testMax = 0.0;
+    double m_testMin = 1.0;
 };
 

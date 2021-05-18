@@ -42,6 +42,139 @@ void Vehicle::GearUp()
     }
 }
 
+double Vehicle::GetCarRotation()
+{
+    double turnRadius = GetTurnRadius();
+    double steeringAngle = m_car.steeringAngle;
+    //steeringAngle = 0.0;
+
+    DirectX::SimpleMath::Vector3 testRadVec(0.0, 0.0, -turnRadius);
+    DirectX::SimpleMath::Matrix testTurnMat = DirectX::SimpleMath::Matrix::CreateRotationY(steeringAngle);
+
+    testRadVec = DirectX::SimpleMath::Vector3::Transform(testRadVec, testTurnMat);
+    DirectX::SimpleMath::Vector3 testRadVecNorm = testRadVec;
+    testRadVecNorm.Normalize();
+
+    DirectX::SimpleMath::Vector3 ballVec = testRadVecNorm;
+    DirectX::SimpleMath::Vector3 zeroDirection = DirectX::SimpleMath::Vector3::UnitZ;
+
+    double direction = DirectX::XMVectorGetX(DirectX::XMVector3AngleBetweenNormals(DirectX::XMVector3Normalize(ballVec), DirectX::XMVector3Normalize(zeroDirection)));
+
+    DirectX::SimpleMath::Vector3 a = - DirectX::SimpleMath::Vector3::UnitZ;
+    DirectX::SimpleMath::Vector3 b = DirectX::SimpleMath::Vector3::UnitX;
+    b = testRadVecNorm;
+    //static inline double GetAngle1(DirectX::SimpleMath::Vector3 aRef, DirectX::SimpleMath::Vector3 aPointA) { return acos(aRef.Dot(aPointA)); };
+    double testAngle = acos(a.Dot(b));
+    double testAngleDegrees = Utility::ToDegrees(testAngle);
+
+    if (testAngle > m_testMax)
+    {
+        m_testMax = testAngle;
+    }
+    if (testAngle < m_testMin)
+    {
+        m_testMin = testAngle;
+    }
+    if (m_car.time > 15.0)
+    {
+        int testBreak;
+
+    }
+
+    double carRotation = testAngle + 0.1; // +(Utility::ToRadians(90.0));
+    m_car.carRotation = carRotation;
+    m_car.carRotation = testAngle;
+    //m_car.carRotation = steeringAngle;
+
+    m_car.carRotation = m_car.time * 0.5;
+    return carRotation;
+}
+
+double Vehicle::GetCarRotation2()
+{
+    double turnRadius = GetTurnRadius();
+    double steeringAngle = m_car.steeringAngle;
+    //steeringAngle = 0.0;
+
+    DirectX::SimpleMath::Vector3 testRadVec(0.0, 0.0, -turnRadius);
+    DirectX::SimpleMath::Matrix testTurnMat = DirectX::SimpleMath::Matrix::CreateRotationY(steeringAngle);
+
+    testRadVec = DirectX::SimpleMath::Vector3::Transform(testRadVec, testTurnMat);
+    DirectX::SimpleMath::Vector3 testRadVecNorm = testRadVec;
+    testRadVecNorm.Normalize();
+
+
+    DirectX::SimpleMath::Vector3 ballVec = testRadVecNorm;
+    DirectX::SimpleMath::Vector3 zeroDirection = DirectX::SimpleMath::Vector3::UnitZ;
+
+    double direction = DirectX::XMVectorGetX(DirectX::XMVector3AngleBetweenNormals(DirectX::XMVector3Normalize(ballVec), DirectX::XMVector3Normalize(zeroDirection)));
+
+    /*
+    if (DirectX::XMVectorGetY(DirectX::XMVector3Cross(ballVec, zeroDirection)) < 0.0f)
+    {
+        direction = -direction;
+    }
+    */
+    DirectX::SimpleMath::Vector3 a = -DirectX::SimpleMath::Vector3::UnitZ;
+    DirectX::SimpleMath::Vector3 b = DirectX::SimpleMath::Vector3::UnitX;
+    b = testRadVecNorm;
+    //static inline double GetAngle1(DirectX::SimpleMath::Vector3 aRef, DirectX::SimpleMath::Vector3 aPointA) { return acos(aRef.Dot(aPointA)); };
+    double testAngle = acos(a.Dot(b));
+    double testAngleDegrees = Utility::ToDegrees(testAngle);
+
+    if (testAngle <= 0.0)
+    {
+        int testBreak = 0;
+        ++testBreak;
+    }
+
+    double carRotation = testAngle + 1.0; // +(Utility::ToRadians(90.0));
+    m_car.carRotation = testAngle;
+    //m_car.carRotation = steeringAngle;
+    return carRotation;
+}
+
+double Vehicle::GetTurnRadius()
+{
+    double wheelBase = m_car.wheelBase;
+    double sinDelta = sin(m_car.steeringAngle);
+    double sinDelta2 = sin((10.0 * Utility::GetPi()) / 180.0);
+    double testVal = (10.0 * Utility::GetPi()) / 180.0;
+    double testDeg = Utility::ToDegrees(testVal);
+    double turnRadius = 1.0;
+    double turnRadius2 = 1.0;
+    if (sinDelta == 0.0)
+    {
+        turnRadius = 0.0;
+    }
+    else
+    {
+        turnRadius = wheelBase / sinDelta;
+        turnRadius2 = wheelBase / sinDelta2;
+    }
+
+    return turnRadius;
+}
+
+double Vehicle::GetYawRate(double aTimeDelta)
+{
+    double turnRadius = GetTurnRadius();
+    double wheelBase = m_car.wheelBase;
+    double velocity = m_car.q.velocity.Length();
+    double steeringAngle = m_car.steeringAngle;
+    //steeringAngle = Utility::ToRadians(10.0);
+    //velocity = 10.0;
+    double sinDelta = sin(steeringAngle);
+
+    double omega = (velocity * sinDelta) / wheelBase;
+    double omegaT = omega * aTimeDelta;
+
+    double omegaDeg = Utility::ToDegrees(omega);
+    double omegaTdeg = Utility::ToDegrees(omegaT);
+
+    return omegaT;
+}
+
 DirectX::SimpleMath::Vector3 Vehicle::GetVehicleDirection()
 {
     DirectX::SimpleMath::Vector3 frontAxelPos;
@@ -95,7 +228,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     const float height = heightTotal * 0.6;
      
     const float axelLength = width + 0.6;
-    const float wheelBase = 2.47396;
+    const float wheelBase = m_car.wheelBase;
     DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
@@ -168,13 +301,15 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.brakeInput = 0.0;
     m_car.maxAccelerationRate = 1.0;
     m_car.maxBrakeRate = 5.0;
-    m_car.steeringInRads = 0.0;
+    m_car.carRotation = 0.0;
+    //m_car.steeringInRads = 0.0;
     m_car.steeringAngle = 0.0;
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
 
     m_car.isAccelerating = false;
     m_car.isBraking = false;
+    m_car.wheelBase = 2.41;
 
     InitializeModel(aContext);
 }
@@ -327,7 +462,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     aDQ->velocity.z = 0.0;
     aDQ->position.z = aTimeDelta * newQ.velocity.z;
 
-    DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.steeringInRads);
+    DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
+    //DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.steeringAngle);
     //DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0));
     //aDQ->velocity.Transform(aDQ->velocity, testTurn, aDQ->velocity);
     //aDQ->velocity = DirectX::SimpleMath::Vector3::Transform(aDQ->velocity, testTurn, aDQ->velocity);
@@ -438,7 +574,7 @@ void Vehicle::UpdateModel(const double aTimer)
     /////////////////////////////
 
     //DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(cos(m_car.time));
-    DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.steeringInRads);
+    DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
     
     /*
     m_carModel.bodyMatrix = testTurn;
@@ -459,7 +595,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.frontAxelMatrix *= m_carModel.frontAxelTranslation * updateMatrix;
     */
 
-    DirectX::SimpleMath::Matrix stearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringInRads);
+    DirectX::SimpleMath::Matrix stearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
     m_carModel.frontAxelMatrix = m_carModel.frontAxelRotation * wheelSpinMat * stearingTurn;
     m_carModel.frontAxelMatrix *= m_carModel.frontAxelTranslation;
     m_carModel.frontAxelMatrix *= testTurn;
@@ -478,6 +614,11 @@ void Vehicle::UpdateModel(const double aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
+    m_car.steeringAngle = cos(m_car.time);// +Utility::ToRadians(360.0);
+    m_car.steeringAngle = Utility::ToRadians(45.0);
+    //double testRotation = GetCarRotation();
+    m_car.carRotation = - GetYawRate(aTimeDelta);
+
     RungeKutta4(&m_car, aTimeDelta);
 
     double testV2 = m_car.speed;
@@ -514,7 +655,6 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     UpdateModel(aTimeDelta);
     UpdateVehicleCamera();
 
-    m_car.steeringInRads = cos(m_car.time * 0.3);
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
