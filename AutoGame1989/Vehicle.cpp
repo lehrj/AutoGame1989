@@ -388,6 +388,10 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double Cd = aCar->Cd;
     double area = aCar->area;
     double Fd = 0.5 * density * area * Cd * v * v;
+    // drag force without wind
+    double Fdx = -Fd * v;
+    double Fdy = -Fd * v;
+    double Fdz = -Fd * v;
 
     //  Compute the force of rolling friction. Because
     //  the G constant has a negative sign, the value 
@@ -409,6 +413,10 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double finalDriveRatio = aCar->finalDriveRatio;
     double wheelRadius = aCar->wheelRadius;
     double pi = acos(-1.0);
+    double carHeading = m_car.carRotation;
+    DirectX::SimpleMath::Matrix headingRotation = DirectX::SimpleMath::Matrix::CreateRotationY(carHeading);
+    DirectX::SimpleMath::Vector3 headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, headingRotation);
+
     //if (m_car.accelerationInput < m_car.inputDeadZone)
     if (m_car.isAccelerating == true)
     {
@@ -417,7 +425,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
         double c3 = (tmp * d + Fr) / mass;
         //dq[0] = ds * (c1 + c2 + c3);
-        aDQ->velocity.x = aTimeDelta * (c1 + c2 + c3); // ToDo: update 3D x, y, z motion;
+        //aDQ->velocity.x = aTimeDelta * (c1 + c2 + c3); // ToDo: update 3D x, y, z motion;
+        aDQ->velocity.x = (aTimeDelta * (c1 + c2 + c3)) * headingVec.x;
+        //aDQ->velocity.y = (aTimeDelta * (c1 + c2 + c3)) * headingVec.y;
+        aDQ->velocity.z = (aTimeDelta * (c1 + c2 + c3)) * headingVec.z;
+        aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
     }
     // braking
     else if (m_car.isBraking == true)
@@ -428,17 +440,22 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         {
             //dq[0] = ds * (-m_car.maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
             aDQ->velocity.x = aTimeDelta * (-aCar->maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
+            aDQ->velocity = (aTimeDelta * (-aCar->maxBrakeRate)) * headingVec;
         }
         else
         {
             //dq[0] = 0.0;
             aDQ->velocity.x = 0.0;
+            aDQ->velocity.y = 0.0;
+            aDQ->velocity.z = 0.0;
         }
     }
     else
     {
         //dq[0] = 0.0;
         aDQ->velocity.x = 0.0;
+        aDQ->velocity.y = 0.0;
+        aDQ->velocity.z = 0.0;
     }
 
     //  Compute right-hand side values.
@@ -457,9 +474,9 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     aDQ->position.z = 0.0;
     */
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
-    aDQ->velocity.y = 0.0;
+    //aDQ->velocity.y = 0.0;
     aDQ->position.y = aTimeDelta * newQ.velocity.y;
-    aDQ->velocity.z = 0.0;
+    //aDQ->velocity.z = 0.0;
     aDQ->position.z = aTimeDelta * newQ.velocity.z;
 
     DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
@@ -467,7 +484,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0));
     //aDQ->velocity.Transform(aDQ->velocity, testTurn, aDQ->velocity);
     //aDQ->velocity = DirectX::SimpleMath::Vector3::Transform(aDQ->velocity, testTurn, aDQ->velocity);
-    aDQ->velocity = DirectX::SimpleMath::Vector3::Transform(aDQ->velocity, testTurn);
+
+    //aDQ->velocity = DirectX::SimpleMath::Vector3::Transform(aDQ->velocity, testTurn);
 
     return;
 }
@@ -614,20 +632,26 @@ void Vehicle::UpdateModel(const double aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
-    m_car.steeringAngle = cos(m_car.time);// +Utility::ToRadians(360.0);
-    m_car.steeringAngle = Utility::ToRadians(45.0);
+    m_car.steeringAngle = m_car.carRotation + cos(m_car.time);// +Utility::ToRadians(360.0);
+    //m_car.steeringAngle = m_car.carRotation;
+
+    //m_car.steeringAngle += Utility::ToRadians(45.0);
     //double testRotation = GetCarRotation();
-    m_car.carRotation = - GetYawRate(aTimeDelta);
+    //m_car.carRotation = Utility::ToRadians(180.0);
+    m_car.carRotation += - GetYawRate(aTimeDelta);
 
     RungeKutta4(&m_car, aTimeDelta);
 
     double testV2 = m_car.speed;
     double time = m_car.time;
+    /*
     double x = m_car.q.position.x;
     double vx = m_car.q.velocity.x;
 
     double z = m_car.q.position.z;
     double vz = m_car.q.velocity.z;
+    */
+    double velocity = m_car.q.velocity.Length();
 
     int gear = m_car.gearNumber;
     double rpm = m_car.omegaE;
@@ -637,8 +661,9 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     //  Compute the new engine rpm value
     int gearNumber = m_car.gearNumber;
     double gearRatio = m_car.gearRatio[gearNumber];
-    m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    //m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
     //m_car.omegaE = vz * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    m_car.omegaE = velocity * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
 
     //  If the engine is at the redline rpm value,
     //  shift gears upward.
