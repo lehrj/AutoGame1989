@@ -3615,7 +3615,20 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->ToggleBrake();
         }
     }
-
+    if (m_kbStateTracker.pressed.Z)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->GearDown();
+        }
+    }
+    if (m_kbStateTracker.pressed.X)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->GearUp();
+        }
+    }
     auto mouse = m_mouse->GetState();
 
     if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)

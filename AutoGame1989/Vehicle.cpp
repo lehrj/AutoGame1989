@@ -283,7 +283,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.muR = 0.015;             //  coefficient of rolling friction
     m_car.omegaE = 1000.0;         //  engine rpm
     m_car.gearNumber = 1;          //  gear the car is in
-    //m_car.gearRatio[0] = 0.0;
+    m_car.gearRatio[0] = 0.0;
     m_car.gearRatio[1] = 3.82;
     m_car.gearRatio[2] = 2.20;
     m_car.gearRatio[3] = 1.52;
@@ -655,50 +655,30 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     RungeKutta4(&m_car, aTimeDelta);
 
-    double testV2 = m_car.speed;
-    double time = m_car.time;
-    /*
-    double x = m_car.q.position.x;
-    double vx = m_car.q.velocity.x;
-
-    double z = m_car.q.position.z;
-    double vz = m_car.q.velocity.z;
-    */
     double velocity = m_car.q.velocity.Length();
-
-    int gear = m_car.gearNumber;
-    double rpm = m_car.omegaE;
-
-    double oldGearRatio;
-    double newGearRatio;
+    
     //  Compute the new engine rpm value
-    int gearNumber = m_car.gearNumber;
-    double gearRatio = m_car.gearRatio[gearNumber];
-    //m_car.omegaE = vx * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
-    //m_car.omegaE = vz * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
-    m_car.omegaE = velocity * 60.0 * gearRatio * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
 
     //  If the engine is at the redline rpm value,
     //  shift gears upward.
     if (m_car.omegaE > m_car.redline) 
     {
-        oldGearRatio = gearRatio;
+        double oldGearRatio = m_car.gearRatio[m_car.gearNumber];
         ++m_car.gearNumber;
-        newGearRatio = m_car.gearRatio[m_car.gearNumber];
+        double newGearRatio = m_car.gearRatio[m_car.gearNumber];
         m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
     }
 
-    m_car.speed = m_car.q.velocity.Length();
+    m_car.speed = velocity;
 
     UpdateModel(aTimeDelta);
     UpdateVehicleCamera();
-
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
 {
     float move = 3.3;
-    //m_car.q2[1] += move;
     m_car.q.position.x += move;
 }
 
