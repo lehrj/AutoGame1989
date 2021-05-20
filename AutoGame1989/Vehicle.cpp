@@ -648,10 +648,9 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     //m_car.steeringAngle += deltaSteer + m_car.steeringAngle2;
     //m_car.steeringAngle -= m_car.carRotation;
     //m_car.carRotation += 0.005;
-    if (m_car.time > 10.0)
-    {
-        int testBreak = 0;
-    }
+
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(- deltaSteer);
+    m_car.q.velocity = DirectX::SimpleMath::Vector3::Transform(m_car.q.velocity, rotMat);
 
     RungeKutta4(&m_car, aTimeDelta);
 

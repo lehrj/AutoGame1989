@@ -502,7 +502,7 @@ void Camera::UpdateFollowCamera()
 	SetUpPos(m_followCamUp);
 	SetTargetPos(m_followCamTarget + m_followCamTargOffset);
 	//SetTargetPos(m_followCamTarget);
-	DirectX::SimpleMath::Vector3 testPos(0.0, 16.0, -0.5);
+	DirectX::SimpleMath::Vector3 testPos(0.0, 3.0, -10.5);
 	testPos += m_followCamTarget;
 	//SetPos(m_followCamTarget - m_followCamDirection);
 	SetPos(testPos);
