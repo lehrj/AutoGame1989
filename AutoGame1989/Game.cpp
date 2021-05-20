@@ -785,7 +785,7 @@ void Game::DrawDebugValue()
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
     
-    m_debugValue2 = m_vehicle->GetTime();
+    m_debugValue2 = m_vehicle->GetDebugValue();
     textLine = "Value2 = " + std::to_string(m_debugValue2);
     textLinePosX = m_bitwiseFontPos.x;
     //textLinePosY += 300;
@@ -2504,6 +2504,7 @@ void Game::InitializeWorldGrid()
 
     const DirectX::SimpleMath::Vector3 gridNorm = DirectX::SimpleMath::Vector3::UnitY;
     const int hightLightIncrement = 10;
+    /*
     const float maxX = 2.0;
     const float maxY = 1.0;
     const float maxZ = 2.0;
@@ -2511,6 +2512,14 @@ void Game::InitializeWorldGrid()
     const float minY = -1.0;
     const float minZ = -2.0;
     const float increment = 0.1;
+    */
+    const float maxX = 2000.0;
+    const float maxY = 1.0;
+    const float maxZ = 2000.0;
+    const float minX = -2000.0;
+    const float minY = -1.0;
+    const float minZ = -2000.0;
+    const float increment = 10.0;
     DirectX::SimpleMath::Vector3 p1 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 p2 = DirectX::SimpleMath::Vector3::Zero;
 
@@ -3354,6 +3363,20 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_ENVIRONTMENTSELECT)
         {
             ++m_menuSelect;
+        }
+    }
+    if (kb.Left)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->Turn( - aTimer.GetElapsedSeconds());
+        }
+    }
+    if (kb.Right)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->Turn(aTimer.GetElapsedSeconds());
         }
     }
     if (kb.D)

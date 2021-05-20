@@ -82,11 +82,11 @@ double Vehicle::GetCarRotation()
     }
 
     double carRotation = testAngle + 0.1; // +(Utility::ToRadians(90.0));
-    m_car.carRotation = carRotation;
-    m_car.carRotation = testAngle;
+    //m_car.carRotation = carRotation;
+    //m_car.carRotation = testAngle;
     //m_car.carRotation = steeringAngle;
 
-    m_car.carRotation = m_car.time * 0.5;
+    //m_car.carRotation = m_car.time * 0.5;
     return carRotation;
 }
 
@@ -303,7 +303,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.maxBrakeRate = 5.0;
     m_car.carRotation = 0.0;
     //m_car.steeringInRads = 0.0;
-    m_car.steeringAngle = 0.0;
+    m_car.steeringAngle = Utility::ToRadians(180.0);
+    m_car.steeringAngle2 = Utility::ToRadians(180.0);
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
 
@@ -426,9 +427,9 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         double c3 = (tmp * d + Fr) / mass;
         //dq[0] = ds * (c1 + c2 + c3);
         //aDQ->velocity.x = aTimeDelta * (c1 + c2 + c3); // ToDo: update 3D x, y, z motion;
-        aDQ->velocity.x = (aTimeDelta * (c1 + c2 + c3)) * headingVec.x;
+        //aDQ->velocity.x = (aTimeDelta * (c1 + c2 + c3)) * headingVec.x;
         //aDQ->velocity.y = (aTimeDelta * (c1 + c2 + c3)) * headingVec.y;
-        aDQ->velocity.z = (aTimeDelta * (c1 + c2 + c3)) * headingVec.z;
+        //aDQ->velocity.z = (aTimeDelta * (c1 + c2 + c3)) * headingVec.z;
         aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
     }
     // braking
@@ -439,7 +440,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         if (newQ.velocity.Length() > 0.1)
         {
             //dq[0] = ds * (-m_car.maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
-            aDQ->velocity.x = aTimeDelta * (-aCar->maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
+            //aDQ->velocity.x = aTimeDelta * (-aCar->maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
             aDQ->velocity = (aTimeDelta * (-aCar->maxBrakeRate)) * headingVec;
         }
         else
@@ -575,6 +576,11 @@ void Vehicle::ToggleBrake()
     }
 }
 
+void Vehicle::Turn(double aTurnInput)
+{
+    m_car.steeringAngle += aTurnInput * 0.5;
+}
+
 void Vehicle::UpdateModel(const double aTimer)
 {
     double wheelTurnRads = GetWheelRotationRadians(aTimer) + m_testRotation;
@@ -632,13 +638,20 @@ void Vehicle::UpdateModel(const double aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
-    m_car.steeringAngle = m_car.carRotation + cos(m_car.time);// +Utility::ToRadians(360.0);
     //m_car.steeringAngle = m_car.carRotation;
-
-    //m_car.steeringAngle += Utility::ToRadians(45.0);
-    //double testRotation = GetCarRotation();
-    //m_car.carRotation = Utility::ToRadians(180.0);
-    m_car.carRotation += - GetYawRate(aTimeDelta);
+    //m_car.steeringAngle += Utility::ToRadians(90.0);
+    double preRot = m_car.carRotation;
+    m_car.carRotation += GetYawRate(aTimeDelta);
+    double postRot = m_car.carRotation;
+    double deltaSteer = preRot - postRot;
+    //m_car.steeringAngle = m_car.carRotation + m_car.carRotation + m_car.steeringAngle2 - deltaSteer - deltaSteer;
+    //m_car.steeringAngle += deltaSteer + m_car.steeringAngle2;
+    //m_car.steeringAngle -= m_car.carRotation;
+    //m_car.carRotation += 0.005;
+    if (m_car.time > 10.0)
+    {
+        int testBreak = 0;
+    }
 
     RungeKutta4(&m_car, aTimeDelta);
 
