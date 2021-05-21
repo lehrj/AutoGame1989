@@ -75,7 +75,6 @@ class Vehicle
 {
 public:
     Vehicle();
-    ~Vehicle();
 
     void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
     void GearDown();
@@ -94,8 +93,6 @@ public:
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
-    //void LinkCamera(Camera* aCamera);
-
     void ResetVehicle();
     void ToggleGas();
     void ToggleBrake();
@@ -107,7 +104,6 @@ private:
 
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     double GetCarRotation();
-    double GetCarRotation2();
     double GetTurnRadius();
     double GetYawRate(double aTimeDelta);
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
@@ -116,7 +112,6 @@ private:
     void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
     void UpdateModel(const double aTimer);
-    //void UpdateVehicleCamera();
     
     Car                             m_car;
     CarModel                        m_carModel;
@@ -137,9 +132,6 @@ private:
     DirectX::SimpleMath::Matrix     m_testBodyTop;
     DirectX::SimpleMath::Matrix     m_testFrontAxle;
     DirectX::SimpleMath::Matrix     m_testRearAxle;
-
-    //Camera const* m_vehicleCamera;
-    //Camera* m_vehicleCamera;
 
     DirectX::SimpleMath::Vector3 m_debugPoint = DirectX::SimpleMath::Vector3::Zero;
 

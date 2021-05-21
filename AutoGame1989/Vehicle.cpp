@@ -7,12 +7,6 @@ Vehicle::Vehicle()
     //InitializeVehicle();
 }
 
-Vehicle::~Vehicle()
-{
-    //m_vehicleCamera = nullptr;
-    //delete m_vehicleCamera;
-}
-
 void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
 {
     DirectX::SimpleMath::Matrix world = aWorld;
@@ -90,50 +84,6 @@ double Vehicle::GetCarRotation()
     return carRotation;
 }
 
-double Vehicle::GetCarRotation2()
-{
-    double turnRadius = GetTurnRadius();
-    double steeringAngle = m_car.steeringAngle;
-    //steeringAngle = 0.0;
-
-    DirectX::SimpleMath::Vector3 testRadVec(0.0, 0.0, -turnRadius);
-    DirectX::SimpleMath::Matrix testTurnMat = DirectX::SimpleMath::Matrix::CreateRotationY(steeringAngle);
-
-    testRadVec = DirectX::SimpleMath::Vector3::Transform(testRadVec, testTurnMat);
-    DirectX::SimpleMath::Vector3 testRadVecNorm = testRadVec;
-    testRadVecNorm.Normalize();
-
-
-    DirectX::SimpleMath::Vector3 ballVec = testRadVecNorm;
-    DirectX::SimpleMath::Vector3 zeroDirection = DirectX::SimpleMath::Vector3::UnitZ;
-
-    double direction = DirectX::XMVectorGetX(DirectX::XMVector3AngleBetweenNormals(DirectX::XMVector3Normalize(ballVec), DirectX::XMVector3Normalize(zeroDirection)));
-
-    /*
-    if (DirectX::XMVectorGetY(DirectX::XMVector3Cross(ballVec, zeroDirection)) < 0.0f)
-    {
-        direction = -direction;
-    }
-    */
-    DirectX::SimpleMath::Vector3 a = -DirectX::SimpleMath::Vector3::UnitZ;
-    DirectX::SimpleMath::Vector3 b = DirectX::SimpleMath::Vector3::UnitX;
-    b = testRadVecNorm;
-    //static inline double GetAngle1(DirectX::SimpleMath::Vector3 aRef, DirectX::SimpleMath::Vector3 aPointA) { return acos(aRef.Dot(aPointA)); };
-    double testAngle = acos(a.Dot(b));
-    double testAngleDegrees = Utility::ToDegrees(testAngle);
-
-    if (testAngle <= 0.0)
-    {
-        int testBreak = 0;
-        ++testBreak;
-    }
-
-    double carRotation = testAngle + 1.0; // +(Utility::ToRadians(90.0));
-    m_car.carRotation = testAngle;
-    //m_car.carRotation = steeringAngle;
-    return carRotation;
-}
-
 double Vehicle::GetTurnRadius()
 {
     double wheelBase = m_car.wheelBase;
@@ -162,8 +112,7 @@ double Vehicle::GetYawRate(double aTimeDelta)
     double wheelBase = m_car.wheelBase;
     double velocity = m_car.q.velocity.Length();
     double steeringAngle = m_car.steeringAngle;
-    //steeringAngle = Utility::ToRadians(10.0);
-    //velocity = 10.0;
+
     double sinDelta = sin(steeringAngle);
 
     double omega = (velocity * sinDelta) / wheelBase;
@@ -185,9 +134,6 @@ DirectX::SimpleMath::Vector3 Vehicle::GetVehicleDirection()
     m_carModel.rearAxelMatrix.Decompose(tempScale, tempQuat, rearAxelPos);
     DirectX::SimpleMath::Vector3 direction = rearAxelPos - frontAxelPos;
     direction.Normalize();
-
-    // temp for camera testing
-    //m_car.position = frontAxelPos;
    
     DirectX::SimpleMath::Vector3 testPos;
     m_carModel.bodyTopMatrix.Decompose(tempScale, tempQuat, testPos);
@@ -302,7 +248,6 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.maxAccelerationRate = 1.0;
     m_car.maxBrakeRate = 5.0;
     m_car.carRotation = 0.0;
-    //m_car.steeringInRads = 0.0;
     m_car.steeringAngle = Utility::ToRadians(180.0);
     m_car.steeringAngle2 = Utility::ToRadians(180.0);
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
@@ -314,14 +259,6 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     InitializeModel(aContext);
 }
-
-/*
-//void Vehicle::LinkCamera(Camera const* aCamera)
-void Vehicle::LinkCamera(Camera* aCamera)
-{
-    m_vehicleCamera = aCamera;
-}
-*/
 
 void Vehicle::ResetVehicle()
 {
@@ -342,14 +279,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //  Compute the intermediate values of the 
     //  dependent variables.
     Motion newQ;
-    /*
-    newQ.position.x = q->position.x + static_cast<float>(aQScale) * deltaQ->position.x;
-    newQ.position.y = q->position.y + static_cast<float>(aQScale) * deltaQ->position.y;
-    newQ.position.z = q->position.z + static_cast<float>(aQScale) * deltaQ->position.z;
-    newQ.velocity.x = q->velocity.x + static_cast<float>(aQScale) * deltaQ->velocity.x;
-    newQ.velocity.y = q->velocity.y + static_cast<float>(aQScale) * deltaQ->velocity.y;
-    newQ.velocity.z = q->velocity.z + static_cast<float>(aQScale) * deltaQ->velocity.z;
-    */
+
     newQ.position = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->position;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
 
@@ -462,33 +392,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     }
 
     //  Compute right-hand side values.
-    /*
-    aDQ->position.z = aTimeDelta * newQ.velocity.z;
-    aDQ->velocity.y = 0.0;
-    aDQ->position.y = 0.0;
-    aDQ->velocity.x = 0.0;
-    aDQ->position.x = 0.0;
-    */
-    /*
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
-    aDQ->velocity.y = 0.0;
-    aDQ->position.y = 0.0;
-    aDQ->velocity.z = 0.0;
-    aDQ->position.z = 0.0;
-    */
-    aDQ->position.x = aTimeDelta * newQ.velocity.x;
-    //aDQ->velocity.y = 0.0;
     aDQ->position.y = aTimeDelta * newQ.velocity.y;
-    //aDQ->velocity.z = 0.0;
     aDQ->position.z = aTimeDelta * newQ.velocity.z;
 
     DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
-    //DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.steeringAngle);
-    //DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0));
-    //aDQ->velocity.Transform(aDQ->velocity, testTurn, aDQ->velocity);
-    //aDQ->velocity = DirectX::SimpleMath::Vector3::Transform(aDQ->velocity, testTurn, aDQ->velocity);
-
-    //aDQ->velocity = DirectX::SimpleMath::Vector3::Transform(aDQ->velocity, testTurn);
 
     return;
 }
@@ -505,7 +413,6 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
 
     //  Retrieve the current values of the dependent
     //  and independent variables.
-    //double time = car->time;
     Motion q = aCar->q;
 
     Motion dq1;
@@ -525,21 +432,6 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     //  at the new dependent variable location and store the
     //  values in the ODE object arrays.
     aCar->time = aCar->time + aTimeDelta;
-
-    /*
-    q.position.x = static_cast<float>(q.position.x + (dq1.position.x + 2.0 * dq2.position.x + 2.0 * dq3.position.x + dq4.position.x) / numEqns);
-    aCar->q.position.x = q.position.x; 
-    q.position.y = static_cast<float>(q.position.y + (dq1.position.y + 2.0 * dq2.position.y + 2.0 * dq3.position.y + dq4.position.y) / numEqns);
-    aCar->q.position.y = q.position.y;
-    q.position.z = static_cast<float>(q.position.z + (dq1.position.z + 2.0 * dq2.position.z + 2.0 * dq3.position.z + dq4.position.z) / numEqns);
-    aCar->q.position.z = q.position.z;
-    q.velocity.x = static_cast<float>(q.velocity.x + (dq1.velocity.x + 2.0 * dq2.velocity.x + 2.0 * dq3.velocity.x + dq4.velocity.x) / numEqns);
-    aCar->q.velocity.x = q.velocity.x;
-    q.velocity.y = static_cast<float>(q.velocity.y + (dq1.velocity.y + 2.0 * dq2.velocity.y + 2.0 * dq3.velocity.y + dq4.velocity.y) / numEqns);
-    aCar->q.velocity.y = q.velocity.y;
-    q.velocity.z = static_cast<float>(q.velocity.z + (dq1.velocity.z + 2.0 * dq2.velocity.z + 2.0 * dq3.velocity.z + dq4.velocity.z) / numEqns);
-    aCar->q.velocity.z = q.velocity.z;
-    */
     
     q.position.x = static_cast<float>(q.position.x + (dq1.position.x + 2.0 * dq2.position.x + 2.0 * dq3.position.x + dq4.position.x) / numEqns);
     q.position.y = static_cast<float>(q.position.y + (dq1.position.y + 2.0 * dq2.position.y + 2.0 * dq3.position.y + dq4.position.y) / numEqns);
@@ -588,24 +480,9 @@ void Vehicle::UpdateModel(const double aTimer)
     double wheelTurnRads = GetWheelRotationRadians(aTimer) + m_testRotation;
     m_testRotation = wheelTurnRads;
     DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
-    /*
-    DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, 0.0);
 
-    m_carModel.bodyMatrix.Transform(updateMatrix, testQuat, m_carModel.bodyMatrix);
-    m_carModel.bodyTopMatrix.Transform(updateMatrix, testQuat, m_carModel.bodyTopMatrix);   
-
-    m_carModel.bodyMatrix *= m_carModel.localBodyMatrix;
-    m_carModel.bodyTopMatrix *= m_carModel.localBodyTopMatrix;
-    */
-    /////////////////////////////
-
-    //DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(cos(m_car.time));
     DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
     
-    /*
-    m_carModel.bodyMatrix = testTurn;
-    m_carModel.bodyMatrix *= m_carModel.localBodyMatrix * updateMatrix;
-    */
     m_carModel.bodyMatrix = m_carModel.localBodyMatrix;
     m_carModel.bodyMatrix *= testTurn;
     m_carModel.bodyMatrix *=  updateMatrix;
@@ -616,21 +493,12 @@ void Vehicle::UpdateModel(const double aTimer)
     ///////
 
     DirectX::SimpleMath::Matrix wheelSpinMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads);
-    /*
-    m_carModel.frontAxelMatrix = m_carModel.frontAxelRotation * wheelSpinMat;
-    m_carModel.frontAxelMatrix *= m_carModel.frontAxelTranslation * updateMatrix;
-    */
 
     DirectX::SimpleMath::Matrix stearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
     m_carModel.frontAxelMatrix = m_carModel.frontAxelRotation * wheelSpinMat * stearingTurn;
     m_carModel.frontAxelMatrix *= m_carModel.frontAxelTranslation;
     m_carModel.frontAxelMatrix *= testTurn;
     m_carModel.frontAxelMatrix *= updateMatrix;
-
-    /*
-    m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinMat;
-    m_carModel.rearAxelMatrix *= m_carModel.rearAxelTranslation * updateMatrix;
-    */
 
     m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinMat;
     m_carModel.rearAxelMatrix *= m_carModel.rearAxelTranslation;
@@ -640,16 +508,10 @@ void Vehicle::UpdateModel(const double aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
-    //m_car.steeringAngle = m_car.carRotation;
-    //m_car.steeringAngle += Utility::ToRadians(90.0);
     double preRot = m_car.carRotation;
     m_car.carRotation += GetYawRate(aTimeDelta);
     double postRot = m_car.carRotation;
     double deltaSteer = preRot - postRot;
-    //m_car.steeringAngle = m_car.carRotation + m_car.carRotation + m_car.steeringAngle2 - deltaSteer - deltaSteer;
-    //m_car.steeringAngle += deltaSteer + m_car.steeringAngle2;
-    //m_car.steeringAngle -= m_car.carRotation;
-    //m_car.carRotation += 0.005;
 
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(- deltaSteer);
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Transform(m_car.q.velocity, rotMat);
@@ -674,7 +536,6 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.speed = velocity;
 
     UpdateModel(aTimeDelta);
-    //UpdateVehicleCamera();
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
@@ -682,12 +543,3 @@ void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
     float move = 3.3;
     m_car.q.position.x += move;
 }
-
-/*
-void Vehicle::UpdateVehicleCamera()
-{
-    m_vehicleCamera->SetFollowCamUp(DirectX::SimpleMath::Vector3::UnitY);
-    m_vehicleCamera->SetFollowCamTarget(m_car.q.position);
-    m_vehicleCamera->SetFollowCamDirection(GetVehicleDirection());
-}
-*/
