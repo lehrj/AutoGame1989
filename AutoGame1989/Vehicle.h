@@ -1,5 +1,5 @@
 #pragma once
-#include "Camera.h"
+//#include "Camera.h"
 #include "pch.h"
 #include "Utility.h"
 
@@ -85,7 +85,7 @@ public:
     DirectX::SimpleMath::Vector3 GetDebugPoint() { return  m_debugPoint; };
     int GetGear() { return m_car.gearNumber; };
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
-    DirectX::SimpleMath::Vector3 GetPos() { return m_car.q.position; };
+    DirectX::SimpleMath::Vector3 GetPos() const { return m_car.q.position; };
     double GetRPM() { return m_car.omegaE; };
     float GetSpeed() { return m_car.speed; };
     double GetTime() { return m_car.time; };
@@ -94,7 +94,7 @@ public:
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
-    void LinkCamera(Camera* aCamera);
+    //void LinkCamera(Camera* aCamera);
 
     void ResetVehicle();
     void ToggleGas();
@@ -116,7 +116,7 @@ private:
     void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
     void UpdateModel(const double aTimer);
-    void UpdateVehicleCamera();
+    //void UpdateVehicleCamera();
     
     Car                             m_car;
     CarModel                        m_carModel;
@@ -139,7 +139,7 @@ private:
     DirectX::SimpleMath::Matrix     m_testRearAxle;
 
     //Camera const* m_vehicleCamera;
-    Camera* m_vehicleCamera;
+    //Camera* m_vehicleCamera;
 
     DirectX::SimpleMath::Vector3 m_debugPoint = DirectX::SimpleMath::Vector3::Zero;
 

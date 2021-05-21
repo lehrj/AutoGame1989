@@ -9,8 +9,8 @@ Vehicle::Vehicle()
 
 Vehicle::~Vehicle()
 {
-    m_vehicleCamera = nullptr;
-    delete m_vehicleCamera;
+    //m_vehicleCamera = nullptr;
+    //delete m_vehicleCamera;
 }
 
 void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
@@ -315,11 +315,13 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     InitializeModel(aContext);
 }
 
+/*
 //void Vehicle::LinkCamera(Camera const* aCamera)
 void Vehicle::LinkCamera(Camera* aCamera)
 {
     m_vehicleCamera = aCamera;
 }
+*/
 
 void Vehicle::ResetVehicle()
 {
@@ -672,7 +674,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.speed = velocity;
 
     UpdateModel(aTimeDelta);
-    UpdateVehicleCamera();
+    //UpdateVehicleCamera();
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
@@ -681,9 +683,11 @@ void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
     m_car.q.position.x += move;
 }
 
+/*
 void Vehicle::UpdateVehicleCamera()
 {
     m_vehicleCamera->SetFollowCamUp(DirectX::SimpleMath::Vector3::UnitY);
     m_vehicleCamera->SetFollowCamTarget(m_car.q.position);
     m_vehicleCamera->SetFollowCamDirection(GetVehicleDirection());
 }
+*/

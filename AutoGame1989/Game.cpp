@@ -26,7 +26,8 @@ Game::Game() noexcept :
     m_camera->InintializePreSwingCamera(DirectX::SimpleMath::Vector3::Zero, 0.0);
     m_lighting = new Lighting();
     m_vehicle = new Vehicle();
-    m_vehicle->LinkCamera(m_camera);
+    //m_vehicle->LinkCamera(m_camera);
+    m_camera->SetVehicleFocus(m_vehicle);
 
     if (m_isInDebugMode == false)
     {

@@ -1,7 +1,7 @@
 #pragma once
 #include "StepTimer.h"
 #include "Utility.h"
-
+#include "Vehicle.h"
 
 enum class CameraState
 {
@@ -21,6 +21,7 @@ class Camera
 public:
     Camera();
     Camera(int aWidth, int aHeight);
+    ~Camera();
 
     CameraState GetCameraState() const { return m_cameraState; };
     float GetAimTurnRate() const { return m_aimTurnRate; };
@@ -67,8 +68,10 @@ public:
     void SetTargetEndPos(DirectX::SimpleMath::Vector3 aEndPos);
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetTransitionSpeed(const float aSpeed);
+    void SetVehicleFocus(const Vehicle* aVehicle);
     void TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation); //Chili
 
+    
     void UpdateCamera(DX::StepTimer const& aTimer);
     void UpdateFirstPersonCamera();
     void UpdatePitchYaw(const float aPitch, const float aYaw);
@@ -154,5 +157,7 @@ private:
     DirectX::SimpleMath::Vector3 m_followCamPosOffset = DirectX::SimpleMath::Vector3(-1.0, 1.0, 0.0);
     DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 0.2, 0.0);
     double                       m_followCamDistance = 1.0;
+
+    Vehicle const * m_vehicleFocus;
 };
 

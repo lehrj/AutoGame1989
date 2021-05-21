@@ -35,6 +35,12 @@ Camera::Camera(int aWidth, int aHeight)
 	InitializeOrthoganalMatrix();
 }
 
+Camera::~Camera()
+{
+	m_vehicleFocus = nullptr;
+	delete m_vehicleFocus;
+}
+
 DirectX::SimpleMath::Vector3 Camera::GetPreSwingCamPos(DirectX::SimpleMath::Vector3 aPosition, float aDirection)
 {
 	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::Transform(m_preSwingCamPosOffset,
@@ -384,6 +390,11 @@ void Camera::SetTransitionSpeed(const float aSpeed)
 	}
 }
 
+void Camera::SetVehicleFocus(const Vehicle* aVehicle)
+{
+	m_vehicleFocus = aVehicle;
+}
+
 void Camera::TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation)
 {
 	DirectX::XMStoreFloat3(&aTranslation, DirectX::XMVector3Transform(
@@ -499,10 +510,13 @@ void Camera::UpdateFirstPersonCamera()
 
 void Camera::UpdateFollowCamera()
 {
+
 	SetUpPos(m_followCamUp);
-	SetTargetPos(m_followCamTarget + m_followCamTargOffset);
+	//SetTargetPos(m_followCamTarget + m_followCamTargOffset);
+	SetTargetPos(m_vehicleFocus->GetPos() + m_followCamTargOffset);
 	//SetTargetPos(m_followCamTarget);
 	DirectX::SimpleMath::Vector3 testPos(0.0, 3.0, -10.5);
+	m_followCamTarget = m_target;
 	testPos += m_followCamTarget;
 	//SetPos(m_followCamTarget - m_followCamDirection);
 	SetPos(testPos);
