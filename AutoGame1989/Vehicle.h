@@ -32,14 +32,20 @@ struct Car
 
     //////////////////////
     double inputDeadZone;  // small deadzone to ignore gas and brake peddle input
-    double accelerationInput;
     double brakeInput;
-    double maxAccelerationRate;
+    double throttleInput;    
+    double brakeDecayRate;
+    double throttleDecayRate;
+    const double maxThrottleInput = 1.0;
+    const double maxBrakeInput = 1.0;
+    double maxThrottleRate;
     double maxBrakeRate;
+    bool isThrottlePressed;
+    bool isBrakePressed;
 
     double steeringAngle;
-    double steeringAngle2;
     double steeringAngleMax;
+
     double carRotation;
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
@@ -92,6 +98,11 @@ public:
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+
+    void PressBrake(const double aBrakeInput);
+    void PressThrottle(const double aThrottleInput);
+    void ThrottleBrakeDecay(const double aTimeDelta);
+    void SteeringInputDecay(const double aTimeDetla);
 
     void ResetVehicle();
     void ToggleGas();

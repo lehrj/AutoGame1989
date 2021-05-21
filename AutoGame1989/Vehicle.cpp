@@ -243,21 +243,61 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 
     m_car.inputDeadZone = 0.05;
-    m_car.accelerationInput = 0.0;
+    m_car.throttleInput = 0.0;
     m_car.brakeInput = 0.0;
-    m_car.maxAccelerationRate = 1.0;
+    m_car.maxThrottleRate = 1.0;
     m_car.maxBrakeRate = 5.0;
+
+    m_car.brakeDecayRate = -0.2;
+    m_car.throttleDecayRate = -0.2;
+
+
     m_car.carRotation = 0.0;
-    m_car.steeringAngle = Utility::ToRadians(180.0);
-    m_car.steeringAngle2 = Utility::ToRadians(180.0);
+    m_car.steeringAngle = Utility::ToRadians(0.0);
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
 
+    m_car.isThrottlePressed = false;
+    m_car.isBrakePressed = false;
     m_car.isAccelerating = false;
     m_car.isBraking = false;
     m_car.wheelBase = 2.41;
 
     InitializeModel(aContext);
+}
+
+void Vehicle::PressBrake(const double aBrakeInput)
+{
+    if (aBrakeInput > 0.0)
+    {
+        m_car.isBrakePressed = true;
+    }
+    double updatedBrake = aBrakeInput + m_car.brakeInput;
+    if (updatedBrake > m_car.maxBrakeInput)
+    {
+        m_car.brakeInput = m_car.maxBrakeInput;
+    }
+    else
+    {
+        m_car.brakeInput += aBrakeInput;
+    }
+}
+
+void Vehicle::PressThrottle(const double aThrottleInput)
+{
+    if (aThrottleInput > 0.0)
+    {
+        m_car.isThrottlePressed = true;
+    }
+    double updatedThrottle = aThrottleInput + m_car.throttleInput;
+    if (updatedThrottle > m_car.maxThrottleInput)
+    {
+        m_car.throttleInput = m_car.maxThrottleInput;
+    }
+    else
+    {
+        m_car.throttleInput += aThrottleInput;
+    }
 }
 
 void Vehicle::ResetVehicle()
@@ -351,7 +391,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     DirectX::SimpleMath::Vector3 headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, headingRotation);
 
     //if (m_car.accelerationInput < m_car.inputDeadZone)
-    if (m_car.isAccelerating == true)
+    if (m_car.isAccelerating == true || m_car.throttleInput > 0.0)
     {
         double c1 = -Fd / mass;
         double tmp = gearRatio * finalDriveRatio / wheelRadius;
@@ -362,10 +402,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //aDQ->velocity.x = (aTimeDelta * (c1 + c2 + c3)) * headingVec.x;
         //aDQ->velocity.y = (aTimeDelta * (c1 + c2 + c3)) * headingVec.y;
         //aDQ->velocity.z = (aTimeDelta * (c1 + c2 + c3)) * headingVec.z;
+
         aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
     }
     // braking
-    else if (m_car.isBraking == true)
+    else if (m_car.isBraking == true || m_car.brakeInput > 0.0)
     {
         //  Only brake if the velocity is positive.
         //if (newQ[0] > 0.1) 
@@ -475,6 +516,33 @@ void Vehicle::Turn(double aTurnInput)
     m_car.steeringAngle += aTurnInput * 0.5;
 }
 
+void Vehicle::ThrottleBrakeDecay(const double aTimeDelta)
+{
+    if (m_car.isThrottlePressed == false)
+    {
+        if (m_car.throttleInput + (m_car.throttleDecayRate * aTimeDelta) < 0.0)
+        {
+            m_car.throttleInput = 0.0;
+        }
+        else
+        {
+            m_car.throttleInput = m_car.throttleDecayRate * aTimeDelta;
+        }
+    }
+
+    if (m_car.isBrakePressed == false)
+    {
+        if (m_car.brakeInput + (m_car.brakeDecayRate * aTimeDelta) < 0.0)
+        {
+            m_car.brakeInput = 0.0;
+        }
+        else
+        {
+            m_car.brakeInput = m_car.brakeDecayRate * aTimeDelta;
+        }
+    }
+}
+
 void Vehicle::UpdateModel(const double aTimer)
 {
     double wheelTurnRads = GetWheelRotationRadians(aTimer) + m_testRotation;
@@ -508,8 +576,9 @@ void Vehicle::UpdateModel(const double aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
+    ThrottleBrakeDecay(aTimeDelta);
     double preRot = m_car.carRotation;
-    m_car.carRotation += GetYawRate(aTimeDelta);
+    m_car.carRotation -= GetYawRate(aTimeDelta);
     double postRot = m_car.carRotation;
     double deltaSteer = preRot - postRot;
 
@@ -536,6 +605,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.speed = velocity;
 
     UpdateModel(aTimeDelta);
+    m_car.isBrakePressed = false;
+    m_car.isThrottlePressed = false;
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)

@@ -3365,6 +3365,20 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             ++m_menuSelect;
         }
     }
+    if (kb.Up)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->PressThrottle(aTimer.GetElapsedSeconds());
+        }
+    }
+    if (kb.Down)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->PressBrake(aTimer.GetElapsedSeconds());
+        }
+    }
     if (kb.Left)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
