@@ -510,17 +510,22 @@ void Camera::UpdateFirstPersonCamera()
 
 void Camera::UpdateFollowCamera()
 {
-
 	SetUpPos(m_followCamUp);
-	//SetTargetPos(m_followCamTarget + m_followCamTargOffset);
-	SetTargetPos(m_vehicleFocus->GetPos() + m_followCamTargOffset);
-	//SetTargetPos(m_followCamTarget);
-	DirectX::SimpleMath::Vector3 testPos(0.0, 3.0, -10.5);
+	DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
+	targetPos.y += 2.0;
+
+	SetTargetPos(targetPos);
+
 	m_followCamTarget = m_target;
+	double rotation = m_vehicleFocus->GetRotation();
+	double steeringOffset = m_vehicleFocus->GetSteering();
+
+	DirectX::SimpleMath::Vector3 testPos(-15.0, 1.0, 0.0);
+	DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(rotation - steeringOffset);
+	testPos = DirectX::SimpleMath::Vector3::Transform(testPos, rotMat);
 	testPos += m_followCamTarget;
-	//SetPos(m_followCamTarget - m_followCamDirection);
+
 	SetPos(testPos);
-	//SetPos(m_followCamDirection - m_followCamTarget + m_followCamPosOffset);
 }
 
 void Camera::UpdatePitchYaw(const float aPitch, const float aYaw)

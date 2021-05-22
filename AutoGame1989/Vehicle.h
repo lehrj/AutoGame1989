@@ -98,7 +98,9 @@ public:
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_car.q.position; };
     double GetRPM() { return m_car.omegaE; };
+    double GetRotation() const { return m_car.carRotation; };
     float GetSpeed() { return m_car.speed; };
+    double GetSteering() const { return m_car.steeringAngle; };
     double GetTime() { return m_car.time; };
     
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
