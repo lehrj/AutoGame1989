@@ -42,9 +42,12 @@ struct Car
     double maxBrakeRate;
     bool isThrottlePressed;
     bool isBrakePressed;
+    bool isTurningPressed;
 
     double steeringAngle;
+    double steeringAngleDecay;
     double steeringAngleMax;
+    double steeringSpeed; 
 
     double carRotation;
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
@@ -52,6 +55,7 @@ struct Car
     double wheelBase;
     bool isAccelerating;
     bool isBraking;
+   
 };
 
 struct CarModel
@@ -82,6 +86,8 @@ class Vehicle
 public:
     Vehicle();
 
+    std::vector<std::pair<std::string, double>> DebutGetUI() { return m_debugUI; };
+
     void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
     void GearDown();
     void GearUp();
@@ -102,7 +108,7 @@ public:
     void PressBrake(const double aBrakeInput);
     void PressThrottle(const double aThrottleInput);
     void ThrottleBrakeDecay(const double aTimeDelta);
-    void SteeringInputDecay(const double aTimeDetla);
+    void SteeringInputDecay(const double aTimeDelta);
 
     void ResetVehicle();
     void ToggleGas();
@@ -111,6 +117,9 @@ public:
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
 
 private:
+    void DebugClearUI() { m_debugUI.clear(); };
+    void DebugPushUILine(std::string aString, double aVal);
+    
     void DebugTestMove(const double aTimer, const double aTimeDelta);
 
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
@@ -150,5 +159,7 @@ private:
 
     double m_testMax = 0.0;
     double m_testMin = 1.0;
+
+    std::vector<std::pair<std::string, double>> m_debugUI;
 };
 

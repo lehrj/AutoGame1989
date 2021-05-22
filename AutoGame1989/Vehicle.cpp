@@ -250,15 +250,18 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_car.brakeDecayRate = -0.2;
     m_car.throttleDecayRate = -0.2;
-
+    m_car.steeringAngleDecay = -0.2;
+    m_car.steeringSpeed = 0.5;
 
     m_car.carRotation = 0.0;
     m_car.steeringAngle = Utility::ToRadians(0.0);
+    m_car.steeringAngleMax = Utility::ToRadians(33.0);
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
 
     m_car.isThrottlePressed = false;
     m_car.isBrakePressed = false;
+    m_car.isTurningPressed = false;
     m_car.isAccelerating = false;
     m_car.isBraking = false;
     m_car.wheelBase = 2.41;
@@ -432,6 +435,16 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         aDQ->velocity.z = 0.0;
     }
 
+    //if (m_car.brakeInput == 0.0 && m_car.maxThrottleInput == 0.0)
+    if (m_car.isBrakePressed == false && m_car.isThrottlePressed == false && aQ->velocity.Length() > 0.1)
+    {
+        //newQ.velocity *= 0.5;
+        //aDQ->velocity = (aTimeDelta * (- m_car.muR)) * headingVec;
+        double rollingResistance = Fr / mass;
+        aDQ->velocity = (aTimeDelta * (rollingResistance)) * headingVec;
+        //aDQ->velocity *=  0.5;
+    }
+
     //  Compute right-hand side values.
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
     aDQ->position.y = aTimeDelta * newQ.velocity.y;
@@ -487,6 +500,57 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     return;
 }
 
+void Vehicle::SteeringInputDecay(const double aTimeDelta)
+{
+    m_car.steeringAngleDecay = -0.2;
+    if (m_car.isTurningPressed == false)
+    {
+        if (m_car.steeringAngle != 0.0)
+        {
+            if (m_car.steeringAngle > 0.0)
+            {
+                if (m_car.steeringAngle + (m_car.steeringAngleDecay * aTimeDelta) < 0.0)
+                {
+                    m_car.steeringAngle = 0.0;
+                }
+                else
+                {
+                    m_car.steeringAngle += m_car.steeringAngleDecay * aTimeDelta;
+                }
+            }
+            else
+            {
+                if (m_car.steeringAngle - (m_car.steeringAngleDecay * aTimeDelta) > 0.0)
+                {
+                    m_car.steeringAngle = 0.0;
+                }
+                else
+                {
+                    m_car.steeringAngle -= m_car.steeringAngleDecay * aTimeDelta;
+                }
+            }
+        }
+    }
+
+    /*
+    if (m_car.isTurningPressed == false)
+    {
+        if (m_car.steeringAngle != 0.0)
+        {
+            if (m_car.steeringAngle + (m_car.steeringAngleDecay * aTimeDelta) < 0.0)
+            {
+                m_car.steeringAngle = 0.0;
+            }
+            else
+            {
+                m_car.steeringAngle -= m_car.steeringAngleDecay * aTimeDelta;
+            }
+        }
+    }
+    */
+    //m_car.isTurningPressed
+}
+
 void Vehicle::ToggleGas()
 {
     if (m_car.isAccelerating == true)
@@ -513,7 +577,19 @@ void Vehicle::ToggleBrake()
 
 void Vehicle::Turn(double aTurnInput)
 {
-    m_car.steeringAngle += aTurnInput * 0.5;
+    m_car.isTurningPressed = true;
+
+    m_car.steeringAngle += aTurnInput * m_car.steeringSpeed;
+
+    if (m_car.steeringAngle > m_car.steeringAngleMax)
+    {
+        m_car.steeringAngle = m_car.steeringAngleMax;
+    }
+    else if (m_car.steeringAngle < -m_car.steeringAngleMax)
+    {
+        m_car.steeringAngle = - m_car.steeringAngleMax;
+    }
+
 }
 
 void Vehicle::ThrottleBrakeDecay(const double aTimeDelta)
@@ -576,9 +652,14 @@ void Vehicle::UpdateModel(const double aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
+    DebugClearUI();
+
     ThrottleBrakeDecay(aTimeDelta);
+    SteeringInputDecay(aTimeDelta);
     double preRot = m_car.carRotation;
     m_car.carRotation -= GetYawRate(aTimeDelta);
+    m_car.carRotation = Utility::WrapAngle(m_car.carRotation);
+
     double postRot = m_car.carRotation;
     double deltaSteer = preRot - postRot;
 
@@ -604,13 +685,25 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     m_car.speed = velocity;
 
+    DebugPushUILine("Speed", m_car.speed);
+    DebugPushUILine("RPM", m_car.omegaE);
+    DebugPushUILine("steeringAngle;", m_car.steeringAngle);
+    DebugPushUILine("carRotation", m_car.carRotation);
+
     UpdateModel(aTimeDelta);
     m_car.isBrakePressed = false;
     m_car.isThrottlePressed = false;
+    m_car.isTurningPressed = false;
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
 {
     float move = 3.3;
     m_car.q.position.x += move;
+}
+
+void Vehicle::DebugPushUILine(std::string aString, double aVal)
+{
+    std::pair<std::string, double> newPair = std::make_pair(aString, aVal);
+    m_debugUI.push_back(newPair);
 }
