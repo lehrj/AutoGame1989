@@ -90,9 +90,8 @@ private:
     void InitializeProjectionMatrix(); //Pavel
     void InitializeViewMatrix(); //Pavel
 
-    void UpdateFollowCamera();
-    void UpdateFollowCamera2();
-    void UpdateFollowCamera3();
+    void UpdateChaseCamera();
+
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
     void UpdateViewMatrix();
