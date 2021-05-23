@@ -508,7 +508,7 @@ void Camera::UpdateFirstPersonCamera()
 	m_target = m_position + m_target;
 }
 
-void Camera::UpdateFollowCamera()
+void Camera::UpdateFollowCamera2()
 {
 	SetUpPos(m_followCamUp);
 	DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
@@ -521,11 +521,89 @@ void Camera::UpdateFollowCamera()
 	double steeringOffset = m_vehicleFocus->GetSteering();
 
 	DirectX::SimpleMath::Vector3 testPos(-15.0, 1.0, 0.0);
+	DirectX::SimpleMath::Vector3 testPosA = testPos;
+	DirectX::SimpleMath::Vector3 testPosB = testPos;
 	DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(rotation - steeringOffset);
-	testPos = DirectX::SimpleMath::Vector3::Transform(testPos, rotMat);
-	testPos += m_followCamTarget;
+	DirectX::SimpleMath::Matrix rotMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(rotation);
 
+	testPos = DirectX::SimpleMath::Vector3::Transform(testPos, rotMat);
+	testPosA = DirectX::SimpleMath::Vector3::Transform(testPosA, rotMat);
+	testPosB = DirectX::SimpleMath::Vector3::Transform(testPosB, rotMat);
+	DirectX::SimpleMath::Vector3 testPos2 = DirectX::SimpleMath::Vector3::Transform(testPosB, rotMat2);
+	DirectX::SimpleMath::Vector3 testPosLerp = DirectX::SimpleMath::Vector3::Lerp(testPosA, testPos2, 0.01);
+
+	testPos += m_followCamTarget;
+	testPosLerp += m_followCamTarget;
+
+	if (testPosLerp != testPos)
+	{
+		double aLength = testPos.Length();
+		double aLerpLength = testPosLerp.Length();
+		int testBreak = 0;
+		testBreak++;
+	}
+	//SetPos(testPosLerp);
 	SetPos(testPos);
+}
+
+void Camera::UpdateFollowCamera()
+{
+	SetUpPos(m_followCamUp);
+	SetTargetPos(m_vehicleFocus->GetPos() + m_followCamTargOffset);
+	m_chaseCameQuat = DirectX::SimpleMath::Quaternion::Lerp(m_chaseCameQuat, DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetRotation(), 0.0, 0.0), m_chaseCamLerpFactor);
+	DirectX::SimpleMath::Vector3 cameraPos = m_followCamPos;
+	cameraPos = DirectX::SimpleMath::Vector3::Transform(cameraPos, m_chaseCameQuat);
+	cameraPos += m_vehicleFocus->GetPos();
+	SetPos(cameraPos);
+}
+
+void Camera::UpdateFollowCamera3()
+{
+	SetUpPos(m_followCamUp);
+	DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
+	targetPos.y += 2.0;
+
+	SetTargetPos(targetPos);
+
+	m_followCamTarget = m_target;
+	double rotation = m_vehicleFocus->GetRotation();
+	double steeringOffset = m_vehicleFocus->GetSteering();
+
+	DirectX::SimpleMath::Vector3 testPos(-15.0, 1.0, 0.0);
+	DirectX::SimpleMath::Vector3 testPosA = testPos;
+	DirectX::SimpleMath::Vector3 testPosB = testPos;
+	DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(rotation - steeringOffset);
+	DirectX::SimpleMath::Matrix rotMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(rotation);
+
+	testPos = DirectX::SimpleMath::Vector3::Transform(testPos, rotMat);
+	testPosA = DirectX::SimpleMath::Vector3::Transform(testPosA, rotMat);
+	testPosB = DirectX::SimpleMath::Vector3::Transform(testPosB, rotMat);
+	DirectX::SimpleMath::Vector3 testPos2 = DirectX::SimpleMath::Vector3::Transform(testPosB, rotMat2);
+	DirectX::SimpleMath::Vector3 testPosLerp = DirectX::SimpleMath::Vector3::Lerp(testPosA, testPos2, 0.01);
+
+	testPos += m_followCamTarget;
+	testPosLerp += m_followCamTarget;
+
+	if (testPosLerp != testPos)
+	{
+		double aLength = testPos.Length();
+		double aLerpLength = testPosLerp.Length();
+		int testBreak = 0;
+		testBreak++;
+	}
+	//SetPos(testPosLerp);
+	//SetPos(testPos);
+
+	DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rotation, 0.0, 0.0);
+
+	m_testRotQuat = DirectX::SimpleMath::Quaternion::Lerp(m_testRotQuat, testQuat, 0.1f);
+
+	//DirectX::SimpleMath::Vector3 cameraPos(0, 0.1f, 0.6f);
+	DirectX::SimpleMath::Vector3 cameraPos(-15.0, 3.0f, 0.0f);
+	//DirectX::SimpleMath::Vector3 cameraPos = m_followCamTargOffset;
+	cameraPos = DirectX::SimpleMath::Vector3::Transform(cameraPos, DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_testRotQuat));
+	cameraPos += m_vehicleFocus->GetPos();// +m_followCamTargOffset;
+	SetPos(cameraPos);
 }
 
 void Camera::UpdatePitchYaw(const float aPitch, const float aYaw)

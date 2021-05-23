@@ -91,6 +91,8 @@ private:
     void InitializeViewMatrix(); //Pavel
 
     void UpdateFollowCamera();
+    void UpdateFollowCamera2();
+    void UpdateFollowCamera3();
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
     void UpdateViewMatrix();
@@ -151,13 +153,19 @@ private:
     bool                            m_isFpYaxisInverted = true; // toggle of turning on/off inverting the firstperson camera y axis control, set to true because I am weirdo that likes an inverted y axis
 
     DirectX::SimpleMath::Vector3 m_followCamDirection = DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Vector3 m_followCamPos = - DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-15.0, 3.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_followCamTarget = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_followCamUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 m_followCamPosOffset = DirectX::SimpleMath::Vector3(-1.0, 1.0, 0.0);
-    DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 0.2, 0.0);
+    DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 2.2, 0.0);
     double                       m_followCamDistance = 1.0;
 
     Vehicle const * m_vehicleFocus;
+
+
+
+    DirectX::SimpleMath::Quaternion m_testRotQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion m_chaseCameQuat = DirectX::SimpleMath::Quaternion::Identity;
+    const double m_chaseCamLerpFactor = 0.1;
 };
 
