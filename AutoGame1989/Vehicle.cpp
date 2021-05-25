@@ -13,8 +13,16 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Matrix view = aView;
     DirectX::SimpleMath::Matrix proj = aProj;
     
-    m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, DirectX::Colors::DarkRed);
-    m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, DirectX::Colors::Red);
+    // testing variations of volvo yellow color
+    float x = 252.0 / 256.0;
+    float y = 255.0 / 256.0;
+    float z = 164.0 / 256.0;
+    DirectX::SimpleMath::Vector4 volvoYellow(x, y, z, 1.0);
+    DirectX::XMFLOAT4 testColor(0.984375, 0.91015625, 0.01171875, 1.0);
+    
+    DirectX::SimpleMath::Vector4 testV = testColor;
+    m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, testV);
+    m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
     m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj);
     m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj);
     
@@ -121,6 +129,23 @@ double Vehicle::GetYawRate(double aTimeDelta)
     double omegaDeg = Utility::ToDegrees(omega);
     double omegaTdeg = Utility::ToDegrees(omegaT);
 
+    
+    /// ///////////////////
+    // testing wheel slip eqations and verables
+    DirectX::SimpleMath::Vector3 testMuK = m_car.mass * ((m_car.q.velocity * m_car.q.velocity) / turnRadius);
+    DirectX::SimpleMath::Vector3 testMuK2 = testMuK;
+    testMuK = testMuK / (m_car.mass * m_car.gravity);
+
+    double Fn = m_car.mass * -m_car.gravity * cos(0.0);
+
+    if (steeringAngle > 0.1 || steeringAngle < -0.1)
+    {
+        double aaTestTorque = m_car.testTorque;
+        double aaTestAngularVelocity = m_car.testRearAnglularVelocity;
+        int testBreak = 0;
+        testBreak++;
+    }
+
     return omegaT;
 }
 
@@ -164,6 +189,21 @@ double Vehicle::GetWheelRotationRadians(const double aTimeDelta)
     return rotations;
 }
 
+double Vehicle::GetWheelRotationRadiansRear(const double aTimeDelta)
+{
+    double rotations = 0.0;
+    if (aTimeDelta != 0.0)
+    {
+        rotations = m_car.testRearAnglularVelocity * aTimeDelta;
+    }
+    else
+    {
+        rotations = 0.0;
+    }
+
+    return rotations;
+}
+
 void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
     // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
@@ -179,7 +219,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
     m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelRadius, 3);
-    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelRadius, 6);
+    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, wheelRadius, 3);
 
     m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.frontAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -248,8 +288,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.maxThrottleRate = 1.0;
     m_car.maxBrakeRate = 5.0;
 
-    m_car.brakeDecayRate = -0.2;
-    m_car.throttleDecayRate = -0.2;
+    m_car.brakeDecayRate = 1.2;
+    m_car.throttleDecayRate = 1.2;
     m_car.steeringAngleDecay = -0.2;
     m_car.steeringSpeed = 0.5;
 
@@ -265,6 +305,13 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.isAccelerating = false;
     m_car.isBraking = false;
     m_car.wheelBase = 2.41;
+
+    // test values for wheel slip
+    m_car.testRearCylinderMass = 75.0;
+    m_car.testTorque = 0.0;
+    m_car.testRearAnglularVelocity = 0.0;
+    m_car.testRearAngularVelocityAngle = 0.0;
+
 
     InitializeModel(aContext);
 }
@@ -407,6 +454,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //aDQ->velocity.z = (aTimeDelta * (c1 + c2 + c3)) * headingVec.z;
 
         aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
+        m_car.testTorque = (c1 + c2 + c3) / aTimeDelta;
     }
     // braking
     else if (m_car.isBraking == true || m_car.brakeInput > 0.0)
@@ -497,6 +545,10 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
     
+    // Test rear torque
+    //m_car.testRearAnglularVelocity += (total torque / (Mass * radius ^ 2 / 2)) * time step
+    m_car.testRearAnglularVelocity = (m_car.testTorque / (m_car.testRearCylinderMass * (m_car.wheelRadius * m_car.wheelRadius) / 2)) * aTimeDelta;
+
     return;
 }
 
@@ -596,25 +648,26 @@ void Vehicle::ThrottleBrakeDecay(const double aTimeDelta)
 {
     if (m_car.isThrottlePressed == false)
     {
-        if (m_car.throttleInput + (m_car.throttleDecayRate * aTimeDelta) < 0.0)
+        if (m_car.throttleInput - (m_car.throttleDecayRate * aTimeDelta) < 0.0)
         {
             m_car.throttleInput = 0.0;
         }
         else
         {
-            m_car.throttleInput = m_car.throttleDecayRate * aTimeDelta;
+            double testDecay = m_car.throttleDecayRate * aTimeDelta;
+            m_car.throttleInput -= m_car.throttleDecayRate * aTimeDelta;
         }
     }
 
     if (m_car.isBrakePressed == false)
     {
-        if (m_car.brakeInput + (m_car.brakeDecayRate * aTimeDelta) < 0.0)
+        if (m_car.brakeInput - (m_car.brakeDecayRate * aTimeDelta) < 0.0)
         {
             m_car.brakeInput = 0.0;
         }
         else
         {
-            m_car.brakeInput = m_car.brakeDecayRate * aTimeDelta;
+            m_car.brakeInput -= m_car.brakeDecayRate * aTimeDelta;
         }
     }
 }
@@ -623,6 +676,13 @@ void Vehicle::UpdateModel(const double aTimer)
 {
     double wheelTurnRads = GetWheelRotationRadians(aTimer) + m_testRotation;
     m_testRotation = wheelTurnRads;
+    //double wheelTurnRadsRear = GetWheelRotationRadiansRear(aTimer) + m_testRotationRear;
+    double wheelTurnRadsRear = GetWheelRotationRadiansRear(aTimer) + m_testRotation;
+    //m_testRotationRear = (wheelTurnRadsRear + wheelTurnRads) / 2;
+    m_testRotationRear = wheelTurnRadsRear;
+    DebugPushUILine("m_testRotation", m_testRotation);
+    DebugPushUILine("m_testRotationRear", m_testRotationRear);
+    DebugPushUILine("GetWheelRotationRadiansRear(aTimer)", GetWheelRotationRadiansRear(aTimer));
     DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
 
     DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
@@ -637,6 +697,7 @@ void Vehicle::UpdateModel(const double aTimer)
     ///////
 
     DirectX::SimpleMath::Matrix wheelSpinMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads);
+    DirectX::SimpleMath::Matrix wheelSpinRearMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRadsRear);
 
     DirectX::SimpleMath::Matrix stearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
     m_carModel.frontAxelMatrix = m_carModel.frontAxelRotation * wheelSpinMat * stearingTurn;
@@ -644,7 +705,8 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.frontAxelMatrix *= testTurn;
     m_carModel.frontAxelMatrix *= updateMatrix;
 
-    m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinMat;
+    //m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinMat;
+    m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinRearMat;
     m_carModel.rearAxelMatrix *= m_carModel.rearAxelTranslation;
     m_carModel.rearAxelMatrix *= testTurn;
     m_carModel.rearAxelMatrix *= updateMatrix;
@@ -689,6 +751,10 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DebugPushUILine("RPM", m_car.omegaE);
     DebugPushUILine("steeringAngle;", m_car.steeringAngle);
     DebugPushUILine("carRotation", m_car.carRotation);
+    DebugPushUILine("m_car.throttleInput", m_car.throttleInput);
+    DebugPushUILine("m_car.brakeInput", m_car.brakeInput);
+
+    TestGetForceLateral();
 
     UpdateModel(aTimeDelta);
     m_car.isBrakePressed = false;
@@ -706,4 +772,26 @@ void Vehicle::DebugPushUILine(std::string aString, double aVal)
 {
     std::pair<std::string, double> newPair = std::make_pair(aString, aVal);
     m_debugUI.push_back(newPair);
+}
+
+void Vehicle::TestGetForceLateral()
+{
+    double radius = GetTurnRadius();
+    double mass = m_car.mass;
+    double velocity = m_car.q.velocity.Length();
+    velocity *= velocity;
+    double muK = 0.7; // guess at this point
+
+    double forceLat;
+    forceLat = ((mass * velocity) / radius) - (muK * mass * m_car.gravity * cos(0.0));  
+    DebugPushUILine("Force Lateral", forceLat);
+
+    DirectX::SimpleMath::Vector3 testForceLat;
+    DirectX::SimpleMath::Vector3 gravVec(0.0, -9.8, 0.0);
+
+    testForceLat = ((mass * (m_car.q.velocity * m_car.q.velocity)) / radius) - (muK * mass * gravVec * cos(0.0));
+
+    DebugPushUILine("Force Lateral X ", testForceLat.x);
+    DebugPushUILine("Force Lateral Y ", testForceLat.y);
+    DebugPushUILine("Force Lateral Z ", testForceLat.z);
 }

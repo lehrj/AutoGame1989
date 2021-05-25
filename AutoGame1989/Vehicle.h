@@ -20,7 +20,7 @@ struct Car
     double area;
     double density;
     double Cd;
-    double muR;
+    double muR;  // rolling friction
     double omegaE;
     double redline;
     double finalDriveRatio;
@@ -55,7 +55,12 @@ struct Car
     double wheelBase;
     bool isAccelerating;
     bool isBraking;
-   
+
+    // test values for wheel slip
+    double testRearCylinderMass;
+    double testTorque;
+    double testRearAnglularVelocity;
+    double testRearAngularVelocityAngle;
 };
 
 struct CarModel
@@ -130,9 +135,13 @@ private:
     double GetYawRate(double aTimeDelta);
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
     double GetWheelRotationRadians(const double aTimeDelta);
+    double GetWheelRotationRadiansRear(const double aTimeDelta);
 
     void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
+    
+    void TestGetForceLateral();
+
     void UpdateModel(const double aTimer);
     
     Car                             m_car;
@@ -158,6 +167,7 @@ private:
     DirectX::SimpleMath::Vector3 m_debugPoint = DirectX::SimpleMath::Vector3::Zero;
 
     double m_testRotation = 0.0;
+    double m_testRotationRear = 0.0;
 
     double m_testMax = 0.0;
     double m_testMin = 1.0;
