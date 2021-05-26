@@ -70,11 +70,17 @@ struct CarModel
     std::unique_ptr<DirectX::GeometricPrimitive>    frontAxel;
     std::unique_ptr<DirectX::GeometricPrimitive>    rearAxel;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    frontTire;
+    std::unique_ptr<DirectX::GeometricPrimitive>    rearTire;
+
     DirectX::SimpleMath::Matrix bodyMatrix;
     DirectX::SimpleMath::Matrix bodyTopMatrix;
 
     DirectX::SimpleMath::Matrix frontAxelMatrix;
     DirectX::SimpleMath::Matrix rearAxelMatrix;
+
+    DirectX::SimpleMath::Matrix frontTireMatrix;
+    DirectX::SimpleMath::Matrix rearTireMatrix;
 
     DirectX::SimpleMath::Matrix localBodyMatrix;
     DirectX::SimpleMath::Matrix localBodyTopMatrix;
@@ -82,8 +88,14 @@ struct CarModel
     DirectX::SimpleMath::Matrix frontAxelRotation;
     DirectX::SimpleMath::Matrix frontAxelTranslation;
 
+    DirectX::SimpleMath::Matrix frontTireRotation;
+    DirectX::SimpleMath::Matrix frontTireTranslation;
+
     DirectX::SimpleMath::Matrix rearAxelRotation;
     DirectX::SimpleMath::Matrix rearAxelTranslation;
+
+    DirectX::SimpleMath::Matrix rearTireRotation;
+    DirectX::SimpleMath::Matrix rearTireTranslation;
 };
 
 class Vehicle
