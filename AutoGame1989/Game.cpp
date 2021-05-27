@@ -3109,6 +3109,17 @@ void Game::Render()
 
     m_batch3->Begin();
    
+    const float y = 0.3186 * 2.0;
+    DirectX::SimpleMath::Vector3 pointA(-10.0, y, 0.0);
+    DirectX::SimpleMath::Vector3 pointB(10.0, y, 0.0);
+    
+    VertexPositionColor vertA(pointA, DirectX::Colors::White);
+    VertexPositionColor vertB(pointB, DirectX::Colors::White);
+    VertexPositionColor vertC(DirectX::SimpleMath::Vector3::Zero, DirectX::Colors::Blue);
+    m_batch3->DrawLine(vertA, vertB);
+    m_batch3->DrawLine(vertA, vertC);
+    m_batch3->DrawLine(vertB, vertC);
+
     /*
     DrawDebugLines(m_vehicle->GetPos(), DirectX::Colors::White);
     DrawDebugLines(m_vehicle->GetDebugPoint(), DirectX::Colors::Yellow);

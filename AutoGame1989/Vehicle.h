@@ -142,6 +142,7 @@ private:
     void DebugTestMove(const double aTimer, const double aTimeDelta);
 
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+    void InitializeModel2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     double GetCarRotation();
     double GetTurnRadius();
     double GetYawRate(double aTimeDelta);

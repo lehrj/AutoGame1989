@@ -211,7 +211,9 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 {
     // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
     const float wheelRadius = m_car.wheelRadius;
-    const float axelRadius = wheelRadius * 0.9;
+    const float wheelDiameter = wheelRadius * 2.0;
+    const float axelRadius = wheelRadius * .9;
+    const float axelDiameter = axelRadius * 2.0;
     const float length = 4.3942;
     const float width = 1.8034;
     const float heightTotal = 1.27;
@@ -223,11 +225,81 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
+    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 3);
+    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 3);
+
+    m_carModel.frontTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 32);
+    m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 32);
+
+    m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.frontAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.rearAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.frontTireMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.rearTireMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+    m_carModel.bodyMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, (height + (wheelRadius)), 0.0));
+
+    DirectX::SimpleMath::Matrix axelRotation = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+
+    m_carModel.frontAxelMatrix *= axelRotation;
+    //m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, axelRadius * 0.5, 0.0));
+    m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, axelRadius, 0.0));
+    m_carModel.rearAxelMatrix *= axelRotation;
+    m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, axelRadius * 0.5, 0.0));
+    
+    m_carModel.frontTireMatrix *= axelRotation;
+    //m_carModel.frontTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius * 0.5, 0.0));
+    m_carModel.frontTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelDiameter, 0.0));
+    m_carModel.rearTireMatrix *= axelRotation;
+    m_carModel.rearTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius * 0.5, 0.0));
+
+    const float topIndent = 0.2;   
+    const float topHeight = heightTotal * 0.4;
+    const float topLength = length * .6;
+    const float roofHeightAlignment = height + wheelRadius + wheelRadius + topHeight;
+    const float roofLengthAlignment = length - topLength - topIndent;
+    DirectX::SimpleMath::Vector3 carBodyTopSize(topLength, topHeight, width - topIndent);
+    m_carModel.bodyTop = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodyTopSize);
+    m_carModel.bodyTopMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.bodyTopMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3( - roofLengthAlignment, roofHeightAlignment, 0.0));
+    
+    m_carModel.localBodyMatrix = m_carModel.bodyMatrix;
+    m_carModel.localBodyTopMatrix = m_carModel.bodyTopMatrix;
+
+    m_carModel.frontAxelRotation *= axelRotation;
+    m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, axelRadius, 0.0));
+
+    m_carModel.rearAxelRotation = axelRotation;
+    m_carModel.rearAxelTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, axelRadius, 0.0));
+
+    m_carModel.frontTireRotation *= axelRotation;
+    m_carModel.frontTireTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
+
+    m_carModel.rearTireRotation = axelRotation;
+    m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+}
+
+void Vehicle::InitializeModel2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
+{
+    // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
+    const float wheelRadius = m_car.wheelRadius;
+    const float axelRadius = wheelRadius * 0.9;
+    const float length = 4.3942;
+    const float width = 1.8034;
+    const float heightTotal = 1.27;
+    const float height = heightTotal * 0.6;
+
+    const float axelLength = width + 0.6;
+    const float tireLength = width + 0.5;
+    const float wheelBase = m_car.wheelBase;
+    DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
+
+    m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
     m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelRadius, 3);
     m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelRadius, 3);
 
     m_carModel.frontTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelRadius, 32);
-    m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelRadius, 32);
+    m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelRadius, 323);
 
     m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.frontAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -243,13 +315,13 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, axelRadius * 0.5, 0.0));
     m_carModel.rearAxelMatrix *= axelRotation;
     m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, axelRadius * 0.5, 0.0));
-    
+
     m_carModel.frontTireMatrix *= axelRotation;
     m_carModel.frontTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius * 0.5, 0.0));
     m_carModel.rearTireMatrix *= axelRotation;
     m_carModel.rearTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius * 0.5, 0.0));
 
-    const float topIndent = 0.2;   
+    const float topIndent = 0.2;
     const float topHeight = heightTotal * 0.4;
     const float topLength = length * .6;
     const float roofHeightAlignment = height + wheelRadius + wheelRadius + topHeight;
@@ -257,8 +329,8 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     DirectX::SimpleMath::Vector3 carBodyTopSize(topLength, topHeight, width - topIndent);
     m_carModel.bodyTop = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodyTopSize);
     m_carModel.bodyTopMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.bodyTopMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3( - roofLengthAlignment, roofHeightAlignment, 0.0));
-    
+    m_carModel.bodyTopMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-roofLengthAlignment, roofHeightAlignment, 0.0));
+
     m_carModel.localBodyMatrix = m_carModel.bodyMatrix;
     m_carModel.localBodyTopMatrix = m_carModel.bodyTopMatrix;
 
@@ -703,6 +775,7 @@ void Vehicle::UpdateModel(const double aTimer)
     DebugPushUILine("m_testRotation", m_testRotation);
     DebugPushUILine("m_testRotationRear", m_testRotationRear);
     DebugPushUILine("GetWheelRotationRadiansRear(aTimer)", GetWheelRotationRadiansRear(aTimer));
+    
     DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
 
     DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
