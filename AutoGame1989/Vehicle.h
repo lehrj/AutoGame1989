@@ -73,6 +73,12 @@ struct CarModel
     std::unique_ptr<DirectX::GeometricPrimitive>    frontTire;
     std::unique_ptr<DirectX::GeometricPrimitive>    rearTire;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    windShield;
+    DirectX::SimpleMath::Matrix windShieldMatrix;
+    DirectX::SimpleMath::Matrix windShieldTranslation;
+    DirectX::SimpleMath::Matrix localWindShieldMatrix;
+    DirectX::SimpleMath::Matrix windShieldRot;
+
     DirectX::SimpleMath::Matrix bodyMatrix;
     DirectX::SimpleMath::Matrix bodyTopMatrix;
 
