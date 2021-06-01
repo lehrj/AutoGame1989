@@ -30,7 +30,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.frontTire->Draw(m_carModel.frontTireMatrix, view, proj, tireColor);
     m_carModel.rearTire->Draw(m_carModel.rearTireMatrix, view, proj, tireColor);
 
-    m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, DirectX::Colors::Red);
+    //m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, DirectX::Colors::Red);
 }
 
 void Vehicle::GearDown()
@@ -274,7 +274,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     //windShieldSize.x *= 0.5;
     //windShieldSize.z *= 0.99;
     m_carModel.windShield = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), windShieldSize);
-
 
     m_carModel.windShieldMatrix = DirectX::SimpleMath::Matrix::Identity;
 
@@ -732,7 +731,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_testRotationRear = wheelTurnRadsRear;
     DebugPushUILine("m_testRotation", m_testRotation);
     DebugPushUILine("m_testRotationRear", m_testRotationRear);
-    DebugPushUILine("GetWheelRotationRadiansRear(aTimer)", GetWheelRotationRadiansRear(aTimer));
+    //DebugPushUILine("GetWheelRotationRadiansRear(aTimer)", GetWheelRotationRadiansRear(aTimer));
     
     DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
 
@@ -743,8 +742,8 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.bodyMatrix *=  updateMatrix;
 
     m_carModel.bodyTopMatrix = m_carModel.localBodyTopMatrix;
-    //m_carModel.bodyTopMatrix *= testTurn;
-    //m_carModel.bodyTopMatrix *= updateMatrix;
+    m_carModel.bodyTopMatrix *= testTurn;
+    m_carModel.bodyTopMatrix *= updateMatrix;
     ///////
 
     DirectX::SimpleMath::Matrix wheelSpinMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads);
@@ -815,8 +814,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DebugPushUILine("RPM", m_car.omegaE);
     DebugPushUILine("steeringAngle;", m_car.steeringAngle);
     DebugPushUILine("carRotation", m_car.carRotation);
-    DebugPushUILine("m_car.throttleInput", m_car.throttleInput);
-    DebugPushUILine("m_car.brakeInput", m_car.brakeInput);
+    //DebugPushUILine("m_car.throttleInput", m_car.throttleInput);
+    //DebugPushUILine("m_car.brakeInput", m_car.brakeInput);
 
     TestGetForceLateral();
 
