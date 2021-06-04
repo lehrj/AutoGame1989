@@ -191,6 +191,11 @@ double Vehicle::GetWheelRotationRadians(const double aTimeDelta)
 
     double rotations = turnRatio * (2.0 * Utility::GetPi());
     
+    // testing wheel rotation and distance
+    double circumferance = 2.0 * Utility::GetPi() * m_car.wheelRadius;
+    double wheelMove = rotations * circumferance;
+    m_debugWheelDistance += wheelMove;
+
     return rotations;
 }
 
@@ -823,6 +828,9 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.isBrakePressed = false;
     m_car.isThrottlePressed = false;
     m_car.isTurningPressed = false;
+
+    DebugPushUILine("m_debugWheelDistance", m_debugWheelDistance);
+    DebugPushUILine("x Pos                  ", m_car.q.position.x);
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
