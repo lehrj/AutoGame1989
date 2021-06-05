@@ -116,8 +116,8 @@ private:
     DirectX::SimpleMath::Matrix     m_projectionMatrix;
     DirectX::SimpleMath::Matrix     m_orthogonalMatrix;
 
-    const float                     m_posTravelSpeed = 2.6f;
-    const float                     m_rotationTravelSpeed = 1.3f;
+    const float                     m_posTravelSpeed = 3.6f;
+    const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 
     //bool                            m_isCameraAtDestination;
@@ -126,11 +126,12 @@ private:
     CameraState                     m_cameraState;
     
     DirectX::SimpleMath::Matrix     m_rotationMatrix;
-
+    
     DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector4    m_forward        = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector4    m_defaultRight   = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector4    m_right          = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
 
     float                           m_moveBackForward = 0.0f;
     float                           m_moveLeftRight = 0.0f;

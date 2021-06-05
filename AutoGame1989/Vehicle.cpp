@@ -30,7 +30,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.frontTire->Draw(m_carModel.frontTireMatrix, view, proj, tireColor);
     m_carModel.rearTire->Draw(m_carModel.rearTireMatrix, view, proj, tireColor);
 
-    //m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, DirectX::Colors::Red);
+    m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, volvoYellow);
 }
 
 void Vehicle::GearDown()
@@ -228,7 +228,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
     const float wheelRadius = m_car.wheelRadius;
     const float wheelDiameter = wheelRadius * 2.0;
-    const float axelRadius = wheelRadius * 1.0;
+    const float axelRadius = wheelRadius * 0.8;
     const float axelDiameter = axelRadius * 2.0;
     const float length = 4.3942;
     const float width = 1.8034;
@@ -283,7 +283,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     /// windshield start   
     //DirectX::SimpleMath::Vector3 windShieldSize = carBodyTopSize;
-    DirectX::SimpleMath::Vector3 windShieldSize(1.0, 1.0, 1.0);
+    DirectX::SimpleMath::Vector3 windShieldSize(1.0, 0.5, carBodyTopSize.z - 0.001);
     const float windShieldLengthAlignment = (topLength * 2.0) - roofLengthAlignment;
     //windShieldSize.x *= 0.5;
     //windShieldSize.z *= 0.99;
@@ -292,11 +292,21 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.windShieldMatrix = DirectX::SimpleMath::Matrix::Identity;
 
     m_carModel.windShieldRot = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-45.0));
-
+    DirectX::SimpleMath::Quaternion testWindShieldRotate = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, Utility::ToRadians(-99.0));
+    m_carModel.windShieldMatrix = DirectX::SimpleMath::Matrix::Transform(m_carModel.windShieldMatrix, testWindShieldRotate);
     
-    m_carModel.windShieldMatrix = m_carModel.windShieldRot;
+    //m_carModel.windShieldMatrix = m_carModel.windShieldRot;
     //m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(+ roofLengthAlignment - carBodyTopSize.x, roofHeightAlignment, 0.0));
-    m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(windShieldLengthAlignment, roofHeightAlignment, 0.0));
+    DirectX::SimpleMath::Vector3 testWindShieldAllignment = DirectX::SimpleMath::Vector3::Zero;
+    testWindShieldAllignment.x = windShieldLengthAlignment;
+    testWindShieldAllignment.y = roofHeightAlignment;
+    testWindShieldAllignment.x = 3.71535993;
+    testWindShieldAllignment.y = 1.90719998;
+
+    testWindShieldAllignment.x = 1.255;
+    testWindShieldAllignment.y = 1.711;
+
+    m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(testWindShieldAllignment));
     
     m_carModel.localWindShieldMatrix = m_carModel.windShieldMatrix;
     
@@ -550,7 +560,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //aDQ->velocity.z = 0.0;
     }
 
-    /*
+    
     //if (m_car.brakeInput == 0.0 && m_car.maxThrottleInput == 0.0)
     if (m_car.isBrakePressed == false && m_car.isThrottlePressed == false && aQ->velocity.Length() > 0.1)
     //if (aQ->velocity.Length() > 0.1)
@@ -561,7 +571,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         aDQ->velocity = (aTimeDelta * (rollingResistance)) * headingVec;
         //aDQ->velocity *=  0.5;
     }
-    */
+    
 
     //  Compute right-hand side values.
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
@@ -801,6 +811,15 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.rearTireMatrix *= m_carModel.rearTireTranslation;
     m_carModel.rearTireMatrix *= testTurn;
     m_carModel.rearTireMatrix *= updateMatrix;
+
+    // windshield
+    m_carModel.bodyTopMatrix = m_carModel.localBodyTopMatrix;
+    m_carModel.bodyTopMatrix *= testTurn;
+    m_carModel.bodyTopMatrix *= updateMatrix;
+
+    m_carModel.windShieldMatrix = m_carModel.localWindShieldMatrix;
+    m_carModel.windShieldMatrix *= testTurn;
+    m_carModel.windShieldMatrix *= updateMatrix;
     
 }
 
@@ -852,15 +871,13 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.isBrakePressed = false;
     m_car.isThrottlePressed = false;
     m_car.isTurningPressed = false;
-
+    /*
     m_debugVehicleDistanceTraveled += DirectX::SimpleMath::Vector3::Distance(prevPos, m_car.q.position);
     DebugPushUILine("m_debugVehicleDistanceTraveled", m_debugVehicleDistanceTraveled);
     DebugPushUILine("m_debugWheelDistance          ", m_debugWheelDistance);
     DebugPushUILine("x Pos                           ", m_car.q.position.x);
+    */
 
-    DebugPushUILine("m_car.q.velocity.x          ", m_car.q.velocity.x);
-    DebugPushUILine("m_car.q.velocity.z          ", m_car.q.velocity.z);
-    DebugPushUILine("gear         ", m_car.gearNumber);
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
