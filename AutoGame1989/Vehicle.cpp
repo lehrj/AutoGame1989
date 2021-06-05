@@ -193,9 +193,18 @@ double Vehicle::GetWheelRotationRadians(const double aTimeDelta)
     
     // testing wheel rotation and distance
     double circumferance = 2.0 * Utility::GetPi() * m_car.wheelRadius;
+
     double wheelMove = rotations * circumferance;
+    //double wheelMove = turnRatio * circumferance;
+
     m_debugWheelDistance += wheelMove;
 
+    if (m_debugWheelDistance > 0.5)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+    //return turnRatio;
     return rotations;
 }
 
@@ -219,7 +228,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
     const float wheelRadius = m_car.wheelRadius;
     const float wheelDiameter = wheelRadius * 2.0;
-    const float axelRadius = wheelRadius * .8;
+    const float axelRadius = wheelRadius * 1.0;
     const float axelDiameter = axelRadius * 2.0;
     const float length = 4.3942;
     const float width = 1.8034;
@@ -235,8 +244,8 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 3);
     m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 3);
 
-    m_carModel.frontTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 32);
-    m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 32);
+    m_carModel.frontTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 16);
+    m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 16);
 
     m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.frontAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -319,6 +328,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.redline = 7200;
     m_car.finalDriveRatio = 3.44;
     m_car.wheelRadius = 0.3186;
+
     m_car.numberOfGears = 6;
     m_car.muR = 0.015;             //  coefficient of rolling friction
     m_car.omegaE = 1000.0;         //  engine rpm
@@ -340,7 +350,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.throttleInput = 0.0;
     m_car.brakeInput = 0.0;
     m_car.maxThrottleRate = 1.0;
-    m_car.maxBrakeRate = 5.0;
+    //m_car.maxBrakeRate = 5.0;
+    m_car.maxBrakeRate = 15.0;
 
     m_car.brakeDecayRate = 1.2;
     m_car.throttleDecayRate = 1.2;
@@ -495,7 +506,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     DirectX::SimpleMath::Vector3 headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, headingRotation);
 
     //if (m_car.accelerationInput < m_car.inputDeadZone)
-    if (m_car.isAccelerating == true || m_car.throttleInput > 0.0)
+    //if (m_car.isAccelerating == true || m_car.throttleInput > 0.0)
+    if (m_car.throttleInput > 0.0)
     {
         double c1 = -Fd / mass;
         double tmp = gearRatio * finalDriveRatio / wheelRadius;
@@ -511,7 +523,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         m_car.testTorque = (c1 + c2 + c3) / aTimeDelta;
     }
     // braking
-    else if (m_car.isBraking == true || m_car.brakeInput > 0.0)
+    //else if (m_car.isBraking == true || m_car.brakeInput > 0.0)
+    else if (m_car.brakeInput > 0.0)
     {
         //  Only brake if the velocity is positive.
         //if (newQ[0] > 0.1) 
@@ -523,22 +536,24 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         }
         else
         {
-            //dq[0] = 0.0;
-            aDQ->velocity.x = 0.0;
-            aDQ->velocity.y = 0.0;
-            aDQ->velocity.z = 0.0;
+            aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
+            //aDQ->velocity.x = 0.0;
+            //aDQ->velocity.y = 0.0;
+            //aDQ->velocity.z = 0.0;
         }
     }
     else
     {
-        //dq[0] = 0.0;
-        aDQ->velocity.x = 0.0;
-        aDQ->velocity.y = 0.0;
-        aDQ->velocity.z = 0.0;
+        aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
+        //aDQ->velocity.x = 0.0;
+        //aDQ->velocity.y = 0.0;
+        //aDQ->velocity.z = 0.0;
     }
 
+    /*
     //if (m_car.brakeInput == 0.0 && m_car.maxThrottleInput == 0.0)
     if (m_car.isBrakePressed == false && m_car.isThrottlePressed == false && aQ->velocity.Length() > 0.1)
+    //if (aQ->velocity.Length() > 0.1)
     {
         //newQ.velocity *= 0.5;
         //aDQ->velocity = (aTimeDelta * (- m_car.muR)) * headingVec;
@@ -546,6 +561,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         aDQ->velocity = (aTimeDelta * (rollingResistance)) * headingVec;
         //aDQ->velocity *=  0.5;
     }
+    */
 
     //  Compute right-hand side values.
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
@@ -588,20 +604,28 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     //  at the new dependent variable location and store the
     //  values in the ODE object arrays.
     aCar->time = aCar->time + aTimeDelta;
-    
-    q.position.x = static_cast<float>(q.position.x + (dq1.position.x + 2.0 * dq2.position.x + 2.0 * dq3.position.x + dq4.position.x) / numEqns);
-    q.position.y = static_cast<float>(q.position.y + (dq1.position.y + 2.0 * dq2.position.y + 2.0 * dq3.position.y + dq4.position.y) / numEqns);
-    q.position.z = static_cast<float>(q.position.z + (dq1.position.z + 2.0 * dq2.position.z + 2.0 * dq3.position.z + dq4.position.z) / numEqns);
-    q.velocity.x = static_cast<float>(q.velocity.x + (dq1.velocity.x + 2.0 * dq2.velocity.x + 2.0 * dq3.velocity.x + dq4.velocity.x) / numEqns);
-    q.velocity.y = static_cast<float>(q.velocity.y + (dq1.velocity.y + 2.0 * dq2.velocity.y + 2.0 * dq3.velocity.y + dq4.velocity.y) / numEqns);
-    q.velocity.z = static_cast<float>(q.velocity.z + (dq1.velocity.z + 2.0 * dq2.velocity.z + 2.0 * dq3.velocity.z + dq4.velocity.z) / numEqns);
+
+    DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
+    q.position += posUpdate;
+
+    DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
+    const float stopTolerance = 0.09;
+    // To prevent the car from continuing to roll forward if car velocity is less thatn the tollerance value and update velocity is zero
+    if (q.velocity.Length() < stopTolerance && velocityUpdate == DirectX::SimpleMath::Vector3::Zero)
+    {
+        q.velocity = DirectX::SimpleMath::Vector3::Zero;
+    }
+    else
+    {
+        q.velocity += velocityUpdate;
+    }
 
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
     
     // Test rear torque
     //m_car.testRearAnglularVelocity += (total torque / (Mass * radius ^ 2 / 2)) * time step
-    m_car.testRearAnglularVelocity = (m_car.testTorque / (m_car.testRearCylinderMass * (m_car.wheelRadius * m_car.wheelRadius) / 2)) * aTimeDelta;
+    //m_car.testRearAnglularVelocity = (m_car.testTorque / (m_car.testRearCylinderMass * (m_car.wheelRadius * m_car.wheelRadius) / 2)) * aTimeDelta;
 
     return;
 }
@@ -782,8 +806,8 @@ void Vehicle::UpdateModel(const double aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
+    DirectX::SimpleMath::Vector3 prevPos = m_car.q.position;
     DebugClearUI();
-
     ThrottleBrakeDecay(aTimeDelta);
     SteeringInputDecay(aTimeDelta);
     double preRot = m_car.carRotation;
@@ -829,8 +853,14 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.isThrottlePressed = false;
     m_car.isTurningPressed = false;
 
-    DebugPushUILine("m_debugWheelDistance", m_debugWheelDistance);
-    DebugPushUILine("x Pos                  ", m_car.q.position.x);
+    m_debugVehicleDistanceTraveled += DirectX::SimpleMath::Vector3::Distance(prevPos, m_car.q.position);
+    DebugPushUILine("m_debugVehicleDistanceTraveled", m_debugVehicleDistanceTraveled);
+    DebugPushUILine("m_debugWheelDistance          ", m_debugWheelDistance);
+    DebugPushUILine("x Pos                           ", m_car.q.position.x);
+
+    DebugPushUILine("m_car.q.velocity.x          ", m_car.q.velocity.x);
+    DebugPushUILine("m_car.q.velocity.z          ", m_car.q.velocity.z);
+    DebugPushUILine("gear         ", m_car.gearNumber);
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)

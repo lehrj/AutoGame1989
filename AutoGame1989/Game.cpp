@@ -2537,7 +2537,10 @@ void Game::InitializeWorldGrid()
     const float minX = -2000.0;
     const float minY = -1.0;
     const float minZ = -2000.0;
-    const float increment = 10.0;
+    //const float increment = 10.0;
+    const float increment = 0.2;
+    const float yOffset = 0.005;
+
     DirectX::SimpleMath::Vector3 p1 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 p2 = DirectX::SimpleMath::Vector3::Zero;
 
@@ -2551,6 +2554,8 @@ void Game::InitializeWorldGrid()
     // positive z draws
     p1 = DirectX::SimpleMath::Vector3::Zero;
     p2 = DirectX::SimpleMath::Vector3::Zero;
+    p1.y += yOffset;
+    p2.y += yOffset;
     p1.x = minX;
     p2.x = maxX;
     VertexPositionNormalColor v1(p1, gridNorm, gridColor0);
@@ -2581,6 +2586,8 @@ void Game::InitializeWorldGrid()
     p2.z = 0.0;
     p1.y = 0.0;
     p1.y = 0.0;
+    p1.y += yOffset;
+    p2.y += yOffset;
     i = 0;
     while (p1.z >= minZ)
     {
@@ -2605,6 +2612,8 @@ void Game::InitializeWorldGrid()
     p1.z = minZ;
     p2 = DirectX::SimpleMath::Vector3::Zero;
     p2.z = maxZ;
+    p1.y += yOffset;
+    p2.y += yOffset;
     v1 = DirectX::VertexPositionNormalColor(p1, gridNorm, gridColor0);
     v2 = DirectX::VertexPositionNormalColor(p2, gridNorm, gridColor0);
     m_worldGrid.push_back(std::pair(v1, v2));
@@ -2633,6 +2642,8 @@ void Game::InitializeWorldGrid()
     p2.x = 0.0;
     p1.y = 0.0;
     p1.y = 0.0;
+    p1.y += yOffset;
+    p2.y += yOffset;
     i = 0;
     while (p1.x >= minX)
     {

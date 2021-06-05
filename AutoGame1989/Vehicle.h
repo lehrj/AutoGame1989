@@ -193,5 +193,6 @@ private:
     std::vector<std::pair<std::string, double>> m_debugUI;
 
     double m_debugWheelDistance = 0.0;
+    double m_debugVehicleDistanceTraveled = 0.0;
 };
 
