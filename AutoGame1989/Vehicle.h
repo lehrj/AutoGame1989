@@ -102,6 +102,10 @@ struct CarModel
     DirectX::SimpleMath::Matrix windShieldTranslation;
     DirectX::SimpleMath::Matrix localWindShieldMatrix;
     DirectX::SimpleMath::Matrix windShieldRot;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    hood;
+    DirectX::SimpleMath::Matrix hoodMatrix;
+    DirectX::SimpleMath::Matrix localHoodMatrix;
 };
 
 class Vehicle
