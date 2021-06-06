@@ -31,6 +31,8 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.rearTire->Draw(m_carModel.rearTireMatrix, view, proj, tireColor);
 
     m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, volvoYellow);
+
+    m_carModel.rearSpoiler->Draw(m_carModel.rearSpoilerMatrix, view, proj, volvoYellow);
 }
 
 void Vehicle::GearDown()
@@ -281,9 +283,27 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.localBodyMatrix = m_carModel.bodyMatrix;
     m_carModel.localBodyTopMatrix = m_carModel.bodyTopMatrix;
 
-    /// windshield start   
+    // rear spoiler start /////////////////////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 rearSpoilerSize = carBodyTopSize;
+    rearSpoilerSize.x = 0.1;
+    rearSpoilerSize.y = 0.07;   
+    rearSpoilerSize.z *= 0.9;
+    m_carModel.rearSpoiler = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rearSpoilerSize);
+
+    m_carModel.rearSpoilerMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Vector3 spoilerTranslation(-roofLengthAlignment, roofHeightAlignment, 0.0);
+    spoilerTranslation.y = roofHeightAlignment + (carBodyTopSize.y * 0.5);
+
+    spoilerTranslation.y = roofHeightAlignment + carBodyTopSize.y - rearSpoilerSize.y;
+    spoilerTranslation.x = - rearSpoilerSize.x - roofLengthAlignment - carBodyTopSize.x;
+    m_carModel.rearSpoilerMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(spoilerTranslation);
+    m_carModel.locarearSpoilerMatrix = m_carModel.rearSpoilerMatrix;
+    // rear spoiler end //////////////////////////////////////////////////////////////////////////////////
+
+    /// windshield start /////////////////////////////////////////////////////////////////////////////////  
     //DirectX::SimpleMath::Vector3 windShieldSize = carBodyTopSize;
-    DirectX::SimpleMath::Vector3 windShieldSize(1.0, 0.5, carBodyTopSize.z - 0.001);
+    //DirectX::SimpleMath::Vector3 windShieldSize(1.0, 0.5, carBodyTopSize.z - 0.001);
+    DirectX::SimpleMath::Vector3 windShieldSize(1.0, 0.5, carBodyTopSize.z);
     const float windShieldLengthAlignment = (topLength * 2.0) - roofLengthAlignment;
     //windShieldSize.x *= 0.5;
     //windShieldSize.z *= 0.99;
@@ -308,12 +328,8 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(testWindShieldAllignment));
     
-    m_carModel.localWindShieldMatrix = m_carModel.windShieldMatrix;
-    
-
-    
+    m_carModel.localWindShieldMatrix = m_carModel.windShieldMatrix;   
     /// windshield end
-
 
     m_carModel.frontAxelRotation *= axelRotation;
     m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
@@ -326,6 +342,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     m_carModel.rearTireRotation = axelRotation;
     m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+
 }
 
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
@@ -619,7 +636,7 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     q.position += posUpdate;
 
     DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
-    const float stopTolerance = 0.09;
+    const float stopTolerance = 0.1;
     // To prevent the car from continuing to roll forward if car velocity is less thatn the tollerance value and update velocity is zero
     if (q.velocity.Length() < stopTolerance && velocityUpdate == DirectX::SimpleMath::Vector3::Zero)
     {
@@ -813,14 +830,14 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.rearTireMatrix *= updateMatrix;
 
     // windshield
-    m_carModel.bodyTopMatrix = m_carModel.localBodyTopMatrix;
-    m_carModel.bodyTopMatrix *= testTurn;
-    m_carModel.bodyTopMatrix *= updateMatrix;
-
     m_carModel.windShieldMatrix = m_carModel.localWindShieldMatrix;
     m_carModel.windShieldMatrix *= testTurn;
     m_carModel.windShieldMatrix *= updateMatrix;
     
+    // rear spoiler
+    m_carModel.rearSpoilerMatrix = m_carModel.locarearSpoilerMatrix;
+    m_carModel.rearSpoilerMatrix *= testTurn;
+    m_carModel.rearSpoilerMatrix *= updateMatrix;
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
