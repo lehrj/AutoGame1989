@@ -124,6 +124,26 @@ struct CarModel
     std::unique_ptr<DirectX::GeometricPrimitive>    triangleFrontWindow;
     DirectX::SimpleMath::Matrix triangleFrontWindowMatrix;
     DirectX::SimpleMath::Matrix localtriangleFrontWindowMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    bumperFront;
+    DirectX::SimpleMath::Matrix bumperFrontMatrix;
+    DirectX::SimpleMath::Matrix localBumperFrontMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    bumperBack;
+    DirectX::SimpleMath::Matrix bumperBackMatrix;
+    DirectX::SimpleMath::Matrix localBumperBackMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    grill;
+    DirectX::SimpleMath::Matrix grillMatrix;
+    DirectX::SimpleMath::Matrix localGrillMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    headLight;
+    DirectX::SimpleMath::Matrix headLightLeftMatrix;
+    DirectX::SimpleMath::Matrix localHeadLightLeftMatrix;
+    std::unique_ptr<DirectX::GeometricPrimitive>    headLightRight;
+    DirectX::SimpleMath::Matrix headLightRightMatrix;
+    DirectX::SimpleMath::Matrix localHeadLightRightMatrix;
+
 };
 
 class Vehicle

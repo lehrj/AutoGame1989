@@ -18,10 +18,16 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     float y = 255.0 / 256.0;
     float z = 164.0 / 256.0;
     DirectX::SimpleMath::Vector4 volvoYellow(x, y, z, 1.0);
-    DirectX::XMFLOAT4 testColor(0.984375, 0.91015625, 0.01171875, 1.0);  
-    DirectX::SimpleMath::Vector4 testV = testColor;
+    //DirectX::XMFLOAT4 testColor(0.984375, 0.91015625, 0.01171875, 1.0);  
+    //DirectX::SimpleMath::Vector4 testV = testColor;
     DirectX::SimpleMath::Vector4 tireColor(0.2, 0.2, 0.2, 1.0);
     DirectX::SimpleMath::Vector4 windowColor(0.09, 0.09, 0.09, 1.0);
+    DirectX::SimpleMath::Vector4 windShieldColor(0.09, 0.09, 0.09, 0.7);
+    DirectX::SimpleMath::Vector4 bumperColor = DirectX::Colors::Black;
+    DirectX::SimpleMath::Vector4 grillColor(0.08, 0.08, 0.08, 1.0);
+    DirectX::SimpleMath::Vector4 headLightColor(0.9, 0.9, 0.9, 1.0);
+
+    DirectX::SimpleMath::Vector4 testColor = DirectX::Colors::Red;
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, volvoYellow);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
@@ -32,11 +38,18 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, volvoYellow);
     m_carModel.rearSpoiler->Draw(m_carModel.rearSpoilerMatrix, view, proj, volvoYellow);
     m_carModel.hood->Draw(m_carModel.hoodMatrix, view, proj, volvoYellow);
-    m_carModel.windShieldWindow->Draw(m_carModel.windShieldWindowMatrix, view, proj, windowColor);
+
+    m_carModel.windShieldWindow->Draw(m_carModel.windShieldWindowMatrix, view, proj, windShieldColor);
     m_carModel.frontSideWindows->Draw(m_carModel.frontSideWindowsMatrix, view, proj, windowColor);
     m_carModel.rearSideWindows->Draw(m_carModel.rearSideWindowsMatrix, view, proj, windowColor);
     m_carModel.backWindow->Draw(m_carModel.backWindowMatrix, view, proj, windowColor);
     m_carModel.triangleFrontWindow->Draw(m_carModel.triangleFrontWindowMatrix, view, proj, windowColor);
+    m_carModel.bumperFront->Draw(m_carModel.bumperFrontMatrix, view, proj, bumperColor);
+    m_carModel.bumperBack->Draw(m_carModel.bumperBackMatrix, view, proj, bumperColor);
+    m_carModel.grill->Draw(m_carModel.grillMatrix, view, proj, grillColor);
+
+    m_carModel.headLight->Draw(m_carModel.headLightLeftMatrix, view, proj, headLightColor);
+    m_carModel.headLight->Draw(m_carModel.headLightRightMatrix, view, proj, headLightColor);
 }
 
 void Vehicle::GearDown()
@@ -244,6 +257,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     const float axelLength = width + 0.6;
     const float tireLength = width + 0.5;
     const float wheelBase = m_car.wheelBase;
+    const float zFightOffSet = 0.001;
     DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
@@ -386,7 +400,67 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.triangleFrontWindow = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), triangleWindowSize);
     m_carModel.triangleFrontWindowMatrix = m_carModel.windShieldMatrix;
     m_carModel.triangleFrontWindowMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-0.014, -0.064, 0.0));
+    m_carModel.localtriangleFrontWindowMatrix = m_carModel.triangleFrontWindowMatrix;
     /// Triangle Front Window End   ////////////////////////////////////////////////////////////////
+
+    /// Front Bumper Start ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 bumperFrontSize;
+    bumperFrontSize.x = 0.4;
+    bumperFrontSize.y = 0.2;
+    bumperFrontSize.z = carBodySize.z + 0.1;
+    m_carModel.bumperFront = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), bumperFrontSize);
+    m_carModel.bumperFrontMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.bumperFrontMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(carBodySize.x * 0.5 - bumperFrontSize.x * 0.25, wheelRadius + bumperFrontSize.y * 0.5 + zFightOffSet, 0.0));
+    m_carModel.localBumperFrontMatrix = m_carModel.bumperFrontMatrix;
+    /// Front Bumper End   ////////////////////////////////////////////////////////////////
+
+    /// Back Bumper Start   ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 bumperBackSize = bumperFrontSize;
+    m_carModel.bumperBack = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), bumperBackSize);
+    m_carModel.bumperBackMatrix = m_carModel.bumperFrontMatrix;
+    m_carModel.bumperBackMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-carBodySize.x + bumperBackSize.x * 0.5, 0.0, 0.0));
+    m_carModel.localBumperBackMatrix = m_carModel.bumperBackMatrix;
+    /// Back Bumper End    ////////////////////////////////////////////////////////////////
+
+    /// Grill Start   ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 grillSize = hoodSize;
+    grillSize.y *= 0.8;
+    grillSize.z *= 0.8;
+    m_carModel.grill = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), grillSize);
+    m_carModel.grillMatrix = m_carModel.hoodMatrix;
+    m_carModel.grillMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(zFightOffSet, zFightOffSet, 0.0));
+    m_carModel.localGrillMatrix = m_carModel.grillMatrix;
+    /// Grill End     ////////////////////////////////////////////////////////////////
+
+    /// Head Light Left Start  ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 headLightSize;
+    headLightSize.x = bumperFrontSize.x * 0.5;
+    headLightSize.y = (carBodySize.y - bumperFrontSize.y);
+    headLightSize.z = (carBodySize.z - hoodSize.z) * 0.5;
+
+    m_carModel.headLight = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), headLightSize);
+
+    m_carModel.headLightLeftMatrix = m_carModel.hoodMatrix;
+    DirectX::SimpleMath::Vector3 headLightLeftTranslation;
+    headLightLeftTranslation.x = (carBodySize.x * 0.5) - (headLightSize.x * 0.9);
+    headLightLeftTranslation.y = (carBodySize.y * 0.5) + (-headLightSize.y * 0.7);
+    headLightLeftTranslation.z = (- carBodySize.z * 0.5) + (headLightSize.z * 0.45);
+    m_carModel.headLightLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(headLightLeftTranslation);
+    m_carModel.localHeadLightLeftMatrix = m_carModel.headLightLeftMatrix;
+
+    /// Head Light Left End    ////////////////////////////////////////////////////////////////
+
+    /// Head Light Right Start  ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 headLightRightTranslation = headLightLeftTranslation;
+    headLightRightTranslation.x -= headLightLeftTranslation.x;
+    headLightRightTranslation.x = 0.0;
+    headLightRightTranslation.y = 0.0;
+    headLightRightTranslation.z *= -2.0;
+
+    m_carModel.headLightRightMatrix = m_carModel.headLightLeftMatrix;
+    m_carModel.headLightRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(headLightRightTranslation);
+    m_carModel.localHeadLightRightMatrix = m_carModel.headLightRightMatrix;
+    /// Head Light Right End    ////////////////////////////////////////////////////////////////
 
     m_carModel.frontAxelRotation *= axelRotation;
     m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
@@ -902,6 +976,24 @@ void Vehicle::UpdateModel(const double aTimer)
     // back window
     m_carModel.backWindowMatrix = m_carModel.localBackWindowMatrix;
     m_carModel.backWindowMatrix *= updateMat;
+    // triangle front window
+    m_carModel.triangleFrontWindowMatrix = m_carModel.localtriangleFrontWindowMatrix;
+    m_carModel.triangleFrontWindowMatrix *= updateMat;
+    // front bumper 
+    m_carModel.bumperFrontMatrix = m_carModel.localBumperFrontMatrix;
+    m_carModel.bumperFrontMatrix *= updateMat;
+    // back bumper
+    m_carModel.bumperBackMatrix = m_carModel.localBumperBackMatrix;
+    m_carModel.bumperBackMatrix *= updateMat;
+    // grill
+    m_carModel.grillMatrix = m_carModel.localGrillMatrix;
+    m_carModel.grillMatrix *= updateMat;
+    // left headlight
+    m_carModel.headLightLeftMatrix = m_carModel.localHeadLightLeftMatrix;
+    m_carModel.headLightLeftMatrix *= updateMat;
+    // right headlight
+    m_carModel.headLightRightMatrix = m_carModel.localHeadLightRightMatrix;
+    m_carModel.headLightRightMatrix *= updateMat;
     // rear spoiler
     m_carModel.rearSpoilerMatrix = m_carModel.locarearSpoilerMatrix;
     m_carModel.rearSpoilerMatrix *= testTurn;
@@ -911,6 +1003,8 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.hoodMatrix = m_carModel.localHoodMatrix;
     m_carModel.hoodMatrix *= testTurn;
     m_carModel.hoodMatrix *= updateMatrix;
+
+    
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
