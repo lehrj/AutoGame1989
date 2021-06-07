@@ -98,14 +98,32 @@ struct CarModel
     DirectX::SimpleMath::Matrix locarearSpoilerMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    windShield;
-    DirectX::SimpleMath::Matrix windShieldMatrix;
-    DirectX::SimpleMath::Matrix windShieldTranslation;
+    DirectX::SimpleMath::Matrix windShieldMatrix;    
     DirectX::SimpleMath::Matrix localWindShieldMatrix;
-    DirectX::SimpleMath::Matrix windShieldRot;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    windShieldWindow;
+    DirectX::SimpleMath::Matrix windShieldWindowMatrix;
+    DirectX::SimpleMath::Matrix localWindShieldWindowMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    frontSideWindows;
+    DirectX::SimpleMath::Matrix frontSideWindowsMatrix;
+    DirectX::SimpleMath::Matrix localfrontSideWindowsMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    rearSideWindows;
+    DirectX::SimpleMath::Matrix rearSideWindowsMatrix;
+    DirectX::SimpleMath::Matrix localrearSideWindowsMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    backWindow;
+    DirectX::SimpleMath::Matrix backWindowMatrix;
+    DirectX::SimpleMath::Matrix localBackWindowMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    hood;
     DirectX::SimpleMath::Matrix hoodMatrix;
     DirectX::SimpleMath::Matrix localHoodMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    triangleFrontWindow;
+    DirectX::SimpleMath::Matrix triangleFrontWindowMatrix;
+    DirectX::SimpleMath::Matrix localtriangleFrontWindowMatrix;
 };
 
 class Vehicle

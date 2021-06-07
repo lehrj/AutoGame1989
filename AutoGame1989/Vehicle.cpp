@@ -21,20 +21,22 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::XMFLOAT4 testColor(0.984375, 0.91015625, 0.01171875, 1.0);  
     DirectX::SimpleMath::Vector4 testV = testColor;
     DirectX::SimpleMath::Vector4 tireColor(0.2, 0.2, 0.2, 1.0);
+    DirectX::SimpleMath::Vector4 windowColor(0.09, 0.09, 0.09, 1.0);
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, volvoYellow);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
     m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj);
     m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj);
-
     m_carModel.frontTire->Draw(m_carModel.frontTireMatrix, view, proj, tireColor);
     m_carModel.rearTire->Draw(m_carModel.rearTireMatrix, view, proj, tireColor);
-
     m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, volvoYellow);
-
     m_carModel.rearSpoiler->Draw(m_carModel.rearSpoilerMatrix, view, proj, volvoYellow);
-
     m_carModel.hood->Draw(m_carModel.hoodMatrix, view, proj, volvoYellow);
+    m_carModel.windShieldWindow->Draw(m_carModel.windShieldWindowMatrix, view, proj, windowColor);
+    m_carModel.frontSideWindows->Draw(m_carModel.frontSideWindowsMatrix, view, proj, windowColor);
+    m_carModel.rearSideWindows->Draw(m_carModel.rearSideWindowsMatrix, view, proj, windowColor);
+    m_carModel.backWindow->Draw(m_carModel.backWindowMatrix, view, proj, windowColor);
+    m_carModel.triangleFrontWindow->Draw(m_carModel.triangleFrontWindowMatrix, view, proj, windowColor);
 }
 
 void Vehicle::GearDown()
@@ -238,7 +240,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     const float width = 1.8034;
     const float heightTotal = 1.27;
     const float height = heightTotal * 0.6;
-     
+    const float windowPlaneOffset = 0.03;
     const float axelLength = width + 0.6;
     const float tireLength = width + 0.5;
     const float wheelBase = m_car.wheelBase;
@@ -303,7 +305,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     DirectX::SimpleMath::Vector3 rearSpoilerSize = carBodyTopSize;
     rearSpoilerSize.x = 0.1;
     rearSpoilerSize.y = 0.07;   
-    rearSpoilerSize.z *= 0.9;
+    rearSpoilerSize.z *= 0.8;
     m_carModel.rearSpoiler = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rearSpoilerSize);
 
     m_carModel.rearSpoilerMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -317,35 +319,74 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     // rear spoiler end //////////////////////////////////////////////////////////////////////////////////
 
     /// windshield start /////////////////////////////////////////////////////////////////////////////////  
-    //DirectX::SimpleMath::Vector3 windShieldSize = carBodyTopSize;
-    //DirectX::SimpleMath::Vector3 windShieldSize(1.0, 0.5, carBodyTopSize.z - 0.001);
     DirectX::SimpleMath::Vector3 windShieldSize(1.0, 0.5, carBodyTopSize.z - 0.0001);
     const float windShieldLengthAlignment = (topLength * 2.0) - roofLengthAlignment;
-    //windShieldSize.x *= 0.5;
-    //windShieldSize.z *= 0.99;
     m_carModel.windShield = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), windShieldSize);
-
     m_carModel.windShieldMatrix = DirectX::SimpleMath::Matrix::Identity;
-
-    m_carModel.windShieldRot = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-45.0));
     DirectX::SimpleMath::Quaternion testWindShieldRotate = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, Utility::ToRadians(-99.0));
     m_carModel.windShieldMatrix = DirectX::SimpleMath::Matrix::Transform(m_carModel.windShieldMatrix, testWindShieldRotate);
-    
-    //m_carModel.windShieldMatrix = m_carModel.windShieldRot;
-    //m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(+ roofLengthAlignment - carBodyTopSize.x, roofHeightAlignment, 0.0));
     DirectX::SimpleMath::Vector3 testWindShieldAllignment = DirectX::SimpleMath::Vector3::Zero;
     testWindShieldAllignment.x = windShieldLengthAlignment;
     testWindShieldAllignment.y = roofHeightAlignment;
     testWindShieldAllignment.x = 3.71535993;
     testWindShieldAllignment.y = 1.90719998;
-
     testWindShieldAllignment.x = 1.255;
     testWindShieldAllignment.y = 1.711;
-
-    m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(testWindShieldAllignment));
-    
+    //m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(testWindShieldAllignment));    
+    m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(testWindShieldAllignment);
     m_carModel.localWindShieldMatrix = m_carModel.windShieldMatrix;   
     /// windshield end /////////////////////////////////////////////////////////////////////////
+
+    /// Windshield Window Start ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 windShieldWindowSize = windShieldSize;
+    const float windowIndent = 0.9;
+    windShieldWindowSize.x *= windowIndent;
+    windShieldWindowSize.y *= windowIndent;
+    windShieldWindowSize.z *= windowIndent;
+    m_carModel.windShieldWindow = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), windShieldWindowSize);
+    m_carModel.windShieldWindowMatrix = m_carModel.windShieldMatrix;
+    m_carModel.windShieldWindowMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(windowPlaneOffset, 0.0, 0.0));
+    m_carModel.localWindShieldWindowMatrix = m_carModel.windShieldWindowMatrix;
+    /// Windshield Window Stop  ////////////////////////////////////////////////////////////////
+    
+    /// FrontSide Windows Start ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 frontSideWindowSize = carBodyTopSize;
+    frontSideWindowSize.x *= 0.25;
+    frontSideWindowSize.y *= 0.755;
+    frontSideWindowSize.z *= 1.0 + windowPlaneOffset;
+    m_carModel.frontSideWindows = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), frontSideWindowSize);
+    m_carModel.frontSideWindowsMatrix = m_carModel.bodyTopMatrix;
+    m_carModel.frontSideWindowsMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(carBodyTopSize.x * 0.37, 0.0, 0.0));
+    m_carModel.localfrontSideWindowsMatrix = m_carModel.frontSideWindowsMatrix;
+    /// FrontSide Windows End   ////////////////////////////////////////////////////////////////
+
+    /// Rear Side Windows Start ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 rearSideWindowSize = frontSideWindowSize;
+    rearSideWindowSize.x *= 2.5;
+    m_carModel.rearSideWindows = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rearSideWindowSize);
+    m_carModel.rearSideWindowsMatrix = m_carModel.frontSideWindowsMatrix;
+    m_carModel.rearSideWindowsMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3( - frontSideWindowSize.x * 2.0, 0.0, 0.0));
+    m_carModel.localrearSideWindowsMatrix = m_carModel.rearSideWindowsMatrix;
+    /// Rear Side Windows End   ////////////////////////////////////////////////////////////////
+
+    /// Back Window Start  ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 backWindowSize = rearSpoilerSize;
+    backWindowSize.y = rearSideWindowSize.y;
+    backWindowSize.z *= 1.1;
+    m_carModel.backWindow = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), backWindowSize);
+    m_carModel.backWindowMatrix = m_carModel.rearSpoilerMatrix;
+    m_carModel.backWindowMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(rearSpoilerSize.x - windowPlaneOffset, (-backWindowSize.y * 0.5) + (-rearSpoilerSize.y * 0.5), 0.0));
+    m_carModel.localBackWindowMatrix = m_carModel.backWindowMatrix;
+    /// Back Window End   ////////////////////////////////////////////////////////////////
+
+    /// Triangle Front Window Start ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3  triangleWindowSize = windShieldSize;
+    triangleWindowSize.z *= 1.0 + windowPlaneOffset;
+    triangleWindowSize.x -= 0.0001;
+    m_carModel.triangleFrontWindow = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), triangleWindowSize);
+    m_carModel.triangleFrontWindowMatrix = m_carModel.windShieldMatrix;
+    m_carModel.triangleFrontWindowMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-0.014, -0.064, 0.0));
+    /// Triangle Front Window End   ////////////////////////////////////////////////////////////////
 
     m_carModel.frontAxelRotation *= axelRotation;
     m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
@@ -358,8 +399,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     m_carModel.rearTireRotation = axelRotation;
     m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
-
-
 }
 
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
@@ -806,9 +845,10 @@ void Vehicle::UpdateModel(const double aTimer)
     DebugPushUILine("m_testRotationRear", m_testRotationRear);
     //DebugPushUILine("GetWheelRotationRadiansRear(aTimer)", GetWheelRotationRadiansRear(aTimer));
     
-    DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
-
     DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
+    DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
+    DirectX::SimpleMath::Matrix updateMat = testTurn;
+    updateMat *= updateMatrix;
     
     m_carModel.bodyMatrix = m_carModel.localBodyMatrix;
     m_carModel.bodyMatrix *= testTurn;
@@ -834,13 +874,11 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.frontTireMatrix *= testTurn;
     m_carModel.frontTireMatrix *= updateMatrix;
 
-    //m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinMat;
     m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinRearMat;
     m_carModel.rearAxelMatrix *= m_carModel.rearAxelTranslation;
     m_carModel.rearAxelMatrix *= testTurn;
     m_carModel.rearAxelMatrix *= updateMatrix;
-
-    
+  
     m_carModel.rearTireMatrix = m_carModel.rearTireRotation * wheelSpinRearMat;
     m_carModel.rearTireMatrix *= m_carModel.rearTireTranslation;
     m_carModel.rearTireMatrix *= testTurn;
@@ -850,7 +888,20 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.windShieldMatrix = m_carModel.localWindShieldMatrix;
     m_carModel.windShieldMatrix *= testTurn;
     m_carModel.windShieldMatrix *= updateMatrix;
-    
+    // windshield window
+    m_carModel.windShieldWindowMatrix = m_carModel.localWindShieldWindowMatrix;
+    m_carModel.windShieldWindowMatrix *= testTurn;
+    m_carModel.windShieldWindowMatrix *= updateMatrix;
+    // front side window
+    m_carModel.frontSideWindowsMatrix = m_carModel.localfrontSideWindowsMatrix;
+    m_carModel.frontSideWindowsMatrix *= testTurn;
+    m_carModel.frontSideWindowsMatrix *= updateMatrix;
+    // rear side window
+    m_carModel.rearSideWindowsMatrix = m_carModel.localrearSideWindowsMatrix;
+    m_carModel.rearSideWindowsMatrix *= updateMat;
+    // back window
+    m_carModel.backWindowMatrix = m_carModel.localBackWindowMatrix;
+    m_carModel.backWindowMatrix *= updateMat;
     // rear spoiler
     m_carModel.rearSpoilerMatrix = m_carModel.locarearSpoilerMatrix;
     m_carModel.rearSpoilerMatrix *= testTurn;
