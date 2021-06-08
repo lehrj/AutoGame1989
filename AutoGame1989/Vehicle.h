@@ -140,10 +140,14 @@ struct CarModel
     std::unique_ptr<DirectX::GeometricPrimitive>    headLight;
     DirectX::SimpleMath::Matrix headLightLeftMatrix;
     DirectX::SimpleMath::Matrix localHeadLightLeftMatrix;
-    std::unique_ptr<DirectX::GeometricPrimitive>    headLightRight;
     DirectX::SimpleMath::Matrix headLightRightMatrix;
     DirectX::SimpleMath::Matrix localHeadLightRightMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    tailLight;
+    DirectX::SimpleMath::Matrix tailLightLeftMatrix;
+    DirectX::SimpleMath::Matrix localTailLightLeftMatrix;
+    DirectX::SimpleMath::Matrix tailLightRightMatrix;
+    DirectX::SimpleMath::Matrix localTailLightRightMatrix;
 };
 
 class Vehicle

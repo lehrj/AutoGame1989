@@ -26,7 +26,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Vector4 bumperColor = DirectX::Colors::Black;
     DirectX::SimpleMath::Vector4 grillColor(0.08, 0.08, 0.08, 1.0);
     DirectX::SimpleMath::Vector4 headLightColor(0.9, 0.9, 0.9, 1.0);
-
+    DirectX::SimpleMath::Vector4 tailLightColor(0.9, 0.0, 0.0, 1.0);
     DirectX::SimpleMath::Vector4 testColor = DirectX::Colors::Red;
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, volvoYellow);
@@ -38,18 +38,23 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, volvoYellow);
     m_carModel.rearSpoiler->Draw(m_carModel.rearSpoilerMatrix, view, proj, volvoYellow);
     m_carModel.hood->Draw(m_carModel.hoodMatrix, view, proj, volvoYellow);
-
+    
     m_carModel.windShieldWindow->Draw(m_carModel.windShieldWindowMatrix, view, proj, windShieldColor);
     m_carModel.frontSideWindows->Draw(m_carModel.frontSideWindowsMatrix, view, proj, windowColor);
     m_carModel.rearSideWindows->Draw(m_carModel.rearSideWindowsMatrix, view, proj, windowColor);
     m_carModel.backWindow->Draw(m_carModel.backWindowMatrix, view, proj, windowColor);
+    
     m_carModel.triangleFrontWindow->Draw(m_carModel.triangleFrontWindowMatrix, view, proj, windowColor);
     m_carModel.bumperFront->Draw(m_carModel.bumperFrontMatrix, view, proj, bumperColor);
     m_carModel.bumperBack->Draw(m_carModel.bumperBackMatrix, view, proj, bumperColor);
     m_carModel.grill->Draw(m_carModel.grillMatrix, view, proj, grillColor);
-
+    
     m_carModel.headLight->Draw(m_carModel.headLightLeftMatrix, view, proj, headLightColor);
     m_carModel.headLight->Draw(m_carModel.headLightRightMatrix, view, proj, headLightColor);
+    m_carModel.tailLight->Draw(m_carModel.tailLightRightMatrix, view, proj, testColor);
+    m_carModel.tailLight->Draw(m_carModel.tailLightLeftMatrix, view, proj, testColor);
+    
+
 }
 
 void Vehicle::GearDown()
@@ -461,6 +466,30 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.headLightRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(headLightRightTranslation);
     m_carModel.localHeadLightRightMatrix = m_carModel.headLightRightMatrix;
     /// Head Light Right End    ////////////////////////////////////////////////////////////////
+
+    /// Tail Light Right Start  ////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 tailLightSize = headLightSize;
+    tailLightSize.x *= 0.7;
+    tailLightSize.z = tailLightSize.x;
+    m_carModel.tailLight = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), tailLightSize);
+    m_carModel.tailLightRightMatrix = m_carModel.headLightRightMatrix;
+    DirectX::SimpleMath::Vector3 tailLightRightTranslation;
+    tailLightRightTranslation.x = -carBodySize.x + (tailLightSize.x * 0.999);
+    tailLightRightTranslation.y = 0.0;
+    tailLightRightTranslation.z = tailLightSize.z * 0.7;
+    m_carModel.tailLightRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(tailLightRightTranslation);
+    m_carModel.localTailLightRightMatrix = m_carModel.tailLightRightMatrix;
+    /// Tail Light Right End    ////////////////////////////////////////////////////////////////
+
+    /// Tail Light Left Start  ////////////////////////////////////////////////////////////////
+    m_carModel.tailLightLeftMatrix = m_carModel.headLightLeftMatrix;
+    DirectX::SimpleMath::Vector3 tailLightLeftTranslation;
+    tailLightLeftTranslation.x = -carBodySize.x + (tailLightSize.x * 0.999);
+    tailLightLeftTranslation.y = 0.0;
+    tailLightLeftTranslation.z = - tailLightSize.z * 0.7;
+    m_carModel.tailLightLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(tailLightLeftTranslation);
+    m_carModel.localTailLightLeftMatrix = m_carModel.tailLightLeftMatrix;
+    /// Tail Light Left End    ////////////////////////////////////////////////////////////////
 
     m_carModel.frontAxelRotation *= axelRotation;
     m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
@@ -994,6 +1023,12 @@ void Vehicle::UpdateModel(const double aTimer)
     // right headlight
     m_carModel.headLightRightMatrix = m_carModel.localHeadLightRightMatrix;
     m_carModel.headLightRightMatrix *= updateMat;
+    // right tail light
+    m_carModel.tailLightRightMatrix = m_carModel.localTailLightRightMatrix;
+    m_carModel.tailLightRightMatrix *= updateMat;
+    // left tail light
+    m_carModel.tailLightLeftMatrix = m_carModel.localTailLightLeftMatrix;
+    m_carModel.tailLightLeftMatrix *= updateMat;
     // rear spoiler
     m_carModel.rearSpoilerMatrix = m_carModel.locarearSpoilerMatrix;
     m_carModel.rearSpoilerMatrix *= testTurn;
@@ -1003,8 +1038,6 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.hoodMatrix = m_carModel.localHoodMatrix;
     m_carModel.hoodMatrix *= testTurn;
     m_carModel.hoodMatrix *= updateMatrix;
-
-    
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
