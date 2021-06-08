@@ -28,11 +28,15 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Vector4 headLightColor(0.9, 0.9, 0.9, 1.0);
     DirectX::SimpleMath::Vector4 tailLightColor(0.9, 0.0, 0.0, 1.0);
     DirectX::SimpleMath::Vector4 testColor = DirectX::Colors::Red;
+    DirectX::SimpleMath::Vector4 testColor2 = DirectX::Colors::Green;
+    DirectX::SimpleMath::Vector4 spokeColor = DirectX::Colors::Gray;
+    //DirectX::SimpleMath::Vector4 rimColor(0.501960814f, 0.501960814f, 0.501960814f, 1.0);
+    DirectX::SimpleMath::Vector4 rimColor(0.4, 0.4, 0.4, 0.8);
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, volvoYellow);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
-    m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj);
-    m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj);
+    m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj, spokeColor);
+    m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj, spokeColor);
     m_carModel.frontTire->Draw(m_carModel.frontTireMatrix, view, proj, tireColor);
     m_carModel.rearTire->Draw(m_carModel.rearTireMatrix, view, proj, tireColor);
     m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, volvoYellow);
@@ -54,7 +58,20 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.tailLight->Draw(m_carModel.tailLightRightMatrix, view, proj, testColor);
     m_carModel.tailLight->Draw(m_carModel.tailLightLeftMatrix, view, proj, testColor);
     
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront1, view, proj, spokeColor);
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront2, view, proj, spokeColor);
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront3, view, proj, spokeColor);
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront4, view, proj, spokeColor);
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront5, view, proj, spokeColor);
 
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack1, view, proj, spokeColor);
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack2, view, proj, spokeColor);
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack3, view, proj, spokeColor);
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack4, view, proj, spokeColor);
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack5, view, proj, spokeColor);
+
+    m_carModel.wheelRim->Draw(m_carModel.wheelRimFrontMatrix, view, proj, rimColor);
+    m_carModel.wheelRim->Draw(m_carModel.wheelRimBackMatrix, view, proj, rimColor);
 }
 
 void Vehicle::GearDown()
@@ -252,7 +269,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
     const float wheelRadius = m_car.wheelRadius;
     const float wheelDiameter = wheelRadius * 2.0;
-    const float axelRadius = wheelRadius * 0.8;
+    const float axelRadius = wheelRadius * 0.17;
     const float axelDiameter = axelRadius * 2.0;
     const float length = 4.3942;
     const float width = 1.8034;
@@ -266,8 +283,8 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
-    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 3);
-    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 3);
+    m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 32);
+    m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 32);
 
     m_carModel.frontTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 16);
     m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 16);
@@ -291,6 +308,51 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.frontTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
     m_carModel.rearTireMatrix *= axelRotation;
     m_carModel.rearTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+
+
+    m_carModel.frontAxelRotation *= axelRotation;
+    m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
+
+    m_carModel.rearAxelRotation = axelRotation;
+    m_carModel.rearAxelTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+
+    m_carModel.frontTireRotation *= axelRotation;
+    m_carModel.frontTireTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
+
+    m_carModel.rearTireRotation = axelRotation;
+    m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+
+    /// Start wheel spokes ///////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 spokeSize;
+    /*
+    spokeSize.x = axelLength - 0.003;
+    spokeSize.y = wheelRadius;
+    spokeSize.z = wheelRadius * 0.25;
+    */
+    /*
+    spokeSize.x = wheelRadius * 0.25;
+    spokeSize.y = wheelRadius;
+    spokeSize.z = axelLength + 1.0;
+    */
+    spokeSize.x = wheelRadius * 0.25;
+    spokeSize.y = axelLength - 0.003;
+    //spokeSize.y = 2.4;
+    spokeSize.z = wheelRadius * 0.8;
+
+    m_carModel.wheelSpoke = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), spokeSize);
+    m_carModel.wheelSpokeFront1 = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.wheelSpokeFront1 *= axelRotation;
+    m_carModel.wheelSpokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
+    m_carModel.wheelSpokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, spokeSize.y * 0.5, 0.0));
+    /// End wheel spokes /////////////////////////////////////////////////////
+
+    /// Wheel Rim Start /////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 rimSize;
+    rimSize.x = 0.0;
+    rimSize.y = 0.0;
+    rimSize.z = 0.0;
+    m_carModel.wheelRim = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength - 0.006, spokeSize.z * 2.0, 32);
+    /// Wheel Rim End ///////////////////////////////////////////////////////
 
     const float topIndent = 0.2;   
     const float topHeight = heightTotal * 0.4;
@@ -491,17 +553,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.localTailLightLeftMatrix = m_carModel.tailLightLeftMatrix;
     /// Tail Light Left End    ////////////////////////////////////////////////////////////////
 
-    m_carModel.frontAxelRotation *= axelRotation;
-    m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
 
-    m_carModel.rearAxelRotation = axelRotation;
-    m_carModel.rearAxelTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
-
-    m_carModel.frontTireRotation *= axelRotation;
-    m_carModel.frontTireTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
-
-    m_carModel.rearTireRotation = axelRotation;
-    m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
 }
 
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
@@ -986,6 +1038,98 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.rearTireMatrix *= m_carModel.rearTireTranslation;
     m_carModel.rearTireMatrix *= testTurn;
     m_carModel.rearTireMatrix *= updateMatrix;
+
+    // wheel spoke test
+    DirectX::SimpleMath::Vector3 spokeOffset(0.0, 0.1, 0.0);
+    DirectX::SimpleMath::Matrix testUpdateMat2 = DirectX::SimpleMath::Matrix::CreateTranslation(spokeOffset);;
+    m_carModel.wheelSpokeFront1 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront1 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront1 *= wheelSpinMat;
+    m_carModel.wheelSpokeFront1 *= stearingTurn;
+    DirectX::SimpleMath::Matrix testUpdateMat = updateMatrix;
+    //m_carModel.wheelSpokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(spokeOffset);
+    m_carModel.wheelSpokeFront1 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFront1 *= testTurn;
+    m_carModel.wheelSpokeFront1 *= updateMatrix;
+    //m_carModel.localWheelSPokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(spokeOffset);
+
+    const float spokeAngle = (2.0 * Utility::GetPi()) * 0.2;
+    DirectX::SimpleMath::Matrix wheelSpinMat2 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle);
+    m_carModel.wheelSpokeFront2 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront2 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront2 *= wheelSpinMat2;
+    //m_carModel.wheelSpokeFront2 *= wheelSpinMat;
+    m_carModel.wheelSpokeFront2 *= stearingTurn;
+
+    m_carModel.wheelSpokeFront2 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFront2 *= testTurn;
+    m_carModel.wheelSpokeFront2 *= updateMatrix;
+   
+    DirectX::SimpleMath::Matrix wheelSpinMat3 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle + spokeAngle);
+    m_carModel.wheelSpokeFront3 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront3 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront3 *= wheelSpinMat3;
+    m_carModel.wheelSpokeFront3 *= stearingTurn;
+
+    m_carModel.wheelSpokeFront3 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFront3 *= testTurn;
+    m_carModel.wheelSpokeFront3 *= updateMatrix;
+
+    
+    DirectX::SimpleMath::Matrix wheelSpinMat4 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle + spokeAngle + spokeAngle);
+    m_carModel.wheelSpokeFront4 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront4 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront4 *= wheelSpinMat4;
+    m_carModel.wheelSpokeFront4 *= stearingTurn;
+    
+    m_carModel.wheelSpokeFront4 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFront4 *= testTurn;
+    m_carModel.wheelSpokeFront4 *= updateMatrix;
+    
+    DirectX::SimpleMath::Matrix wheelSpinMat5 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle + spokeAngle + spokeAngle + spokeAngle);
+    m_carModel.wheelSpokeFront5 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront5 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront5 *= wheelSpinMat5;
+    m_carModel.wheelSpokeFront5 *= stearingTurn;
+
+    m_carModel.wheelSpokeFront5 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFront5 *= testTurn;
+    m_carModel.wheelSpokeFront5 *= updateMatrix;
+
+    // start backwheel spokes
+    DirectX::SimpleMath::Matrix rearSpokeRotation = m_carModel.rearAxelRotation * testUpdateMat2;
+    DirectX::SimpleMath::Matrix rearSpokeTranslation = m_carModel.rearAxelTranslation * testTurn * updateMatrix;
+    /*
+    m_carModel.wheelSpokeBack1 = m_carModel.rearAxelRotation;
+    m_carModel.wheelSpokeBack1 *= testUpdateMat2;
+    m_carModel.wheelSpokeBack1 *= wheelSpinMat;
+    m_carModel.wheelSpokeBack1 *= m_carModel.rearAxelTranslation;
+    m_carModel.wheelSpokeBack1 *= testTurn;
+    m_carModel.wheelSpokeBack1 *= updateMatrix;
+    */
+    m_carModel.wheelSpokeBack1 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack1 *= wheelSpinMat;
+    m_carModel.wheelSpokeBack1 *= rearSpokeTranslation;
+
+    m_carModel.wheelSpokeBack2 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack2 *= wheelSpinMat2;    
+    m_carModel.wheelSpokeBack2 *= rearSpokeTranslation;
+
+    m_carModel.wheelSpokeBack3 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack3 *= wheelSpinMat3;
+    m_carModel.wheelSpokeBack3 *= rearSpokeTranslation;
+
+    m_carModel.wheelSpokeBack4 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack4 *= wheelSpinMat4;
+    m_carModel.wheelSpokeBack4 *= rearSpokeTranslation;
+
+    m_carModel.wheelSpokeBack5 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack5 *= wheelSpinMat5;
+    m_carModel.wheelSpokeBack5 *= rearSpokeTranslation;
+
+    // Rims
+    m_carModel.wheelRimFrontMatrix = m_carModel.frontAxelMatrix;
+    m_carModel.wheelRimBackMatrix = m_carModel.rearTireMatrix;
 
     // windshield
     m_carModel.windShieldMatrix = m_carModel.localWindShieldMatrix;

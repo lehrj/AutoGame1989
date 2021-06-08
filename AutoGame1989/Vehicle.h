@@ -148,6 +148,28 @@ struct CarModel
     DirectX::SimpleMath::Matrix localTailLightLeftMatrix;
     DirectX::SimpleMath::Matrix tailLightRightMatrix;
     DirectX::SimpleMath::Matrix localTailLightRightMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive> wheelSpoke;
+    DirectX::SimpleMath::Matrix wheelSpokeFront1;
+    DirectX::SimpleMath::Matrix localWheelSPokeFront1;
+    DirectX::SimpleMath::Matrix spokeTranslation;
+    DirectX::SimpleMath::Matrix spokeRotation;
+
+    DirectX::SimpleMath::Matrix wheelSpokeFront2 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix wheelSpokeFront3 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix wheelSpokeFront4 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix wheelSpokeFront5 = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix wheelSpokeBack1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix wheelSpokeBack2 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix wheelSpokeBack3 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix wheelSpokeBack4 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix wheelSpokeBack5 = DirectX::SimpleMath::Matrix::Identity;
+
+    std::unique_ptr<DirectX::GeometricPrimitive> wheelRim;
+    DirectX::SimpleMath::Matrix wheelRimFrontMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix wheelRimBackMatrix = DirectX::SimpleMath::Matrix::Identity;
+
 };
 
 class Vehicle
