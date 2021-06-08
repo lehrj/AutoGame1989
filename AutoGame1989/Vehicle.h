@@ -143,6 +143,12 @@ struct CarModel
     DirectX::SimpleMath::Matrix headLightRightMatrix;
     DirectX::SimpleMath::Matrix localHeadLightRightMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive> blinkerLight;
+    DirectX::SimpleMath::Matrix blinkerLightLeftMatrix;
+    DirectX::SimpleMath::Matrix localBlinkerLightLeftMatrix;
+    DirectX::SimpleMath::Matrix blinkerLightRightMatrix;
+    DirectX::SimpleMath::Matrix localBlinkerLightRightMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    tailLight;
     DirectX::SimpleMath::Matrix tailLightLeftMatrix;
     DirectX::SimpleMath::Matrix localTailLightLeftMatrix;
@@ -170,6 +176,11 @@ struct CarModel
     DirectX::SimpleMath::Matrix wheelRimFrontMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix wheelRimBackMatrix = DirectX::SimpleMath::Matrix::Identity;
 
+    std::unique_ptr<DirectX::GeometricPrimitive> sideMirror;
+    DirectX::SimpleMath::Matrix sideMirrorLeftMatrix;
+    DirectX::SimpleMath::Matrix localSideMirrorLeftMatrix;
+    DirectX::SimpleMath::Matrix sideMirrorRightMatrix;
+    DirectX::SimpleMath::Matrix localSideMirrorRightMatrix;
 };
 
 class Vehicle

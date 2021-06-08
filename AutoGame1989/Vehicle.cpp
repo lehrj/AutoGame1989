@@ -31,7 +31,8 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Vector4 testColor2 = DirectX::Colors::Green;
     DirectX::SimpleMath::Vector4 spokeColor = DirectX::Colors::Gray;
     //DirectX::SimpleMath::Vector4 rimColor(0.501960814f, 0.501960814f, 0.501960814f, 1.0);
-    DirectX::SimpleMath::Vector4 rimColor(0.4, 0.4, 0.4, 0.8);
+    DirectX::SimpleMath::Vector4 rimColor(0.4, 0.4, 0.4, 1.0);
+    DirectX::SimpleMath::Vector4 sideMirrorColor(0.2, 0.2, 0.2, 1.0);
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, volvoYellow);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
@@ -55,6 +56,8 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     
     m_carModel.headLight->Draw(m_carModel.headLightLeftMatrix, view, proj, headLightColor);
     m_carModel.headLight->Draw(m_carModel.headLightRightMatrix, view, proj, headLightColor);
+    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightLeftMatrix, view, proj, testColor);
+    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightRightMatrix, view, proj, testColor);
     m_carModel.tailLight->Draw(m_carModel.tailLightRightMatrix, view, proj, testColor);
     m_carModel.tailLight->Draw(m_carModel.tailLightLeftMatrix, view, proj, testColor);
     
@@ -72,6 +75,9 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
 
     m_carModel.wheelRim->Draw(m_carModel.wheelRimFrontMatrix, view, proj, rimColor);
     m_carModel.wheelRim->Draw(m_carModel.wheelRimBackMatrix, view, proj, rimColor);
+
+    m_carModel.sideMirror->Draw(m_carModel.sideMirrorLeftMatrix, view, proj, sideMirrorColor);
+    m_carModel.sideMirror->Draw(m_carModel.sideMirrorRightMatrix, view, proj, sideMirrorColor);
 }
 
 void Vehicle::GearDown()
@@ -406,15 +412,15 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.windShieldMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Quaternion testWindShieldRotate = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, Utility::ToRadians(-99.0));
     m_carModel.windShieldMatrix = DirectX::SimpleMath::Matrix::Transform(m_carModel.windShieldMatrix, testWindShieldRotate);
-    DirectX::SimpleMath::Vector3 testWindShieldAllignment = DirectX::SimpleMath::Vector3::Zero;
-    testWindShieldAllignment.x = windShieldLengthAlignment;
-    testWindShieldAllignment.y = roofHeightAlignment;
-    testWindShieldAllignment.x = 3.71535993;
-    testWindShieldAllignment.y = 1.90719998;
-    testWindShieldAllignment.x = 1.255;
-    testWindShieldAllignment.y = 1.711;
+    DirectX::SimpleMath::Vector3 windShieldAllignment = DirectX::SimpleMath::Vector3::Zero;
+    windShieldAllignment.x = windShieldLengthAlignment;
+    windShieldAllignment.y = roofHeightAlignment;
+    windShieldAllignment.x = 3.71535993;
+    windShieldAllignment.y = 1.90719998;
+    windShieldAllignment.x = 1.255;
+    windShieldAllignment.y = 1.711;
     //m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(testWindShieldAllignment));    
-    m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(testWindShieldAllignment);
+    m_carModel.windShieldMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(windShieldAllignment);
     m_carModel.localWindShieldMatrix = m_carModel.windShieldMatrix;   
     /// windshield end /////////////////////////////////////////////////////////////////////////
 
@@ -514,7 +520,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     headLightLeftTranslation.z = (- carBodySize.z * 0.5) + (headLightSize.z * 0.45);
     m_carModel.headLightLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(headLightLeftTranslation);
     m_carModel.localHeadLightLeftMatrix = m_carModel.headLightLeftMatrix;
-
     /// Head Light Left End    ////////////////////////////////////////////////////////////////
 
     /// Head Light Right Start  ////////////////////////////////////////////////////////////////
@@ -528,6 +533,28 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.headLightRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(headLightRightTranslation);
     m_carModel.localHeadLightRightMatrix = m_carModel.headLightRightMatrix;
     /// Head Light Right End    ////////////////////////////////////////////////////////////////
+
+    /// Blinker Light Left Start ///////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 blinkerLightSize = headLightSize;
+    blinkerLightSize.y *= 0.5;
+    blinkerLightSize.z *= 0.2;
+    m_carModel.blinkerLight = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), blinkerLightSize);
+    DirectX::SimpleMath::Vector3 blinkerLeftTranslation;
+    blinkerLeftTranslation.x = 0.001;
+    blinkerLeftTranslation.y = -blinkerLightSize.y * 0.4;
+    blinkerLeftTranslation.z = (-headLightSize.z * 0.5) + (blinkerLightSize.z * 0.5) - 0.001;
+    m_carModel.blinkerLightLeftMatrix = m_carModel.headLightLeftMatrix;
+    m_carModel.blinkerLightLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(blinkerLeftTranslation);
+    m_carModel.localBlinkerLightLeftMatrix = m_carModel.blinkerLightLeftMatrix;
+    /// Blinker Light Left End   ///////////////////////////////////////////////////////////////
+
+    /// Blinker Light Left Start ///////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 blinkerRightTranslation = blinkerLeftTranslation;
+    blinkerRightTranslation.z *= -1.0;
+    m_carModel.blinkerLightRightMatrix = m_carModel.headLightRightMatrix;
+    m_carModel.blinkerLightRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(blinkerRightTranslation);
+    m_carModel.localBlinkerLightRightMatrix = m_carModel.blinkerLightRightMatrix;
+    /// Blinker Light Left End  ///////////////////////////////////////////////////////////////
 
     /// Tail Light Right Start  ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 tailLightSize = headLightSize;
@@ -553,6 +580,34 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.localTailLightLeftMatrix = m_carModel.tailLightLeftMatrix;
     /// Tail Light Left End    ////////////////////////////////////////////////////////////////
 
+
+    /// Side Mirror Left Start ///////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 sideMirrorSize;
+    sideMirrorSize.x = 0.13;
+    sideMirrorSize.y = 0.144;
+    sideMirrorSize.z = 0.25;
+    m_carModel.sideMirror = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), sideMirrorSize);
+    m_carModel.sideMirrorLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    const double sideMirrorAngle = Utility::ToRadians(20.0);
+    m_carModel.sideMirrorLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(sideMirrorAngle);
+    DirectX::SimpleMath::Vector3 sideMirrorLeftTranslation;
+    sideMirrorLeftTranslation.x = (windShieldAllignment.x * 0.5) + triangleWindowSize.x * 0.051;
+    sideMirrorLeftTranslation.y = windShieldAllignment.y * 0.5;
+    sideMirrorLeftTranslation.z = (- carBodySize.z * 0.5) - (sideMirrorSize.z * 0.5) + (topIndent * 0.2);
+    m_carModel.sideMirrorLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(sideMirrorLeftTranslation);
+    m_carModel.localSideMirrorLeftMatrix = m_carModel.sideMirrorLeftMatrix;
+    /// Side Mirror Left End ////////////////////////////////////////////////////////////////
+
+    /// Side Mirror Right Start ///////////////////////////////////////////////////////////////
+    m_carModel.sideMirrorRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.sideMirrorRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(-sideMirrorAngle);
+    DirectX::SimpleMath::Vector3 sideMirrorRightTranslation;
+    sideMirrorRightTranslation.x = (windShieldAllignment.x * 0.5) + triangleWindowSize.x * 0.051;
+    sideMirrorRightTranslation.y = windShieldAllignment.y * 0.5;
+    sideMirrorRightTranslation.z = (carBodySize.z * 0.5) + (sideMirrorSize.z * 0.5) - (topIndent * 0.2);
+    m_carModel.sideMirrorRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(sideMirrorRightTranslation);
+    m_carModel.localSideMirrorRightMatrix = m_carModel.sideMirrorRightMatrix;
+    /// Side Mirror Right End ////////////////////////////////////////////////////////////////
 
 }
 
@@ -1167,6 +1222,13 @@ void Vehicle::UpdateModel(const double aTimer)
     // right headlight
     m_carModel.headLightRightMatrix = m_carModel.localHeadLightRightMatrix;
     m_carModel.headLightRightMatrix *= updateMat;
+    // left blinker light
+    m_carModel.blinkerLightLeftMatrix = m_carModel.localBlinkerLightLeftMatrix;
+    m_carModel.blinkerLightLeftMatrix *= updateMat;
+    // right blinker light
+    m_carModel.blinkerLightRightMatrix = m_carModel.localBlinkerLightRightMatrix;
+    m_carModel.blinkerLightRightMatrix *= updateMat;
+    
     // right tail light
     m_carModel.tailLightRightMatrix = m_carModel.localTailLightRightMatrix;
     m_carModel.tailLightRightMatrix *= updateMat;
@@ -1177,7 +1239,12 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.rearSpoilerMatrix = m_carModel.locarearSpoilerMatrix;
     m_carModel.rearSpoilerMatrix *= testTurn;
     m_carModel.rearSpoilerMatrix *= updateMatrix;
-
+    // side mirrors
+    m_carModel.sideMirrorLeftMatrix = m_carModel.localSideMirrorLeftMatrix;
+    m_carModel.sideMirrorLeftMatrix *= updateMat;
+    m_carModel.sideMirrorRightMatrix = m_carModel.localSideMirrorRightMatrix;
+    m_carModel.sideMirrorRightMatrix *= updateMat;
+    
     // hood
     m_carModel.hoodMatrix = m_carModel.localHoodMatrix;
     m_carModel.hoodMatrix *= testTurn;
