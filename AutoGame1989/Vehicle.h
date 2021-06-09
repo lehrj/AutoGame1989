@@ -144,10 +144,14 @@ struct CarModel
     DirectX::SimpleMath::Matrix localHeadLightRightMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive> blinkerLight;
-    DirectX::SimpleMath::Matrix blinkerLightLeftMatrix;
-    DirectX::SimpleMath::Matrix localBlinkerLightLeftMatrix;
-    DirectX::SimpleMath::Matrix blinkerLightRightMatrix;
-    DirectX::SimpleMath::Matrix localBlinkerLightRightMatrix;
+    DirectX::SimpleMath::Matrix blinkerLightLowerLeftMatrix;
+    DirectX::SimpleMath::Matrix localBlinkerLightLowerLeftMatrix;
+    DirectX::SimpleMath::Matrix blinkerLightLowerRightMatrix;
+    DirectX::SimpleMath::Matrix localBlinkerLightLowerRightMatrix;
+    DirectX::SimpleMath::Matrix blinkerLightUpperLeftMatrix;
+    DirectX::SimpleMath::Matrix localBlinkerLightUpperLeftMatrix;
+    DirectX::SimpleMath::Matrix blinkerLightUpperRightMatrix;
+    DirectX::SimpleMath::Matrix localBlinkerLightUpperRightMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    tailLight;
     DirectX::SimpleMath::Matrix tailLightLeftMatrix;
@@ -185,14 +189,13 @@ struct CarModel
     DirectX::SimpleMath::Matrix localrimEdgeMatrix = DirectX::SimpleMath::Matrix::Identity;
 
     DirectX::SimpleMath::Matrix hubFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix localHubFrontLeftMatrixMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localHubFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix hubFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix localHubFrontRightMatrixMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localHubFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix hubBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix localHubBackLeftMatrixMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localHubBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix hubBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix localHubBackRightMatrixMatrix = DirectX::SimpleMath::Matrix::Identity;
-
+    DirectX::SimpleMath::Matrix localHubBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
 
     std::unique_ptr<DirectX::GeometricPrimitive> sideMirror;
     DirectX::SimpleMath::Matrix sideMirrorLeftMatrix;
