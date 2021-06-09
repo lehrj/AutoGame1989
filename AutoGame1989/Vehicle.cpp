@@ -74,10 +74,20 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack5, view, proj, spokeColor);
 
     m_carModel.wheelRim->Draw(m_carModel.wheelRimFrontMatrix, view, proj, rimColor);
-    m_carModel.wheelRim->Draw(m_carModel.wheelRimBackMatrix, view, proj, rimColor);
+    //m_carModel.wheelRim->Draw(m_carModel.wheelRimBackMatrix, view, proj, rimColor);
 
     m_carModel.sideMirror->Draw(m_carModel.sideMirrorLeftMatrix, view, proj, sideMirrorColor);
     m_carModel.sideMirror->Draw(m_carModel.sideMirrorRightMatrix, view, proj, sideMirrorColor);
+
+    //m_carModel.tireEdge->Draw(m_carModel.tireEdgeMatrix, view, proj, tireColor);
+    //m_carModel.tireEdge->Draw(m_carModel.rimEdgeMatrix, view, proj, tireColor);
+    //m_carModel.rimEdge->Draw(m_carModel.rimEdgeMatrix, view, proj, spokeColor);
+    m_carModel.rimEdge->Draw(m_carModel.hubBackRightMatrix, view, proj, spokeColor);
+    m_carModel.tireEdge->Draw(m_carModel.hubBackRightMatrix, view, proj, tireColor);
+
+    m_carModel.rimEdge->Draw(m_carModel.hubFrontRightMatrix, view, proj, spokeColor);
+    m_carModel.tireEdge->Draw(m_carModel.hubFrontRightMatrix, view, proj, tireColor);
+
 }
 
 void Vehicle::GearDown()
@@ -293,7 +303,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 32);
 
     m_carModel.frontTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 16);
-    m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 16);
+    m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 32);
 
     m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.frontAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -342,7 +352,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     */
     spokeSize.x = wheelRadius * 0.25;
     spokeSize.y = axelLength - 0.003;
-    //spokeSize.y = 2.4;
+    spokeSize.y = 2.35;
     spokeSize.z = wheelRadius * 0.8;
 
     m_carModel.wheelSpoke = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), spokeSize);
@@ -357,9 +367,66 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     rimSize.x = 0.0;
     rimSize.y = 0.0;
     rimSize.z = 0.0;
-    m_carModel.wheelRim = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength - 0.006, spokeSize.z * 2.0, 32);
+    const float rimDiameter = spokeSize.z * 2.0;
+    m_carModel.wheelRim = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength + 0.006, rimDiameter, 32);
     /// Wheel Rim End ///////////////////////////////////////////////////////
 
+
+    /// Hub Back Right Start /////////////////////////////////////////////////////
+    m_carModel.hubBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+    m_carModel.hubBackRightMatrix *= m_carModel.rearTireRotation;
+    m_carModel.hubBackRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, (tireLength * 0.5) - (0.0)));
+    m_carModel.hubBackRightMatrix *= m_carModel.rearTireTranslation;
+    m_carModel.localHubBackRightMatrixMatrix = m_carModel.hubBackRightMatrix;
+    /// Hub Back Right End ///////////////////////////////////////////////////////
+
+    /// Hub Front Right Start /////////////////////////////////////////////////////
+    m_carModel.hubFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.hubFrontRightMatrix *= m_carModel.frontTireRotation;
+    m_carModel.hubFrontRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, (tireLength * 0.5) - (0.0)));
+    //m_carModel.hubFrontRightMatrix *= m_carModel.frontTireTranslation;
+    m_carModel.localHubFrontRightMatrixMatrix = m_carModel.hubFrontRightMatrix;
+    /// Hub Front Right End /////////////////////////////////////////////////////// 
+    
+    /// Rim Edge Start /////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 rimEdgeSize;
+    rimEdgeSize.x = 0.0;
+    rimEdgeSize.y = 0.0;
+    rimEdgeSize.z = 0.0;
+    float rimEdgeWidth = wheelDiameter - (spokeSize.z * 2.0);
+    rimEdgeWidth *= 0.8;
+    rimEdgeWidth = rimDiameter - (spokeSize.z * 2.0);
+    rimEdgeWidth = 0.05;
+    float rimDdgeDiameter = wheelDiameter - rimEdgeWidth;
+    rimDdgeDiameter = rimDiameter - rimEdgeWidth;
+    m_carModel.rimEdge = DirectX::GeometricPrimitive::CreateTorus(aContext.Get(), rimDdgeDiameter, rimEdgeWidth, 8);
+    m_carModel.rimEdgeMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+    m_carModel.rimEdgeMatrix *= m_carModel.rearTireRotation;
+    m_carModel.rimEdgeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, (tireLength * 0.5) - (0.0)));
+    m_carModel.rimEdgeMatrix *= m_carModel.rearTireTranslation;
+    /// Rim Edge End ///////////////////////////////////////////////////////
+    
+    /// Tire Edge Start /////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 tireEdgeSize;
+    tireEdgeSize.x = 0.0;
+    tireEdgeSize.y = 0.0;
+    tireEdgeSize.z = 0.0;
+    float edgeWidth = wheelDiameter - (spokeSize.z * 2.0);
+    edgeWidth *= 0.8;
+    //edgeWidth = rimDiameter - (spokeSize.z * 2.0);
+    //edgeWidth = 0.05;
+    float edgeDiameter = wheelDiameter - edgeWidth;
+    //edgeDiameter = rimDiameter - edgeWidth;
+    m_carModel.tireEdge = DirectX::GeometricPrimitive::CreateTorus(aContext.Get(), edgeDiameter, edgeWidth, 8);
+    m_carModel.tireEdgeMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+    m_carModel.tireEdgeMatrix *= m_carModel.rearTireRotation;
+    m_carModel.tireEdgeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, (tireLength * 0.5) - (0.0)));
+    m_carModel.tireEdgeMatrix *= m_carModel.rearTireTranslation;
+    /// Tire Edge End ///////////////////////////////////////////////////////
+    
     const float topIndent = 0.2;   
     const float topHeight = heightTotal * 0.4;
     const float topLength = length * .6;
@@ -579,7 +646,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.tailLightLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(tailLightLeftTranslation);
     m_carModel.localTailLightLeftMatrix = m_carModel.tailLightLeftMatrix;
     /// Tail Light Left End    ////////////////////////////////////////////////////////////////
-
 
     /// Side Mirror Left Start ///////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 sideMirrorSize;
@@ -1185,7 +1251,34 @@ void Vehicle::UpdateModel(const double aTimer)
     // Rims
     m_carModel.wheelRimFrontMatrix = m_carModel.frontAxelMatrix;
     m_carModel.wheelRimBackMatrix = m_carModel.rearTireMatrix;
+    
+    // Hubs
+    DirectX::SimpleMath::Matrix testHubRotate = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRadsRear);
+    DirectX::SimpleMath::Matrix hubStearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
 
+    // Front Right Hub
+    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelRotation;
+    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelTranslation;
+    //
+    DirectX::SimpleMath::Matrix testAxisEndTranslate = m_carModel.localHubFrontRightMatrixMatrix;
+    testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);;
+    m_carModel.hubFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+        
+    m_carModel.hubFrontRightMatrix *= testHubRotate;
+    //m_carModel.hubFrontRightMatrix *= m_carModel.localHubFrontRightMatrixMatrix; 
+    m_carModel.hubFrontRightMatrix *= testAxisEndTranslate;
+    //m_carModel.hubFrontRightMatrix *= hubStearingTurn;
+    m_carModel.hubFrontRightMatrix *= m_carModel.frontTireTranslation;
+    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelRotation;
+    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelTranslation;
+    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelRotation;
+    m_carModel.hubFrontRightMatrix *= updateMat;
+
+    // Back Right Hub
+    m_carModel.hubBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.hubBackRightMatrix *= testHubRotate;
+    m_carModel.hubBackRightMatrix *= m_carModel.localHubBackRightMatrixMatrix;
+    m_carModel.hubBackRightMatrix *= updateMat;
     // windshield
     m_carModel.windShieldMatrix = m_carModel.localWindShieldMatrix;
     m_carModel.windShieldMatrix *= testTurn;
@@ -1227,8 +1320,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.blinkerLightLeftMatrix *= updateMat;
     // right blinker light
     m_carModel.blinkerLightRightMatrix = m_carModel.localBlinkerLightRightMatrix;
-    m_carModel.blinkerLightRightMatrix *= updateMat;
-    
+    m_carModel.blinkerLightRightMatrix *= updateMat;   
     // right tail light
     m_carModel.tailLightRightMatrix = m_carModel.localTailLightRightMatrix;
     m_carModel.tailLightRightMatrix *= updateMat;
@@ -1243,8 +1335,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.sideMirrorLeftMatrix = m_carModel.localSideMirrorLeftMatrix;
     m_carModel.sideMirrorLeftMatrix *= updateMat;
     m_carModel.sideMirrorRightMatrix = m_carModel.localSideMirrorRightMatrix;
-    m_carModel.sideMirrorRightMatrix *= updateMat;
-    
+    m_carModel.sideMirrorRightMatrix *= updateMat;    
     // hood
     m_carModel.hoodMatrix = m_carModel.localHoodMatrix;
     m_carModel.hoodMatrix *= testTurn;
