@@ -73,6 +73,10 @@ struct CarModel
     DirectX::SimpleMath::Matrix localBodyTopMatrix;
     DirectX::SimpleMath::Matrix bodyTopMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    rockerSkirt;
+    DirectX::SimpleMath::Matrix localRockerSkirtMatrix;
+    DirectX::SimpleMath::Matrix rockerSkirtMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    frontAxel;
     DirectX::SimpleMath::Matrix frontAxelMatrix;
     DirectX::SimpleMath::Matrix frontAxelRotation;
@@ -158,6 +162,10 @@ struct CarModel
     DirectX::SimpleMath::Matrix localTailLightLeftMatrix;
     DirectX::SimpleMath::Matrix tailLightRightMatrix;
     DirectX::SimpleMath::Matrix localTailLightRightMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    thirdBrakeLight;
+    DirectX::SimpleMath::Matrix thirdBrakeLightMatrix;
+    DirectX::SimpleMath::Matrix localThirdBrakeLightMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive> wheelSpoke;
     DirectX::SimpleMath::Matrix wheelSpokeFront1;
