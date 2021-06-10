@@ -307,5 +307,7 @@ private:
 
     double m_debugWheelDistance = 0.0;
     double m_debugVehicleDistanceTraveled = 0.0;
+
+    bool m_testIsBreakLightOn = false;
 };
 

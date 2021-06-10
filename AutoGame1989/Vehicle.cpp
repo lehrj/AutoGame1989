@@ -26,7 +26,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Vector4 bumperColor = DirectX::Colors::Black;
     DirectX::SimpleMath::Vector4 grillColor(0.08, 0.08, 0.08, 1.0);
     DirectX::SimpleMath::Vector4 headLightColor(0.9, 0.9, 0.9, 1.0);
-    DirectX::SimpleMath::Vector4 tailLightColor(0.9, 0.0, 0.0, 1.0);
+    
     DirectX::SimpleMath::Vector4 blinkerLightOrange = DirectX::Colors::Orange;
     DirectX::SimpleMath::Vector4 testColor = DirectX::Colors::Red;
     DirectX::SimpleMath::Vector4 testColor2(0.1, 0.1, 0.1, 1.0);
@@ -35,6 +35,20 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Vector4 rimColor(0.4, 0.4, 0.4, 1.0);
     DirectX::SimpleMath::Vector4 sideMirrorColor(0.2, 0.2, 0.2, 1.0);
     DirectX::SimpleMath::Vector4 rockerSkirtColor(0.201960814f, 0.201960814f, 0.201960814f,  1.0);
+
+    DirectX::SimpleMath::Vector4 tailLightColor;// (0.9, 0.0, 0.0, 1.0);
+    //m_testIsBreakLightOn = false;
+    //if (m_testIsBreakLightOn == true)
+    //if (m_car.brakeInput > 0.0)
+    if (m_car.isBrakePressed == true)
+    {
+        tailLightColor = DirectX::SimpleMath::Vector4(0.9, 0.0, 0.0, 1.0);
+    }
+    else
+    {
+        tailLightColor = DirectX::SimpleMath::Vector4(0.9, 0.0, 0.0,  0.6);
+    }
+
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, volvoYellow);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
@@ -64,9 +78,9 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperLeftMatrix, view, proj, DirectX::Colors::Silver);
     m_carModel.blinkerLight->Draw(m_carModel.blinkerLightLowerRightMatrix, view, proj, blinkerLightOrange);
     m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperRightMatrix, view, proj, DirectX::Colors::Silver);
-    m_carModel.tailLight->Draw(m_carModel.tailLightRightMatrix, view, proj, testColor);
-    m_carModel.tailLight->Draw(m_carModel.tailLightLeftMatrix, view, proj, testColor);
-    m_carModel.thirdBrakeLight->Draw(m_carModel.thirdBrakeLightMatrix, view, proj, testColor);
+    m_carModel.tailLight->Draw(m_carModel.tailLightRightMatrix, view, proj, tailLightColor);
+    m_carModel.tailLight->Draw(m_carModel.tailLightLeftMatrix, view, proj, tailLightColor);
+    m_carModel.thirdBrakeLight->Draw(m_carModel.thirdBrakeLightMatrix, view, proj, tailLightColor);
 
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront1, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront2, view, proj, spokeColor);
@@ -841,6 +855,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
 void Vehicle::PressBrake(const double aBrakeInput)
 {
+    m_testIsBreakLightOn = true;
+    //if(m_car.brakeInput > 0.0)
     if (aBrakeInput > 0.0)
     {
         m_car.isBrakePressed = true;
@@ -1216,8 +1232,6 @@ void Vehicle::UpdateModel(const double aTimer)
     double wheelTurnRadsRear = GetWheelRotationRadiansRear(aTimer) + m_testRotation;
     //m_testRotationRear = (wheelTurnRadsRear + wheelTurnRads) / 2;
     m_testRotationRear = wheelTurnRadsRear;
-    DebugPushUILine("m_testRotation", m_testRotation);
-    DebugPushUILine("m_testRotationRear", m_testRotationRear);
     //DebugPushUILine("GetWheelRotationRadiansRear(aTimer)", GetWheelRotationRadiansRear(aTimer));
     
     DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
@@ -1504,17 +1518,15 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     DebugPushUILine("Speed", m_car.speed);
     DebugPushUILine("RPM", m_car.omegaE);
-    DebugPushUILine("steeringAngle;", m_car.steeringAngle);
-    DebugPushUILine("carRotation", m_car.carRotation);
-    //DebugPushUILine("m_car.throttleInput", m_car.throttleInput);
-    //DebugPushUILine("m_car.brakeInput", m_car.brakeInput);
 
-    TestGetForceLateral();
+    //TestGetForceLateral();
 
     UpdateModel(aTimeDelta);
-    m_car.isBrakePressed = false;
+    //m_car.isBrakePressed = false;
     m_car.isThrottlePressed = false;
     m_car.isTurningPressed = false;
+    m_car.isBrakePressed = false;
+    m_testIsBreakLightOn = false;
     /*
     m_debugVehicleDistanceTraveled += DirectX::SimpleMath::Vector3::Distance(prevPos, m_car.q.position);
     DebugPushUILine("m_debugVehicleDistanceTraveled", m_debugVehicleDistanceTraveled);

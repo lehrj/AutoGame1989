@@ -3265,8 +3265,9 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
     
-    UpdateInput(aTimer);
+    
     m_vehicle->UpdateVehicle(aTimer.GetTotalSeconds(), aTimer.GetElapsedSeconds());
+    UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
 }
 
