@@ -45,6 +45,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.rearTire->Draw(m_carModel.rearTireMatrix, view, proj, tireColor);
     m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, volvoYellow);
     m_carModel.rearSpoiler->Draw(m_carModel.rearSpoilerMatrix, view, proj, volvoYellow);
+    m_carModel.airDam->Draw(m_carModel.airDamMatrix, view, proj, rockerSkirtColor);
     m_carModel.hood->Draw(m_carModel.hoodMatrix, view, proj, volvoYellow);
     
     m_carModel.windShieldWindow->Draw(m_carModel.windShieldWindowMatrix, view, proj, windShieldColor);
@@ -341,11 +342,13 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.localRockerSkirtMatrix = m_carModel.rockerSkirtMatrix;
     /////// Rocker Skirt Panels End   ////////////////////////////////////////
 
+    // Axels
+    //DirectX::SimpleMath::Vector3 frontAxelTranslation(DirectX::SimpleMath::Vector3((wheelBase * .8) - wheelRadius, wheelRadius, 0.0));
+    DirectX::SimpleMath::Vector3 frontAxelTranslation(DirectX::SimpleMath::Vector3(wheelBase * .55, wheelRadius, 0.0));
 
     DirectX::SimpleMath::Matrix axelRotation = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
-
     m_carModel.frontAxelMatrix *= axelRotation;
-    m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
+    m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(frontAxelTranslation);
     m_carModel.rearAxelMatrix *= axelRotation;
     m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
     
@@ -354,15 +357,14 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.rearTireMatrix *= axelRotation;
     m_carModel.rearTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
 
-
     m_carModel.frontAxelRotation *= axelRotation;
-    m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
+    m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(frontAxelTranslation);
 
     m_carModel.rearAxelRotation = axelRotation;
     m_carModel.rearAxelTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
 
     m_carModel.frontTireRotation *= axelRotation;
-    m_carModel.frontTireTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
+    m_carModel.frontTireTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(frontAxelTranslation);
 
     m_carModel.rearTireRotation = axelRotation;
     m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
@@ -598,6 +600,22 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.bumperFrontMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(carBodySize.x * 0.5 - bumperFrontSize.x * 0.25, wheelRadius + bumperFrontSize.y * 0.5 + zFightOffSet, 0.0));
     m_carModel.localBumperFrontMatrix = m_carModel.bumperFrontMatrix;
     /// Front Bumper End   ////////////////////////////////////////////////////////////////
+
+    /// Air Dam Start //////////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 airDamSize;
+    airDamSize.x = bumperFrontSize.x * 0.9;
+    airDamSize.y = bumperFrontSize.y * 0.4;
+    airDamSize.z = bumperFrontSize.z * 0.85;
+    m_carModel.airDam = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), airDamSize);
+    m_carModel.airDamMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.airDamMatrix = DirectX::SimpleMath::Matrix::Transform(m_carModel.airDamMatrix, DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, Utility::ToRadians(-55.0)));
+    DirectX::SimpleMath::Vector3 airDamTransform;
+    airDamTransform.x = (carBodySize.x * 0.5) - (bumperFrontSize.x * 0.25) - 0.05;
+    airDamTransform.y = wheelRadius + (-bumperFrontSize.y * 0.1) + zFightOffSet + 0.05;
+    airDamTransform.z = 0.0;
+    m_carModel.airDamMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(airDamTransform);
+    m_carModel.localAirDamMatrix = m_carModel.airDamMatrix;
+    /// Air Dam End ////////////////////////////////////////////////////////////////////////
 
     /// Back Bumper Start   ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 bumperBackSize = bumperFrontSize;
@@ -1403,6 +1421,9 @@ void Vehicle::UpdateModel(const double aTimer)
     // back bumper
     m_carModel.bumperBackMatrix = m_carModel.localBumperBackMatrix;
     m_carModel.bumperBackMatrix *= updateMat;
+    // air dam
+    m_carModel.airDamMatrix = m_carModel.localAirDamMatrix;
+    m_carModel.airDamMatrix *= updateMat;
     // grill
     m_carModel.grillMatrix = m_carModel.localGrillMatrix;
     m_carModel.grillMatrix *= updateMat;

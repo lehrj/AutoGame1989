@@ -77,6 +77,11 @@ struct CarModel
     DirectX::SimpleMath::Matrix localRockerSkirtMatrix;
     DirectX::SimpleMath::Matrix rockerSkirtMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    airDam;
+    DirectX::SimpleMath::Matrix localAirDamMatrix;
+    DirectX::SimpleMath::Matrix airDamMatrix;
+
+
     std::unique_ptr<DirectX::GeometricPrimitive>    frontAxel;
     DirectX::SimpleMath::Matrix frontAxelMatrix;
     DirectX::SimpleMath::Matrix frontAxelRotation;
