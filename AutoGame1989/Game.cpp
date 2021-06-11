@@ -767,7 +767,6 @@ void Game::DrawDebugLines(const  DirectX::SimpleMath::Vector3 aPos, const Direct
 
 void Game::DrawDebugValue()
 {
-    //m_fontPos2
     std::vector<std::pair<std::string, double>> uiVector = m_vehicle->DebutGetUI();
     int vecSize = uiVector.size();
     ///DirectX::SimpleMath::Vector2 textLinePos = m_fontPosDebug;
@@ -777,6 +776,7 @@ void Game::DrawDebugValue()
     for (int i = 0; i < vecSize; ++i)
     {
         std::string textLine = uiVector[i].first + " = " + std::to_string(uiVector[i].second);
+        //std::string textLine = uiVector[i].first + " = " + std::to_string(static_cast<int>(uiVector[i].second));
         //DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
         DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
         textLinePos.x = textLineOrigin.x + 20;
@@ -3205,7 +3205,6 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& aTimer)
 {
-
     double elapsedTime = double(aTimer.GetElapsedSeconds());
     m_testTimer = m_timer.GetTotalSeconds() + m_testTimerOffset;
 

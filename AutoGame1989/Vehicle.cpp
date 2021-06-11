@@ -1483,7 +1483,10 @@ void Vehicle::UpdateModel(const double aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
+    DirectX::SimpleMath::Vector3 prevVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 prevPos = m_car.q.position;
+    double preVel = m_car.q.velocity.Length();
+
     DebugClearUI();
     ThrottleBrakeDecay(aTimeDelta);
     SteeringInputDecay(aTimeDelta);
@@ -1516,9 +1519,15 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     m_car.speed = velocity;
 
-    DebugPushUILine("Speed", m_car.speed);
+    DebugPushUILine("Speed Miles per Hour", m_car.speed * 2.23694);
     DebugPushUILine("RPM", m_car.omegaE);
-
+    DebugPushUILine("m_car.testTorque", m_car.testTorque);
+    DebugPushUILine("Gear", m_car.gearNumber);
+    double hp = (m_car.testTorque * m_car.omegaE) / 5252;
+    DebugPushUILine("HorsePower", hp);
+    double testTorque = (hp * 5252) / m_car.omegaE;
+    DebugPushUILine("testTorque", testTorque);
+    //orsepower = Torque x RPM / 5, 252.
     //TestGetForceLateral();
 
     UpdateModel(aTimeDelta);
@@ -1533,6 +1542,19 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DebugPushUILine("m_debugWheelDistance          ", m_debugWheelDistance);
     DebugPushUILine("x Pos                           ", m_car.q.position.x);
     */
+
+    m_car.testAccel = (m_car.q.velocity.Length() - prevVelocity.Length()) / aTimeDelta;
+    m_car.testAcceleration = (m_car.q.velocity - prevVelocity) / aTimeDelta;
+    //m_car.testAcceleration = (m_car.q.velocity - prevVelocity);
+    //m_car.testAcceleration = (prevVelocity - m_car.q.velocity);
+
+    m_car.testAcceleration = m_car.testAcceleration / m_car.q.velocity;
+    DebugPushUILine("m_car.testAcceleration.x", m_car.testAcceleration.x);
+    DebugPushUILine("m_car.testAcceleration.y", m_car.testAcceleration.y);
+    DebugPushUILine("m_car.testAcceleration.z", m_car.testAcceleration.z);
+    DebugPushUILine("m_car.testAcceleration.Length()", m_car.testAcceleration.Length());
+    DebugPushUILine("m_car.testAccel", m_car.testAccel);
+
 
 }
 

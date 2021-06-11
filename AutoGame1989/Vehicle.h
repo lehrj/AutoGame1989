@@ -56,6 +56,8 @@ struct Car
     bool isAccelerating;
     bool isBraking;
 
+    DirectX::SimpleMath::Vector3 testAcceleration = DirectX::SimpleMath::Vector3::Zero;
+    double testAccel = 0.0;
     // test values for wheel slip
     double testRearCylinderMass;
     double testTorque;
@@ -81,7 +83,6 @@ struct CarModel
     DirectX::SimpleMath::Matrix localAirDamMatrix;
     DirectX::SimpleMath::Matrix airDamMatrix;
 
-
     std::unique_ptr<DirectX::GeometricPrimitive>    frontAxel;
     DirectX::SimpleMath::Matrix frontAxelMatrix;
     DirectX::SimpleMath::Matrix frontAxelRotation;
@@ -101,6 +102,12 @@ struct CarModel
     DirectX::SimpleMath::Matrix rearTireMatrix;
     DirectX::SimpleMath::Matrix rearTireRotation;
     DirectX::SimpleMath::Matrix rearTireTranslation;
+
+    // testing independant wheels
+    std::unique_ptr<DirectX::GeometricPrimitive>    tire;
+    DirectX::SimpleMath::Matrix frontTireRightMatrix;
+    DirectX::SimpleMath::Matrix frontTireRightRotation;
+    DirectX::SimpleMath::Matrix frontTireRightTranslation;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    rearSpoiler;
     DirectX::SimpleMath::Matrix rearSpoilerMatrix;
@@ -233,6 +240,8 @@ public:
     int GetGear() { return m_car.gearNumber; };
     DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_car.q.position; };
+    DirectX::SimpleMath::Vector3 GetVelocity() const { return m_car.q.velocity; };
+    double GetAccel() const { return m_car.testAccel; };
     double GetRPM() { return m_car.omegaE; };
     double GetRotation() const { return m_car.carRotation; };
     float GetSpeed() { return m_car.speed; };
