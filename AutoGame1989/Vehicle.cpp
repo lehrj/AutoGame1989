@@ -49,14 +49,18 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
         tailLightColor = DirectX::SimpleMath::Vector4(0.9, 0.0, 0.0,  0.6);
     }
 
+    m_carModel.tire->Draw(m_carModel.wheelFrontRightMatrix, view, proj, tireColor);
+    m_carModel.tire->Draw(m_carModel.wheelFrontLeftMatrix, view, proj, tireColor);
+    m_carModel.tire->Draw(m_carModel.wheelRearRightMatrix, view, proj, tireColor);
+    m_carModel.tire->Draw(m_carModel.wheelRearLeftMatrix, view, proj, tireColor);
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, volvoYellow);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
     m_carModel.rockerSkirt->Draw(m_carModel.rockerSkirtMatrix, view, proj, rockerSkirtColor);
-    m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj, spokeColor);
-    m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj, spokeColor);
-    m_carModel.frontTire->Draw(m_carModel.frontTireMatrix, view, proj, tireColor);
-    m_carModel.rearTire->Draw(m_carModel.rearTireMatrix, view, proj, tireColor);
+    //m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj, spokeColor);
+    //m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj, spokeColor);
+    //m_carModel.frontTire->Draw(m_carModel.frontTireMatrix, view, proj, tireColor);
+    //m_carModel.rearTire->Draw(m_carModel.rearTireMatrix, view, proj, tireColor);
     m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, volvoYellow);
     m_carModel.rearSpoiler->Draw(m_carModel.rearSpoilerMatrix, view, proj, volvoYellow);
     m_carModel.airDam->Draw(m_carModel.airDamMatrix, view, proj, rockerSkirtColor);
@@ -81,19 +85,19 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.tailLight->Draw(m_carModel.tailLightRightMatrix, view, proj, tailLightColor);
     m_carModel.tailLight->Draw(m_carModel.tailLightLeftMatrix, view, proj, tailLightColor);
     m_carModel.thirdBrakeLight->Draw(m_carModel.thirdBrakeLightMatrix, view, proj, tailLightColor);
-
+    /*
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront1, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront2, view, proj, spokeColor);
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront3, view, proj, spokeColor);
+    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront3, view, proj, spokeColor);         ======
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront4, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront5, view, proj, spokeColor);
-
+    
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack1, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack2, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack3, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack4, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack5, view, proj, spokeColor);
-
+    */
     //m_carModel.wheelRim->Draw(m_carModel.wheelRimFrontMatrix, view, proj, rimColor);
     //m_carModel.wheelRim->Draw(m_carModel.wheelRimBackMatrix, view, proj, rimColor);
 
@@ -322,6 +326,8 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     const float axelLength = width + 0.56;
     const float tireLength = width + 0.5;
     const float wheelBase = m_car.wheelBase;
+    const float frontAxelOffset = wheelBase * .55;
+    const float rearAxelOffset = wheelBase * .45;
     const float zFightOffSet = 0.001;
     DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
@@ -341,30 +347,15 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     DirectX::SimpleMath::Vector3 bodyTranslation(0.0, height + wheelRadius, 0.0);
     m_carModel.bodyMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(bodyTranslation);
 
-    /////// Rocker Skirt Panels Start ////////////////////////////////////////
-    DirectX::SimpleMath::Vector3 rockerSkirtSize = carBodySize;
-    rockerSkirtSize.x *= 0.77;
-    rockerSkirtSize.y *= 0.2;
-    rockerSkirtSize.z += 0.05;
-    m_carModel.rockerSkirt = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rockerSkirtSize);
-    DirectX::SimpleMath::Vector3 rockerSkirtTranslation;
-    rockerSkirtTranslation.x = -(carBodySize.x * 0.5) + (rockerSkirtSize.x * 0.5) - zFightOffSet;
-    rockerSkirtTranslation.y = height - carBodySize.y + (rockerSkirtSize.y * 0.5) - zFightOffSet;
-    rockerSkirtTranslation.z = 0.0;
-    m_carModel.rockerSkirtMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.rockerSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rockerSkirtTranslation);
-    m_carModel.localRockerSkirtMatrix = m_carModel.rockerSkirtMatrix;
-    /////// Rocker Skirt Panels End   ////////////////////////////////////////
-
     // Axels
-    //DirectX::SimpleMath::Vector3 frontAxelTranslation(DirectX::SimpleMath::Vector3((wheelBase * .8) - wheelRadius, wheelRadius, 0.0));
     DirectX::SimpleMath::Vector3 frontAxelTranslation(DirectX::SimpleMath::Vector3(wheelBase * .55, wheelRadius, 0.0));
+    DirectX::SimpleMath::Matrix frontAxelTransMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .55, wheelRadius, 0.0));
 
     DirectX::SimpleMath::Matrix axelRotation = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
     m_carModel.frontAxelMatrix *= axelRotation;
     m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(frontAxelTranslation);
     m_carModel.rearAxelMatrix *= axelRotation;
-    m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+    m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .45, wheelRadius, 0.0));
     
     m_carModel.frontTireMatrix *= axelRotation;
     m_carModel.frontTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
@@ -382,19 +373,34 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     m_carModel.rearTireRotation = axelRotation;
     m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+    /// Axels End ////////////////////////////////////////////////////////////
+    /// Independent Wheels Start /////////////////////////////////////////////
+    m_carModel.tire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), m_car.wheelWidth, m_car.wheelRadius * 2.0, 32);
+    /// Front Left Wheel Start
+    m_carModel.wheelFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.wheelFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+    m_carModel.wheelFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(frontAxelOffset, m_car.wheelRadius, -(carBodySize.z * 0.5)));
+    m_carModel.wheelFrontLeftTranslation = m_carModel.wheelFrontLeftMatrix;
+    /// Front Right Wheel Start
+    m_carModel.wheelFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.wheelFrontRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+    m_carModel.wheelFrontRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(frontAxelOffset, m_car.wheelRadius, (carBodySize.z * 0.5)));
+    m_carModel.wheelFrontRightTranslation = m_carModel.wheelFrontRightMatrix;
+    /// Rear Left Wheel Start
+    m_carModel.wheelRearLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.wheelRearLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+    m_carModel.wheelRearLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-rearAxelOffset, m_car.wheelRadius, -(carBodySize.z * 0.5)));
+    m_carModel.wheelRearLeftTranslation = m_carModel.wheelRearLeftMatrix;
+    /// Rear Right Wheel Start
+    m_carModel.wheelRearRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.wheelRearRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+    m_carModel.wheelRearRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-rearAxelOffset, m_car.wheelRadius, (carBodySize.z * 0.5)));
+    m_carModel.wheelRearRightTranslation = m_carModel.wheelRearRightMatrix;
 
+    /// Independent Wheels End   /////////////////////////////////////////////
+    /// 
     /// Start wheel spokes ///////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 spokeSize;
-    /*
-    spokeSize.x = axelLength - 0.003;
-    spokeSize.y = wheelRadius;
-    spokeSize.z = wheelRadius * 0.25;
-    */
-    /*
-    spokeSize.x = wheelRadius * 0.25;
-    spokeSize.y = wheelRadius;
-    spokeSize.z = axelLength + 1.0;
-    */
     spokeSize.x = wheelRadius * 0.25;
     spokeSize.y = axelLength - 0.003;
     spokeSize.y = 2.35;
@@ -406,7 +412,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.wheelSpokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
     m_carModel.wheelSpokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, spokeSize.y * 0.5, 0.0));
     /// End wheel spokes /////////////////////////////////////////////////////
-
     /// Wheel Rim Start /////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 rimSize;
     rimSize.x = 0.0;
@@ -415,8 +420,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     const float rimDiameter = spokeSize.z * 2.0;
     m_carModel.wheelRim = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength + 0.006, rimDiameter, 32);
     /// Wheel Rim End ///////////////////////////////////////////////////////
-
-
     /// Hub Back Left Start /////////////////////////////////////////////////////
     m_carModel.hubBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
 
@@ -481,7 +484,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     //edgeDiameter = rimDiameter - edgeWidth;
     m_carModel.tireEdge = DirectX::GeometricPrimitive::CreateTorus(aContext.Get(), edgeDiameter, edgeWidth, 32);
     m_carModel.tireEdgeMatrix = DirectX::SimpleMath::Matrix::Identity;
-
     m_carModel.tireEdgeMatrix *= m_carModel.rearTireRotation;
     m_carModel.tireEdgeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, (tireLength * 0.5) - (0.0)));
     m_carModel.tireEdgeMatrix *= m_carModel.rearTireTranslation;
@@ -514,8 +516,23 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.hoodMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(hoodHorizontalAdjust, (hoodVerticalAdjust * 0.5), 0.0));
     m_carModel.localHoodMatrix = m_carModel.hoodMatrix;
     // hood end /////////////////////////////////////////////////////////////////////////////////
-
-    // rear spoiler start /////////////////////////////////////////////////////////////////////////////////
+     
+    /////// Rocker Skirt Panels Start ////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 rockerSkirtSize = carBodySize;
+    rockerSkirtSize.x *= 0.77;
+    rockerSkirtSize.y *= 0.2;
+    rockerSkirtSize.z += 0.05;
+    m_carModel.rockerSkirt = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rockerSkirtSize);
+    DirectX::SimpleMath::Vector3 rockerSkirtTranslation;
+    rockerSkirtTranslation.x = -(carBodySize.x * 0.5) + (rockerSkirtSize.x * 0.5) - zFightOffSet;
+    rockerSkirtTranslation.y = height - carBodySize.y + (rockerSkirtSize.y * 0.5) - zFightOffSet;
+    rockerSkirtTranslation.z = 0.0;
+    m_carModel.rockerSkirtMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.rockerSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rockerSkirtTranslation);
+    m_carModel.localRockerSkirtMatrix = m_carModel.rockerSkirtMatrix;
+    /////// Rocker Skirt Panels End   ////////////////////////////////////////
+    
+    /// rear spoiler start /////////////////////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 rearSpoilerSize = carBodyTopSize;
     rearSpoilerSize.x = 0.1;
     rearSpoilerSize.y = 0.07;   
@@ -530,7 +547,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     spoilerTranslation.x = - rearSpoilerSize.x - roofLengthAlignment - carBodyTopSize.x;
     m_carModel.rearSpoilerMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(spoilerTranslation);
     m_carModel.locarearSpoilerMatrix = m_carModel.rearSpoilerMatrix;
-    // rear spoiler end //////////////////////////////////////////////////////////////////////////////////
+    /// rear spoiler end //////////////////////////////////////////////////////////////////////////////////
 
     /// windshield start /////////////////////////////////////////////////////////////////////////////////  
     DirectX::SimpleMath::Vector3 windShieldSize(1.0, 0.5, carBodyTopSize.z - 0.0001);
@@ -799,7 +816,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.redline = 7200;
     m_car.finalDriveRatio = 3.44;
     m_car.wheelRadius = 0.3186;
-
+    m_car.wheelWidth = 0.235;
     m_car.numberOfGears = 6;
     m_car.muR = 0.015;             //  coefficient of rolling friction
     m_car.omegaE = 1000.0;         //  engine rpm
@@ -1247,9 +1264,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.bodyTopMatrix *= testTurn;
     m_carModel.bodyTopMatrix *= updateMatrix;
     ///////
-    // rocker skirt 
-    m_carModel.rockerSkirtMatrix = m_carModel.localRockerSkirtMatrix;
-    m_carModel.rockerSkirtMatrix *= updateMat;
+
 
     DirectX::SimpleMath::Matrix wheelSpinMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads);
     DirectX::SimpleMath::Matrix wheelSpinRearMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRadsRear);
@@ -1275,6 +1290,25 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.rearTireMatrix *= m_carModel.rearTireTranslation;
     m_carModel.rearTireMatrix *= testTurn;
     m_carModel.rearTireMatrix *= updateMatrix;
+
+    /// Independant Wheels
+    DirectX::SimpleMath::Matrix wheelSpin = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRads);
+    DirectX::SimpleMath::Matrix stearingRotation = DirectX::SimpleMath::Matrix::CreateRotationZ(m_car.steeringAngle);
+    m_carModel.wheelFrontRightMatrix = wheelSpin * stearingRotation;
+    m_carModel.wheelFrontRightMatrix *= m_carModel.wheelFrontRightTranslation;
+    m_carModel.wheelFrontRightMatrix *= updateMat;
+
+    m_carModel.wheelFrontLeftMatrix = wheelSpin * stearingRotation;
+    m_carModel.wheelFrontLeftMatrix *= m_carModel.wheelFrontLeftTranslation;
+    m_carModel.wheelFrontLeftMatrix *= updateMat;
+
+    m_carModel.wheelRearLeftMatrix = wheelSpin;
+    m_carModel.wheelRearLeftMatrix *= m_carModel.wheelRearLeftTranslation;
+    m_carModel.wheelRearLeftMatrix *= updateMat;
+
+    m_carModel.wheelRearRightMatrix = wheelSpin;
+    m_carModel.wheelRearRightMatrix *= m_carModel.wheelRearRightTranslation;
+    m_carModel.wheelRearRightMatrix *= updateMat;
 
     // wheel spoke test
     DirectX::SimpleMath::Vector3 spokeOffset(0.0, 0.1, 0.0);
@@ -1408,6 +1442,9 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.hubBackRightMatrix *= testHubRotate;
     m_carModel.hubBackRightMatrix *= m_carModel.localHubBackRightMatrix;
     m_carModel.hubBackRightMatrix *= updateMat;
+    // rocker skirt 
+    m_carModel.rockerSkirtMatrix = m_carModel.localRockerSkirtMatrix;
+    m_carModel.rockerSkirtMatrix *= updateMat;
     // windshield
     m_carModel.windShieldMatrix = m_carModel.localWindShieldMatrix;
     m_carModel.windShieldMatrix *= testTurn;

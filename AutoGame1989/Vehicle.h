@@ -25,6 +25,7 @@ struct Car
     double redline;
     double finalDriveRatio;
     double wheelRadius;
+    double wheelWidth;
     int gearNumber;     //  gear the car is in
     int numberOfGears;  //  total number of gears
     double gearRatio[7];  //  gear ratios
@@ -105,9 +106,14 @@ struct CarModel
 
     // testing independant wheels
     std::unique_ptr<DirectX::GeometricPrimitive>    tire;
-    DirectX::SimpleMath::Matrix frontTireRightMatrix;
-    DirectX::SimpleMath::Matrix frontTireRightRotation;
-    DirectX::SimpleMath::Matrix frontTireRightTranslation;
+    DirectX::SimpleMath::Matrix wheelFrontLeftMatrix;
+    DirectX::SimpleMath::Matrix wheelFrontLeftTranslation;
+    DirectX::SimpleMath::Matrix wheelFrontRightMatrix;
+    DirectX::SimpleMath::Matrix wheelFrontRightTranslation;
+    DirectX::SimpleMath::Matrix wheelRearLeftMatrix;
+    DirectX::SimpleMath::Matrix wheelRearLeftTranslation;
+    DirectX::SimpleMath::Matrix wheelRearRightMatrix;
+    DirectX::SimpleMath::Matrix wheelRearRightTranslation;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    rearSpoiler;
     DirectX::SimpleMath::Matrix rearSpoilerMatrix;
