@@ -109,16 +109,23 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     //m_carModel.rimEdge->Draw(m_carModel.rimEdgeMatrix, view, proj, spokeColor);
     m_carModel.rimEdge->Draw(m_carModel.hubBackRightMatrix, view, proj, spokeColor);
     m_carModel.tireEdge->Draw(m_carModel.hubBackRightMatrix, view, proj, tireColor);
+    m_carModel.rimEdge->Draw(m_carModel.hubInteriorBackRightMatrix, view, proj, spokeColor);
+    m_carModel.tireEdge->Draw(m_carModel.hubInteriorBackRightMatrix, view, proj, tireColor);
 
     m_carModel.rimEdge->Draw(m_carModel.hubFrontRightMatrix, view, proj, spokeColor);
     m_carModel.tireEdge->Draw(m_carModel.hubFrontRightMatrix, view, proj, tireColor);
+    m_carModel.rimEdge->Draw(m_carModel.hubInteriorFrontRightMatrix, view, proj, spokeColor);
+    m_carModel.tireEdge->Draw(m_carModel.hubInteriorFrontRightMatrix, view, proj, tireColor);
 
     m_carModel.rimEdge->Draw(m_carModel.hubBackLeftMatrix, view, proj, spokeColor);
     m_carModel.tireEdge->Draw(m_carModel.hubBackLeftMatrix, view, proj, tireColor);
+    m_carModel.rimEdge->Draw(m_carModel.hubInteriorBackLeftMatrix, view, proj, spokeColor);
+    m_carModel.tireEdge->Draw(m_carModel.hubInteriorBackLeftMatrix, view, proj, tireColor);
 
     m_carModel.rimEdge->Draw(m_carModel.hubFrontLeftMatrix, view, proj, spokeColor);
     m_carModel.tireEdge->Draw(m_carModel.hubFrontLeftMatrix, view, proj, tireColor);
-
+    m_carModel.rimEdge->Draw(m_carModel.hubInteriorFrontLeftMatrix, view, proj, spokeColor);
+    m_carModel.tireEdge->Draw(m_carModel.hubInteriorFrontLeftMatrix, view, proj, tireColor);
 }
 
 void Vehicle::GearDown()
@@ -422,36 +429,52 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     /// Wheel Rim End ///////////////////////////////////////////////////////
     /// Hub Back Left Start /////////////////////////////////////////////////////
     m_carModel.hubBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-
-    m_carModel.hubBackLeftMatrix *= m_carModel.rearTireRotation;
-    m_carModel.hubBackLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, (-tireLength * 0.5) - (0.0)));
-    m_carModel.hubBackLeftMatrix *= m_carModel.rearTireTranslation;
+    m_carModel.hubBackLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -m_car.wheelWidth * 0.5, 0.0));
     m_carModel.localHubBackLeftMatrix = m_carModel.hubBackLeftMatrix;
+    m_carModel.hubBackLeftMatrix *= m_carModel.wheelRearLeftTranslation;
     /// Hub Back Left End ///////////////////////////////////////////////////////
+    /// Hub Back InteriorLeft Start /////////////////////////////////////////////////////
+    m_carModel.hubInteriorBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.hubInteriorBackLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, m_car.wheelWidth * 0.5, 0.0));
+    m_carModel.localHubInteriorBackLeftMatrix = m_carModel.hubInteriorBackLeftMatrix;
+    m_carModel.hubInteriorBackLeftMatrix *= m_carModel.wheelRearLeftTranslation;
+    /// Hub Back Interior Left End ///////////////////////////////////////////////////////
     /// Hub Back Right Start /////////////////////////////////////////////////////
     m_carModel.hubBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-
-    m_carModel.hubBackRightMatrix *= m_carModel.rearTireRotation;
-    m_carModel.hubBackRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, (tireLength * 0.5) - (0.0)));
-    m_carModel.hubBackRightMatrix *= m_carModel.rearTireTranslation;
+    m_carModel.hubBackRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, m_car.wheelWidth * 0.5, 0.0));
     m_carModel.localHubBackRightMatrix = m_carModel.hubBackRightMatrix;
+    m_carModel.hubBackRightMatrix *= m_carModel.wheelRearRightTranslation;
     /// Hub Back Right End ///////////////////////////////////////////////////////
+    /// Hub Back InteriorRight Start /////////////////////////////////////////////////////
+    m_carModel.hubInteriorBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.hubInteriorBackRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -m_car.wheelWidth * 0.5, 0.0));
+    m_carModel.localHubInteriorBackRightMatrix = m_carModel.hubInteriorBackRightMatrix;
+    m_carModel.hubInteriorBackRightMatrix *= m_carModel.wheelRearRightTranslation;
+    /// Hub Back InteriorRight End ///////////////////////////////////////////////////////
     /// Hub Front Left Start /////////////////////////////////////////////////////
     m_carModel.hubFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubFrontLeftMatrix *= m_carModel.frontTireRotation;
-    m_carModel.hubFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, (-tireLength * 0.5) - (0.0)));
-    //m_carModel.hubFrontRightMatrix *= m_carModel.frontTireTranslation;
+    m_carModel.hubFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -m_car.wheelWidth * 0.5, 0.0));
     m_carModel.localHubFrontLeftMatrix = m_carModel.hubFrontLeftMatrix;
+    m_carModel.hubFrontLeftMatrix *= m_carModel.wheelFrontLeftTranslation;
     /// Hub Front Left End /////////////////////////////////////////////////////// 
-    
+    /// Hub Interior Front Left Start /////////////////////////////////////////////////////
+    m_carModel.hubInteriorFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.hubInteriorFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, m_car.wheelWidth * 0.5, 0.0));
+    m_carModel.localHubInteriorFrontLeftMatrix = m_carModel.hubInteriorFrontLeftMatrix;
+    m_carModel.hubInteriorFrontLeftMatrix *= m_carModel.wheelFrontLeftTranslation;
+    /// Hub Front Interior Left End /////////////////////////////////////////////////////// 
     /// Hub Front Right Start /////////////////////////////////////////////////////
     m_carModel.hubFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubFrontRightMatrix *= m_carModel.frontTireRotation;
-    m_carModel.hubFrontRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, (tireLength * 0.5) - (0.0)));
-    //m_carModel.hubFrontRightMatrix *= m_carModel.frontTireTranslation;
+    m_carModel.hubFrontRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, m_car.wheelWidth * 0.5, 0.0));
     m_carModel.localHubFrontRightMatrix = m_carModel.hubFrontRightMatrix;
+    m_carModel.hubFrontRightMatrix *= m_carModel.wheelFrontRightTranslation;
     /// Hub Front Right End /////////////////////////////////////////////////////// 
-    
+    /// Hub Interior Front Right Start /////////////////////////////////////////////////////
+    m_carModel.hubInteriorFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.hubInteriorFrontRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -m_car.wheelWidth * 0.5, 0.0));
+    m_carModel.localHubInteriorFrontRightMatrix = m_carModel.hubInteriorFrontRightMatrix;
+    m_carModel.hubInteriorFrontRightMatrix *= m_carModel.wheelFrontRightTranslation;
+    /// Hub Front Interior Right End /////////////////////////////////////////////////////// 
     /// Rim Edge Start /////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 rimEdgeSize;
     rimEdgeSize.x = 0.0;
@@ -1405,43 +1428,26 @@ void Vehicle::UpdateModel(const double aTimer)
     DirectX::SimpleMath::Matrix testHubRotate = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRadsRear);
     DirectX::SimpleMath::Matrix hubStearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
 
-    // Front Right Hub
-    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelRotation;
-    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelTranslation;
-    //
+    
     DirectX::SimpleMath::Matrix testAxisEndTranslate = m_carModel.localHubFrontRightMatrix;
     testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);;
-    m_carModel.hubFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-        
-    m_carModel.hubFrontRightMatrix *= testHubRotate;
-    //m_carModel.hubFrontRightMatrix *= m_carModel.localHubFrontRightMatrixMatrix; 
-    m_carModel.hubFrontRightMatrix *= testAxisEndTranslate;
-    //m_carModel.hubFrontRightMatrix *= hubStearingTurn;
-    m_carModel.hubFrontRightMatrix *= m_carModel.frontTireTranslation;
-    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelRotation;
-    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelTranslation;
-    //m_carModel.hubFrontRightMatrix *= m_carModel.frontAxelRotation;
-    m_carModel.hubFrontRightMatrix *= updateMat;
+    
 
-    // Front Left Hub
+    
     testAxisEndTranslate = m_carModel.localHubFrontLeftMatrix;
-    testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);;
-    m_carModel.hubFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubFrontLeftMatrix *= testHubRotate;
-    m_carModel.hubFrontLeftMatrix *= testAxisEndTranslate;
-    m_carModel.hubFrontLeftMatrix *= m_carModel.frontTireTranslation;
-    m_carModel.hubFrontLeftMatrix *= updateMat;
-
+    testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
+    // Front Left Hub
+    m_carModel.hubFrontLeftMatrix = wheelSpin * m_carModel.localHubFrontLeftMatrix * stearingRotation * m_carModel.wheelFrontLeftTranslation * updateMat;
+    m_carModel.hubInteriorFrontLeftMatrix = wheelSpin * m_carModel.localHubInteriorFrontLeftMatrix * stearingRotation * m_carModel.wheelFrontLeftTranslation * updateMat;
+    // Front Right Hub
+    m_carModel.hubFrontRightMatrix = wheelSpin * m_carModel.localHubFrontRightMatrix * stearingRotation * m_carModel.wheelFrontRightTranslation * updateMat;
+    m_carModel.hubInteriorFrontRightMatrix = wheelSpin * m_carModel.localHubInteriorFrontRightMatrix * stearingRotation * m_carModel.wheelFrontRightTranslation * updateMat;
     // Back Left Hub
-    m_carModel.hubBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubBackLeftMatrix *= testHubRotate;
-    m_carModel.hubBackLeftMatrix *= m_carModel.localHubBackLeftMatrix;
-    m_carModel.hubBackLeftMatrix *= updateMat;
+    m_carModel.hubBackLeftMatrix = wheelSpin * m_carModel.localHubBackLeftMatrix * m_carModel.wheelRearLeftTranslation * updateMat;
+    m_carModel.hubInteriorBackLeftMatrix = wheelSpin * m_carModel.localHubInteriorBackLeftMatrix * m_carModel.wheelRearLeftTranslation * updateMat;
     // Back Right Hub
-    m_carModel.hubBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubBackRightMatrix *= testHubRotate;
-    m_carModel.hubBackRightMatrix *= m_carModel.localHubBackRightMatrix;
-    m_carModel.hubBackRightMatrix *= updateMat;
+    m_carModel.hubBackRightMatrix = wheelSpin * m_carModel.localHubBackRightMatrix * m_carModel.wheelRearRightTranslation * updateMat;
+    m_carModel.hubInteriorBackRightMatrix = wheelSpin * m_carModel.localHubInteriorBackRightMatrix * m_carModel.wheelRearRightTranslation * updateMat;
     // rocker skirt 
     m_carModel.rockerSkirtMatrix = m_carModel.localRockerSkirtMatrix;
     m_carModel.rockerSkirtMatrix *= updateMat;

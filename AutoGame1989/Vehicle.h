@@ -223,6 +223,15 @@ struct CarModel
     DirectX::SimpleMath::Matrix hubBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localHubBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
 
+    DirectX::SimpleMath::Matrix hubInteriorFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localHubInteriorFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix hubInteriorFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localHubInteriorFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix hubInteriorBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localHubInteriorBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix hubInteriorBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localHubInteriorBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+
     std::unique_ptr<DirectX::GeometricPrimitive> sideMirror;
     DirectX::SimpleMath::Matrix sideMirrorLeftMatrix;
     DirectX::SimpleMath::Matrix localSideMirrorLeftMatrix;
