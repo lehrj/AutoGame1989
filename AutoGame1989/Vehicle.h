@@ -104,6 +104,8 @@ struct CarModel
     DirectX::SimpleMath::Matrix rearTireRotation;
     DirectX::SimpleMath::Matrix rearTireTranslation;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    axel;
+
     // testing independant wheels
     std::unique_ptr<DirectX::GeometricPrimitive>    tire;
     DirectX::SimpleMath::Matrix wheelFrontLeftMatrix;

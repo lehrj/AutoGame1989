@@ -24,18 +24,21 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Vector4 windowColor(0.09, 0.09, 0.09, 1.0);
     DirectX::SimpleMath::Vector4 windShieldColor(0.09, 0.09, 0.09, 0.7);
     DirectX::SimpleMath::Vector4 bumperColor = DirectX::Colors::Black;
-    DirectX::SimpleMath::Vector4 grillColor(0.08, 0.08, 0.08, 1.0);
+    DirectX::SimpleMath::Vector4 grillColor(0.08, 0.08, 0.08, 0.8);
     DirectX::SimpleMath::Vector4 headLightColor(0.9, 0.9, 0.9, 1.0);
-    
-    DirectX::SimpleMath::Vector4 blinkerLightOrange = DirectX::Colors::Orange;
+    DirectX::SimpleMath::Vector4 headLightColor2(0.9, 0.9, 0.9, 0.7);
+
+    DirectX::SimpleMath::Vector4 blinkerLightOrange(1.000000000f, 0.647058845f, 0.000000000f, 0.8);
+    DirectX::SimpleMath::Vector4 blinkerLightSilver(0.752941251f, 0.752941251f, 0.752941251f, 0.8);
     DirectX::SimpleMath::Vector4 testColor = DirectX::Colors::Red;
     DirectX::SimpleMath::Vector4 testColor2(0.1, 0.1, 0.1, 1.0);
-    DirectX::SimpleMath::Vector4 spokeColor = DirectX::Colors::Gray;
+    //DirectX::SimpleMath::Vector4 spokeColor = DirectX::Colors::Gray;
     //DirectX::SimpleMath::Vector4 rimColor(0.501960814f, 0.501960814f, 0.501960814f, 1.0);
     DirectX::SimpleMath::Vector4 rimColor(0.4, 0.4, 0.4, 1.0);
+    DirectX::SimpleMath::Vector4 spokeColor = rimColor;
     DirectX::SimpleMath::Vector4 sideMirrorColor(0.2, 0.2, 0.2, 1.0);
     DirectX::SimpleMath::Vector4 rockerSkirtColor(0.201960814f, 0.201960814f, 0.201960814f,  1.0);
-
+    bumperColor = rockerSkirtColor;
     DirectX::SimpleMath::Vector4 tailLightColor;// (0.9, 0.0, 0.0, 1.0);
     //m_testIsBreakLightOn = false;
     //if (m_testIsBreakLightOn == true)
@@ -81,11 +84,11 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.grill->Draw(m_carModel.grillMatrix, view, proj, grillColor);
     
     m_carModel.headLight->Draw(m_carModel.headLightLeftMatrix, view, proj, headLightColor);
-    m_carModel.headLight->Draw(m_carModel.headLightRightMatrix, view, proj, headLightColor);
+    m_carModel.headLight->Draw(m_carModel.headLightRightMatrix, view, proj, headLightColor2);
     m_carModel.blinkerLight->Draw(m_carModel.blinkerLightLowerLeftMatrix, view, proj, blinkerLightOrange);
-    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperLeftMatrix, view, proj, DirectX::Colors::Silver);
+    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperLeftMatrix, view, proj, blinkerLightSilver);
     m_carModel.blinkerLight->Draw(m_carModel.blinkerLightLowerRightMatrix, view, proj, blinkerLightOrange);
-    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperRightMatrix, view, proj, DirectX::Colors::Silver);
+    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperRightMatrix, view, proj, blinkerLightSilver);
     m_carModel.tailLight->Draw(m_carModel.tailLightRightMatrix, view, proj, tailLightColor);
     m_carModel.tailLight->Draw(m_carModel.tailLightLeftMatrix, view, proj, tailLightColor);
     m_carModel.thirdBrakeLight->Draw(m_carModel.thirdBrakeLightMatrix, view, proj, tailLightColor);
@@ -374,7 +377,8 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     m_carModel.frontTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 32);
     m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 32);
-    const float rimWidth = m_car.wheelWidth * 1.1;
+    //const float rimWidth = m_car.wheelWidth * 1.1;
+    const float rimWidth = m_car.wheelWidth * 1.25;
     m_carModel.hubCap = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), rimWidth, axelDiameter, 32);
 
     m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -459,11 +463,12 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     spokeSize.x = wheelRadius * 0.25;
     spokeSize.y = axelLength - 0.003;
     spokeSize.y = 2.35;
-    spokeSize.y = m_car.wheelWidth * 1.1;
+    spokeSize.y = m_car.wheelWidth * 1.21;
     spokeSize.z = wheelRadius * 0.5;
     m_carModel.wheelSpoke = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), spokeSize);
     const float spokeAngle = (2.0 * Utility::GetPi()) * 0.2;
     const float spokeOffset = 0.15;
+    const float spokeDeapth = 0.01;
     m_carModel.localWheelSpoke1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, spokeOffset));
     m_carModel.localWheelSpoke1 *= DirectX::SimpleMath::Matrix::CreateRotationY(spokeAngle);
     m_carModel.localWheelSpoke2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 0.0, spokeOffset));
@@ -749,7 +754,8 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     grillSize.z *= 0.8;
     m_carModel.grill = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), grillSize);
     m_carModel.grillMatrix = m_carModel.hoodMatrix;
-    m_carModel.grillMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(zFightOffSet, zFightOffSet, 0.0));
+    //m_carModel.grillMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(zFightOffSet, zFightOffSet, 0.0));
+    m_carModel.grillMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.03, zFightOffSet, 0.0));
     m_carModel.localGrillMatrix = m_carModel.grillMatrix;
     /// Grill End     ////////////////////////////////////////////////////////////////
 
@@ -934,8 +940,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_car.carRotation = 0.0;
     m_car.steeringAngle = Utility::ToRadians(0.0);
-    m_car.steeringAngleMax = Utility::ToRadians(33.0);
-    m_car.steeringAngleMax = Utility::ToRadians(21.0);
+
+    m_car.steeringAngleMax = Utility::ToRadians(27.0);
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
 
