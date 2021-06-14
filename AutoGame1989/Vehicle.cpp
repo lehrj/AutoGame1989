@@ -40,6 +40,9 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Vector4 rockerSkirtColor(0.201960814f, 0.201960814f, 0.201960814f,  1.0);
     bumperColor = rockerSkirtColor;
     DirectX::SimpleMath::Vector4 tailLightColor;// (0.9, 0.0, 0.0, 1.0);
+
+
+
     //m_testIsBreakLightOn = false;
     //if (m_testIsBreakLightOn == true)
     //if (m_car.brakeInput > 0.0)
@@ -1784,7 +1787,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DebugPushUILine("m_car.testAcceleration.z", m_car.testAcceleration.z);
     DebugPushUILine("m_car.testAcceleration.Length()", m_car.testAcceleration.Length());
     DebugPushUILine("m_car.testAccel", m_car.testAccel);
-
+    DebugPushUILine("m_car.carRotation", m_car.carRotation);
+    
 
 }
 

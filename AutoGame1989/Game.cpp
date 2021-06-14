@@ -181,11 +181,11 @@ void Game::CreateDevice()
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/TextureJI.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/NormJI.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/SpecJi.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-  
+
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/tex.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/norm2.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/TestJI/spec3.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-    
+
     // BMW textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestLogo.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"../AutoGame1989/Art/Test/TestNorm7.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
@@ -726,7 +726,7 @@ void Game::DrawCarTest()
     DirectX::SimpleMath::Vector3 testVec(1.10, 1.10, 1.10);
     //static void __cdecl CreateBox(std::vector<VertexType>&vertices, std::vector<uint16_t>&indices, const XMFLOAT3 & size, bool rhcoords = true, bool invertn = false);
     //static std::unique_ptr<GeometricPrimitive> __cdecl CreateBox(_In_ ID3D11DeviceContext * deviceContext, const XMFLOAT3 & size, bool rhcoords = true, bool invertn = false);
-    
+
     //m_shape = GeometricPrimitive::CreateCube(m_d3dContext.Get());
     //m_shape->CreateBox(m_d3dContext.Get(), testVec);
     //m_carShapeTest->Draw(m_world, m_view, m_proj);
@@ -801,7 +801,7 @@ void Game::DrawDebugValue()
     //m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), m_fontPosDebug, Colors::White, 0.f, textLineOrigin);
     m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
-    
+
     m_debugValue2 = m_vehicle->GetDebugValue();
     textLine = "Value2 = " + std::to_string(m_debugValue2);
     textLinePosX = m_bitwiseFontPos.x;
@@ -849,7 +849,7 @@ void Game::DrawDebugValue()
 }
 
 void Game::DrawGridForStartScreen()
-{  
+{
     float timeStamp = static_cast<float>(m_testTimer);
 
     DirectX::XMVECTORF32 gridColor = DirectX::Colors::LawnGreen;
@@ -861,7 +861,7 @@ void Game::DrawGridForStartScreen()
     }
 
     const float xBase = 1.0;
-    const float yBase = - 0.0;
+    const float yBase = -0.0;
     const float zBase = -4.0;
     const float xLength = 4.0;
     const float zSpacing = 0.2;
@@ -878,7 +878,7 @@ void Game::DrawGridForStartScreen()
         verticleEnd.x -= xLength;
         DirectX::VertexPositionColor vertexStart(verticleStart, gridColor2);
         DirectX::VertexPositionColor vertexEnd(verticleEnd, gridColor2);
-        
+
         m_batch3->DrawLine(vertexStart, vertexEnd);
         verticleStart.z += zSpacing;
     }
@@ -888,7 +888,7 @@ void Game::DrawGridForStartScreen()
     horizontalLinePos += 3.0;
     for (int i = 0; i < horizontalLineCount; ++i)
     {
-        horizontalStart.x = - horizontalLinePos + (xSpacing * i);
+        horizontalStart.x = -horizontalLinePos + (xSpacing * i);
 
         DirectX::SimpleMath::Vector3 horizontalEnd = horizontalStart;
         horizontalEnd.z += zLength;
@@ -900,7 +900,7 @@ void Game::DrawGridForStartScreen()
             m_batch3->DrawLine(vertexStart, vertexEnd);
         }
     }
-   
+
     DirectX::SimpleMath::Vector3 nw(xBase, yBase + baseOffset, zBase);
     DirectX::SimpleMath::Vector3 ne = nw;
     ne.z += zLength;
@@ -910,11 +910,11 @@ void Game::DrawGridForStartScreen()
     DirectX::SimpleMath::Vector3 se = nw;
     se.z += zLength;
     se.x -= xLength;
-    
+
     nw.y -= baseOffset;
     ne.y -= baseOffset;
     DirectX::VertexPositionColor v1(nw, baseColor);
-    DirectX::VertexPositionColor v2(ne, baseColor);   
+    DirectX::VertexPositionColor v2(ne, baseColor);
     DirectX::VertexPositionColor v3(se, baseColor);
     DirectX::VertexPositionColor v4(sw, baseColor);
     m_batch3->DrawQuad(v1, v2, v3, v4);
@@ -1100,7 +1100,7 @@ void Game::DrawIntroScene()
     /// Render Start Screen ///
     /////////////////////////// 
     else if (timeStamp < fadeInStart3)
-    {      
+    {
         // render nothing
         float colorIntensity = (fadeInEnd3 - timeStamp) / (fadeDuration);
         colorIntensity = 0.0;
@@ -1115,17 +1115,17 @@ void Game::DrawIntroScene()
         m_camera->SetTargetStartPos(m_introCamTarg);
         m_camera->SetTargetEndPos(m_startScreenCamTarg);
         m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
-       
+
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
         m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
     }
     else if (timeStamp < fadeOutEnd3) // Render Start Screen
-    {                
+    {
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
         m_effect->SetTexture(m_textureAutoGame.Get());
         m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
         m_effect->SetSpecularTexture(m_specularAutoGame.Get());
-        
+
         if (timeStamp < fadeInEnd3)  // fade in
         {
             float colorIntensity = (timeStamp - fadeInStart3) / (fadeDuration);
@@ -1155,10 +1155,10 @@ void Game::DrawIntroScene()
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
-            
+
             float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_startScreenCamZoomPos);
             float speed = distance / (fadeOutEnd3 - fadeOutStart3);
-            
+
             m_camera->SetTransitionSpeed(speed);
             m_camera->SetCameraStartPos(m_startScreenCamPos);
             m_camera->SetCameraEndPos(m_startScreenCamZoomPos);
@@ -1437,8 +1437,8 @@ void Game::DrawLightFocus3()
 }
 
 void Game::DrawLogoScreen()
-{ 
-    const DirectX::SimpleMath::Vector3 vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
+{
+    const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const float height = .5f;
     const float width = .888888888f;
@@ -1448,7 +1448,7 @@ void Game::DrawLogoScreen()
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
     DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
     DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
-    
+
     VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
     VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
     VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
@@ -1638,8 +1638,8 @@ void Game::DrawShape()
 void Game::DrawStartScreen()
 {
     const float timeStamp = static_cast<float>(m_testTimer);
-    m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);   
-    
+    m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
+
     m_effect->SetTexture(m_textureAutoGame.Get());
     m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
     m_effect->SetSpecularTexture(m_specularAutoGame.Get());
@@ -1676,8 +1676,8 @@ void Game::DrawStartScreen()
     /////////////////////////////
 
     vertexNormal = -m_lightPos0 + testNorm;
-    
-    vertexNormal = - m_lightPos0;
+
+    vertexNormal = -m_lightPos0;
 
     vertexNormal.Normalize();
 
@@ -1690,8 +1690,8 @@ void Game::DrawStartScreen()
     /////////////////////////////
 
     //vertexNormal = testNorm;
-    vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
-    
+    vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+
     VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
     VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
     VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
@@ -1718,13 +1718,13 @@ void Game::DrawStartScreen()
     uStop = 0.1588541666666667;
     vStart = 0.0;
     vStop = 0.2824074074074074;
- 
-    vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
 
-    vertTopLeft = VertexPositionNormalColorTexture (topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
-    vertTopRight = VertexPositionNormalColorTexture (topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
-    vertBottomRight = VertexPositionNormalColorTexture (bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
-    vertBottomLeft = VertexPositionNormalColorTexture (bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
+    vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+
+    vertTopLeft = VertexPositionNormalColorTexture(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
+    vertTopRight = VertexPositionNormalColorTexture(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
+    vertBottomRight = VertexPositionNormalColorTexture(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
+    vertBottomLeft = VertexPositionNormalColorTexture(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
 
     m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
 
@@ -1755,7 +1755,7 @@ void Game::DrawStartScreen()
     vStart = 0.0;
     vStop = 0.0611111111111111;
 
-    vertexNormal = - DirectX::SimpleMath::Vector3::UnitX;
+    vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
     vertTopLeft = VertexPositionNormalColorTexture(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
     vertTopRight = VertexPositionNormalColorTexture(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
     vertBottomRight = VertexPositionNormalColorTexture(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
@@ -1783,7 +1783,7 @@ void Game::DrawStartScreen()
         auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
         auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
         auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
-        
+
         auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -roll, 0.0);
 
         DirectX::SimpleMath::Vector3 axis = -DirectX::SimpleMath::Vector3::UnitZ;
@@ -1791,7 +1791,7 @@ void Game::DrawStartScreen()
         DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(axis, quat0);
         DirectX::SimpleMath::Vector3 light1 = XMVector3Rotate(axis, quat1);
         DirectX::SimpleMath::Vector3 light2 = XMVector3Rotate(axis, quat2);
-        
+
         light0.x += 1.0;
         light0.Normalize();
         light1.x += 1.0;
@@ -1854,30 +1854,30 @@ void Game::DrawStartScreen()
 
     vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
 
-    vertTopLeft = VertexPositionNormalColorTexture (topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
-    vertTopRight = VertexPositionNormalColorTexture (topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
-    vertBottomRight = VertexPositionNormalColorTexture (bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
-    vertBottomLeft = VertexPositionNormalColorTexture (bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
+    vertTopLeft = VertexPositionNormalColorTexture(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
+    vertTopRight = VertexPositionNormalColorTexture(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
+    vertBottomRight = VertexPositionNormalColorTexture(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
+    vertBottomLeft = VertexPositionNormalColorTexture(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
 
     /////////////////////////
 
     if (ilights)
     {
-    //testing start
-    
-    float offset = -1.0;
-    float intesity = 15.;
-    testLight0.x += offset;
-    testLight0.Normalize();
-    testLight0 *= intesity;
-    testLight1.x += offset;
-    testLight1.Normalize();
-    testLight1 *= intesity;
-    testLight2.x += offset;
-    testLight2.Normalize();
-    testLight2 *= intesity;
-    
-    //testing end
+        //testing start
+
+        float offset = -1.0;
+        float intesity = 15.;
+        testLight0.x += offset;
+        testLight0.Normalize();
+        testLight0 *= intesity;
+        testLight1.x += offset;
+        testLight1.Normalize();
+        testLight1 *= intesity;
+        testLight2.x += offset;
+        testLight2.Normalize();
+        testLight2 *= intesity;
+
+        //testing end
 
         ilights->SetLightDirection(0, testLight0);
         ilights->SetLightDirection(1, testLight1);
@@ -2003,15 +2003,15 @@ void Game::DrawUIIntroScreen()
         }
     }
     else if (timeStamp < fadeOutEnd1)
-    {      
+    {
         std::string textLine = "Proudly Presents";
         float textLinePosX = m_bitwiseFontPos.x;
         float textLinePosY = m_bitwiseFontPos.y + 100;
         DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
         DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-        
+
         if (timeStamp < fadeInEnd1)  // fade in
-        {          
+        {
             float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
@@ -2459,7 +2459,7 @@ bool Game::InitializeTerrainArray2()
     DirectX::XMFLOAT4 testBlue = DirectX::XMFLOAT4(0.000000000f, 0.000000000f, 1.0, 1.0);
     DirectX::XMFLOAT4 testGray = DirectX::XMFLOAT4(0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f);
     DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
-    
+
     //baseColor = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
     //baseColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
     //XMGLOBALCONST XMVECTORF32 SandyBrown = { { { 0.956862807f, 0.643137276f, 0.376470625f, 1.000000000f } } };
@@ -2474,15 +2474,15 @@ bool Game::InitializeTerrainArray2()
         m_terrainVertexArray2[i].position = vertexPC[i].position;
         //m_terrainVertexArray2[i].normal = vertexPC[i].normal;
         // Flip normals around for lighting;
-        m_terrainVertexArray2[i].normal.x = - flipNormal.x;
+        m_terrainVertexArray2[i].normal.x = -flipNormal.x;
         m_terrainVertexArray2[i].normal.y = -flipNormal.y;
         m_terrainVertexArray2[i].normal.z = -flipNormal.z;
         m_terrainVertexArray2[i].color = lineColor;
-        
+
         m_terrainVertexArrayBase2[i].position = vertexPC[i].position;
         //m_terrainVertexArrayBase2[i].normal = vertexPC[i].normal;
         // flip normals around for lighting
-        m_terrainVertexArrayBase2[i].normal.x = - flipNormal.x;
+        m_terrainVertexArrayBase2[i].normal.x = -flipNormal.x;
         m_terrainVertexArrayBase2[i].normal.y = -flipNormal.y;
         m_terrainVertexArrayBase2[i].normal.z = -flipNormal.z;
         if (i % 2 == 0)
@@ -2495,8 +2495,8 @@ bool Game::InitializeTerrainArray2()
         }
 
         if (i == i)
-        //if (i < 96)
-        //if (i % 96 == 0)
+            //if (i < 96)
+            //if (i % 96 == 0)
         {
             if ((i + 5) % 6 == 0)
             {
@@ -2916,9 +2916,9 @@ void Game::TestDraw()
 
     float dimmer = ((cosf(timeStamp) + 1.) * 0.5);
 
-    SetFogVals(fogTarget, dimmer -.5);
-    SetFogVals2(fogTarget2, dimmer -1.5);
-    SetFogVals3(fogTarget3, dimmer -1.5);
+    SetFogVals(fogTarget, dimmer - .5);
+    SetFogVals2(fogTarget2, dimmer - 1.5);
+    SetFogVals3(fogTarget3, dimmer - 1.5);
 
     DirectX::SimpleMath::Vector3 testCamPos = m_camera->GetPos();
     if (testCamPos.x < -1.0)
@@ -2940,7 +2940,7 @@ void Game::TestDraw()
     m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
     m_effect->SetSpecularTexture(m_specularAutoGame.Get());
 
-    int time = static_cast<int>(timeStamp * .5 );
+    int time = static_cast<int>(timeStamp * .5);
     if (time % 2 == 0)
     {
         //m_effect->SetNormalTexture(m_normalMapBMW2.Get());
@@ -2951,7 +2951,7 @@ void Game::TestDraw()
         //m_effect->SetNormalTexture(m_normalMapBMW2.Get());
         //m_effect->SetSpecularTexture(m_specularTest.Get());
     }
-    
+
 
     DrawLogoScreen();
 }
@@ -2966,7 +2966,7 @@ void Game::Render()
     }
 
     Clear();
-     
+
     //UpdateLighting();
 
     // TODO: Add your rendering code here.
@@ -2990,9 +2990,9 @@ void Game::Render()
     m_batch = std::make_unique<PrimitiveBatch<VertexType>>(m_d3dContext.Get());
     m_effect->SetWorld(m_world);
     //world end
-    
+
     m_effect->Apply(m_d3dContext.Get());
-  
+
     //auto sampler = m_states->LinearClamp();
     //m_d3dContext->PSSetSamplers(0, 1, &sampler);
 
@@ -3034,13 +3034,13 @@ void Game::Render()
         }
     }
     m_batch->End();
-    
+
     void const* shaderByteCode2;
     size_t byteCodeLength2;
     m_effect2->GetVertexShaderBytecode(&shaderByteCode2, &byteCodeLength2);
     DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType2::InputElements, VertexType2::InputElementCount, shaderByteCode2, byteCodeLength2, m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(m_d3dContext.Get());
-    
+
     //m_effect2->SetWorld(m_world);
     m_effect2->Apply(m_d3dContext.Get());
 
@@ -3062,7 +3062,7 @@ void Game::Render()
         DrawLightFocus1();
         DrawLightFocus2();
         DrawLightFocus3();
-        DrawWorld();
+        //DrawWorld();
         DrawTerrain2();
         //DrawWorldCube();
     }
@@ -3078,7 +3078,7 @@ void Game::Render()
     //////////////////////////////////////////////////////////////////
     // Start testing draws
 
-    
+
     m_effect2->EnableDefaultLighting();
 
     auto ilights2 = dynamic_cast<DirectX::IEffectLights*>(m_effect2.get());
@@ -3096,7 +3096,7 @@ void Game::Render()
 
         auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
 
-        light2 = - DirectX::SimpleMath::Vector3::UnitY;
+        light2 = -DirectX::SimpleMath::Vector3::UnitY;
 
         //light2 = m_lightPos1;
         //light2 = DirectX::SimpleMath::Vector3::UnitY;
@@ -3105,7 +3105,7 @@ void Game::Render()
     }
 
     m_effect2->Apply(m_d3dContext.Get());
-    
+
 
     m_batch2->End();
 
@@ -3119,11 +3119,11 @@ void Game::Render()
     m_effect3->Apply(m_d3dContext.Get());
 
     m_batch3->Begin();
-   
+
     const float y = 0.3186 * 2.0;
     DirectX::SimpleMath::Vector3 pointA(-10.0, y, 0.0);
     DirectX::SimpleMath::Vector3 pointB(10.0, y, 0.0);
-    
+
     VertexPositionColor vertA(pointA, DirectX::Colors::White);
     VertexPositionColor vertB(pointB, DirectX::Colors::White);
     VertexPositionColor vertC(DirectX::SimpleMath::Vector3::Zero, DirectX::Colors::Blue);
@@ -3263,8 +3263,8 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect->SetView(viewMatrix);
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
-    
-    
+
+
     m_vehicle->UpdateVehicle(aTimer.GetTotalSeconds(), aTimer.GetElapsedSeconds());
     UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
@@ -3423,7 +3423,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->Turn( - aTimer.GetElapsedSeconds());
+            m_vehicle->Turn(-aTimer.GetElapsedSeconds());
         }
     }
     if (kb.Right)

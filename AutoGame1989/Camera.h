@@ -13,6 +13,15 @@ enum class CameraState
     CAMERASTATE_RESET,
     CAMERASTATE_TRANSTONEWSHOT,
     CAMERASTATE_FOLLOWVEHICLE,
+    CAMERASTATE_SPRINGCAMERA,
+};
+
+// spring camera target
+struct Target
+{
+    DirectX::SimpleMath::Vector3 position = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 up = DirectX::SimpleMath::Vector3::UnitY;
 };
 
 // Class to manage game camera
@@ -153,7 +162,7 @@ private:
     bool                            m_isFpYaxisInverted = true; // toggle of turning on/off inverting the firstperson camera y axis control, set to true because I am weirdo that likes an inverted y axis
 
     DirectX::SimpleMath::Vector3 m_followCamDirection = DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-15.0, 3.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(10.0, 3.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_followCamTarget = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_followCamUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 m_followCamPosOffset = DirectX::SimpleMath::Vector3(-1.0, 1.0, 0.0);
@@ -167,5 +176,20 @@ private:
     DirectX::SimpleMath::Quaternion m_testRotQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion m_chaseCameQuat = DirectX::SimpleMath::Quaternion::Identity;
     const double m_chaseCamLerpFactor = 0.1;
+
+    /////// Spring Camera Variables
+    float m_hDistance;
+    float m_fDistance;
+    float m_vDistance;
+
+    float m_springConstant;
+    float m_dampConstant;
+    DirectX::SimpleMath::Vector3 m_velocity;
+    DirectX::SimpleMath::Vector3 m_actualPosition;
+    DirectX::SimpleMath::Matrix m_springCameraMatrix;
+    Target m_springTarget;
+    void ComputeSpringMatrix();
+    void InitializeSpringCamera(Target aTarget, float aSpringConstant, float ahDist, float aVDist);
+    void UpdateSpringCamera(DX::StepTimer const& aTimeDelta);
 };
 

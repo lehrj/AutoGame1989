@@ -27,7 +27,7 @@ void Lighting::SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, c
     float fogStart = distanceToTarget - aDimmerVal;
     float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
     float testVal = fogEnd - distanceToTarget;
-   
+
     aEffect->SetFogEnabled(true);
     aEffect->SetFogStart(fogEnd);
     aEffect->SetFogEnd(fogStart);
@@ -97,7 +97,7 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             float yaw = time * 0.4f;
             float pitch = time * 0.7f;
             float roll = -time * 1.1f;
-   
+
             auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
             auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 3.14, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 1.25, 0.0);

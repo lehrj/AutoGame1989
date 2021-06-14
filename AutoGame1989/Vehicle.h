@@ -287,8 +287,9 @@ public:
     double GetDebugValue() { return m_car.carRotation; };
     DirectX::SimpleMath::Vector3 GetDebugPoint() { return  m_debugPoint; };
     int GetGear() { return m_car.gearNumber; };
-    DirectX::SimpleMath::Vector3 GetHeading() { return m_car.heading; };
+    DirectX::SimpleMath::Vector3 GetHeading() const { return m_car.heading; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_car.q.position; };
+    double GetCarRotation() const { return m_car.carRotation; };
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_car.q.velocity; };
     double GetAccel() const { return m_car.testAccel; };
     double GetRPM() { return m_car.omegaE; };
