@@ -27,8 +27,8 @@ Camera::Camera(int aWidth, int aHeight)
 	m_farPlane = 80.f;
 
 	//m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
-	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
-	//m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
+	//m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
+	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
 	if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
 	{
 		//(Target aTarget, float aSpringConstant, float ahDist, float aVDist)
@@ -36,9 +36,9 @@ Camera::Camera(int aWidth, int aHeight)
 		testTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
 		testTarget.up = DirectX::SimpleMath::Vector3::UnitY;
 		testTarget.position = DirectX::SimpleMath::Vector3::Zero;
-		float springConst = 2.0;
+		float springConst = 52.00000;
 		float hDist = 15.0;
-		float vDist = 13.0;
+		float vDist = 3.0;
 		InitializeSpringCamera(testTarget, springConst, hDist, vDist);
 	}
 
@@ -499,8 +499,10 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		UpdateSpringCamera(aTimer);
 		m_viewMatrix = m_springCameraMatrix;
 	}
-
-	m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	else
+	{
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	}
 }
 
 void Camera::UpdateFirstPersonCamera()
@@ -542,7 +544,6 @@ void Camera::ComputeSpringMatrix()
 	cameraLeft.Normalize();
 	DirectX::SimpleMath::Vector3 cameraUp = cameraForward.Cross(cameraLeft);
 	cameraUp.Normalize();
-	//m_springCameraMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_actualPosition, m_springTarget.position, cameraUp);
 	m_springCameraMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_actualPosition, m_springTarget.position, cameraUp);
 
 }
@@ -566,7 +567,8 @@ void Camera::UpdateSpringCamera(DX::StepTimer const& aTimeDelta)
 	DirectX::SimpleMath::Vector3 displacement = m_actualPosition - idealPosition;
 	DirectX::SimpleMath::Vector3 springAccel = (-m_springConstant * displacement) - (m_dampConstant * m_velocity);
 	m_velocity += springAccel * aTimeDelta.GetElapsedSeconds();
-	m_actualPosition = idealPosition;
+	//m_actualPosition = idealPosition;
+	m_actualPosition += m_velocity * aTimeDelta.GetElapsedSeconds();
 	ComputeSpringMatrix();
 }
 
