@@ -3135,7 +3135,7 @@ void Game::Render()
     m_batch3->End();
 
     m_spriteBatch->Begin();
-    DrawDebugValue();
+    //DrawDebugValue();
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {

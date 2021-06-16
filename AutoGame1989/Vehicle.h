@@ -165,6 +165,13 @@ struct CarModel
     std::unique_ptr<DirectX::GeometricPrimitive>    grill;
     DirectX::SimpleMath::Matrix grillMatrix;
     DirectX::SimpleMath::Matrix localGrillMatrix;
+    std::unique_ptr<DirectX::GeometricPrimitive> grillSlat;
+    DirectX::SimpleMath::Matrix grillSlatMatrix;
+    DirectX::SimpleMath::Matrix localGrillSlatMatrix;
+    std::unique_ptr<DirectX::GeometricPrimitive> grillLogo;
+    DirectX::SimpleMath::Matrix grillLogoMatrix;
+    DirectX::SimpleMath::Matrix localGrillLogoMatrix;
+    std::unique_ptr<DirectX::GeometricPrimitive>    grillOutline;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    headLight;
     DirectX::SimpleMath::Matrix headLightLeftMatrix;
@@ -188,9 +195,29 @@ struct CarModel
     DirectX::SimpleMath::Matrix tailLightRightMatrix;
     DirectX::SimpleMath::Matrix localTailLightRightMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    reverseLight;
+    DirectX::SimpleMath::Matrix reverseLightLeftMatrix;
+    DirectX::SimpleMath::Matrix localReverseLightLeftMatrix;
+    DirectX::SimpleMath::Matrix reverseLightRightMatrix;
+    DirectX::SimpleMath::Matrix localReverseLightRightMatrix;
+
+    DirectX::SimpleMath::Matrix tailBlinkerLightLeftMatrix;
+    DirectX::SimpleMath::Matrix localTailBlinkerLightLeftMatrix;
+    DirectX::SimpleMath::Matrix tailBlinkerLightRightMatrix;
+    DirectX::SimpleMath::Matrix localTailBlinkerLightRightMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    thirdBrakeLight;
     DirectX::SimpleMath::Matrix thirdBrakeLightMatrix;
     DirectX::SimpleMath::Matrix localThirdBrakeLightMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    licensePlateRear;
+    DirectX::SimpleMath::Matrix licensePlateRearMatrix;
+    DirectX::SimpleMath::Matrix localLicensePlateRearMatrix;
+    std::unique_ptr<DirectX::GeometricPrimitive>    licensePlateRearOutline;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    pinstripe;
+    DirectX::SimpleMath::Matrix pinstripeMatrix;
+    DirectX::SimpleMath::Matrix localPinstripeMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive> wheelSpoke;
     DirectX::SimpleMath::Matrix wheelSpokeFront1;
@@ -274,6 +301,8 @@ struct CarModel
     DirectX::SimpleMath::Matrix localSideMirrorLeftMatrix;
     DirectX::SimpleMath::Matrix sideMirrorRightMatrix;
     DirectX::SimpleMath::Matrix localSideMirrorRightMatrix;
+
+    
 };
 
 class Vehicle

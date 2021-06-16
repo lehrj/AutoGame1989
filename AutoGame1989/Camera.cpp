@@ -27,9 +27,10 @@ Camera::Camera(int aWidth, int aHeight)
 	m_farPlane = 80.f;
 
 	//m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
-	//m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
-	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
-	if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
+	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
+	//m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
+	//if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
+	if (0 == 0)
 	{
 		//(Target aTarget, float aSpringConstant, float ahDist, float aVDist)
 		Target testTarget;
