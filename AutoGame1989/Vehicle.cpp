@@ -914,6 +914,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.wheelWidth = 0.235;
     m_car.numberOfGears = 6;
     m_car.muR = 0.015;             //  coefficient of rolling friction
+    m_car.airResistance = 0.0;
+    //m_car.airDensity = 1.225; // ToDo : pull air density from environment data
+    m_car.totalResistance = m_car.muR + m_car.airResistance;
     m_car.omegaE = 1000.0;         //  engine rpm
     m_car.gearNumber = 1;          //  gear the car is in
     m_car.gearRatio[0] = 0.0;
@@ -1062,6 +1065,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double Cd = aCar->Cd;
     double area = aCar->area;
     double Fd = 0.5 * density * area * Cd * v * v;
+    DebugPushUILine("Fd", Fd);
     // drag force without wind
     double Fdx = -Fd * v;
     double Fdy = -Fd * v;
@@ -1144,7 +1148,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //newQ.velocity *= 0.5;
         //aDQ->velocity = (aTimeDelta * (- m_car.muR)) * headingVec;
         double rollingResistance = Fr / mass;
-        aDQ->velocity = (aTimeDelta * (rollingResistance)) * headingVec;
+        //aDQ->velocity = (aTimeDelta * (rollingResistance)) * headingVec;
+        //aDQ->velocity = (aTimeDelta * (rollingResistance)) * headingVec;
+
+        double testFd = Fd / mass;
+        aDQ->velocity = (aTimeDelta * (-testFd)) * headingVec;
         //aDQ->velocity *=  0.5;
     }
     
@@ -1714,6 +1722,21 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.hoodMatrix *= updateMatrix;
 }
 
+void Vehicle::UpdateResistance()
+{
+    /*
+    Rair = (1/2) rho[mass ensity of air] V^2 Sp  Cd
+        Sp = projected frontal area of car normalto the direction V
+        Cd = drag coeffient == 0.4?ish
+        */
+    double velocity = m_car.q.velocity.Length();
+    //velocity = 20.0;
+    double drag = .5 * m_car.Cd * m_car.density * m_car.area * (velocity * velocity);
+
+    m_car.airResistance = drag;
+
+}
+
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
     DirectX::SimpleMath::Vector3 prevVelocity = m_car.q.velocity;
@@ -1789,7 +1812,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DebugPushUILine("m_car.testAccel", m_car.testAccel);
     DebugPushUILine("m_car.carRotation", m_car.carRotation);
     
-
+    UpdateResistance();
+    DebugPushUILine("m_car.airResistance", m_car.airResistance);
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)

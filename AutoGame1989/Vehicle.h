@@ -21,6 +21,9 @@ struct Car
     double density;
     double Cd;
     double muR;  // rolling friction
+    double airResistance;
+    //double airDensity;
+    double totalResistance;
     double omegaE;
     double redline;
     double finalDriveRatio;
@@ -332,6 +335,7 @@ private:
     
     void TestGetForceLateral();
 
+    void UpdateResistance();
     void UpdateModel(const double aTimer);
     
     Car                             m_car;

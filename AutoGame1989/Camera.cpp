@@ -36,7 +36,7 @@ Camera::Camera(int aWidth, int aHeight)
 		testTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
 		testTarget.up = DirectX::SimpleMath::Vector3::UnitY;
 		testTarget.position = DirectX::SimpleMath::Vector3::Zero;
-		float springConst = 52.00000;
+		float springConst = 152.0;
 		float hDist = 15.0;
 		float vDist = 3.0;
 		InitializeSpringCamera(testTarget, springConst, hDist, vDist);

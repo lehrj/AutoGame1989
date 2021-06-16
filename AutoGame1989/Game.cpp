@@ -3078,7 +3078,6 @@ void Game::Render()
     //////////////////////////////////////////////////////////////////
     // Start testing draws
 
-
     m_effect2->EnableDefaultLighting();
 
     auto ilights2 = dynamic_cast<DirectX::IEffectLights*>(m_effect2.get());
@@ -3119,17 +3118,6 @@ void Game::Render()
     m_effect3->Apply(m_d3dContext.Get());
 
     m_batch3->Begin();
-
-    const float y = 0.3186 * 2.0;
-    DirectX::SimpleMath::Vector3 pointA(-10.0, y, 0.0);
-    DirectX::SimpleMath::Vector3 pointB(10.0, y, 0.0);
-
-    VertexPositionColor vertA(pointA, DirectX::Colors::White);
-    VertexPositionColor vertB(pointB, DirectX::Colors::White);
-    VertexPositionColor vertC(DirectX::SimpleMath::Vector3::Zero, DirectX::Colors::Blue);
-    m_batch3->DrawLine(vertA, vertB);
-    m_batch3->DrawLine(vertA, vertC);
-    m_batch3->DrawLine(vertB, vertC);
 
     /*
     DrawDebugLines(m_vehicle->GetPos(), DirectX::Colors::White);
@@ -3504,7 +3492,18 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.Y)
     {
-        m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
+        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SPRINGCAMERA)
+        {
+            m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWVEHICLE);
+        }
+        else if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FOLLOWVEHICLE)
+        {
+            m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
+        }
+        else
+        {
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SPRINGCAMERA);
+        }     
     }
     if (m_kbStateTracker.pressed.F1)
     {
