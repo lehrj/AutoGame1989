@@ -302,7 +302,28 @@ struct CarModel
     DirectX::SimpleMath::Matrix sideMirrorRightMatrix;
     DirectX::SimpleMath::Matrix localSideMirrorRightMatrix;
 
+
+    std::unique_ptr<DirectX::GeometricPrimitive> fenderFlare;
+    DirectX::SimpleMath::Matrix fenderFlareFrontLeftMatrix;
+    DirectX::SimpleMath::Matrix localfenderFlareFrontLeftMatrix;
+    std::unique_ptr<DirectX::GeometricPrimitive> fenderFlareInterior;
+    DirectX::SimpleMath::Matrix fenderFlareFrontLeftInteriorMatrix;
+    DirectX::SimpleMath::Matrix localfenderFlareFrontLeftInteriorMatrix;
     
+    DirectX::SimpleMath::Matrix fenderFlareFrontRightMatrix;
+    DirectX::SimpleMath::Matrix localfenderFlareFrontRightMatrix;
+    DirectX::SimpleMath::Matrix fenderFlareFrontRightInteriorMatrix;
+    DirectX::SimpleMath::Matrix localfenderFlareFrontRightInteriorMatrix;
+
+    DirectX::SimpleMath::Matrix fenderFlareRearLeftMatrix;
+    DirectX::SimpleMath::Matrix localfenderFlareRearLeftMatrix;
+    DirectX::SimpleMath::Matrix fenderFlareRearLeftInteriorMatrix;
+    DirectX::SimpleMath::Matrix localfenderFlareRearLeftInteriorMatrix;
+
+    DirectX::SimpleMath::Matrix fenderFlareRearRightMatrix;
+    DirectX::SimpleMath::Matrix localfenderFlareRearRightMatrix;
+    DirectX::SimpleMath::Matrix fenderFlareRearRightInteriorMatrix;
+    DirectX::SimpleMath::Matrix localfenderFlareRearRightInteriorMatrix;
 };
 
 class Vehicle
