@@ -56,8 +56,10 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     }
     else
     {
-        tailLightColor = DirectX::SimpleMath::Vector4(0.9, 0.0, 0.0,  0.6);
+        tailLightColor = DirectX::SimpleMath::Vector4(0.9, 0.0, 0.0,  1.0);
     }
+
+
 
     m_carModel.tire->Draw(m_carModel.wheelFrontRightMatrix, view, proj, tireColor);
     m_carModel.tire->Draw(m_carModel.wheelFrontLeftMatrix, view, proj, tireColor);
@@ -108,19 +110,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.licensePlateRear->Draw(m_carModel.licensePlateRearMatrix, view, proj, DirectX::Colors::White);
 
 
-    m_carModel.headLight->Draw(m_carModel.headLightLeftMatrix, view, proj, headLightColor);
-    m_carModel.headLight->Draw(m_carModel.headLightRightMatrix, view, proj, headLightColor);
-    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightLowerLeftMatrix, view, proj, blinkerLightOrange);
-    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperLeftMatrix, view, proj, blinkerLightSilver);
-    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightLowerRightMatrix, view, proj, blinkerLightOrange);
-    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperRightMatrix, view, proj, blinkerLightSilver);
-    m_carModel.tailLight->Draw(m_carModel.tailLightRightMatrix, view, proj, tailLightColor);
-    m_carModel.tailLight->Draw(m_carModel.tailLightLeftMatrix, view, proj, tailLightColor);
-    m_carModel.thirdBrakeLight->Draw(m_carModel.thirdBrakeLightMatrix, view, proj, tailLightColor);
-    m_carModel.reverseLight->Draw(m_carModel.reverseLightRightMatrix, view, proj, reverseLightColor);
-    m_carModel.reverseLight->Draw(m_carModel.reverseLightLeftMatrix, view, proj, reverseLightColor);
-    m_carModel.reverseLight->Draw(m_carModel.tailBlinkerLightLeftMatrix, view, proj, blinkerLightOrange);
-    m_carModel.reverseLight->Draw(m_carModel.tailBlinkerLightRightMatrix, view, proj, blinkerLightOrange);
+
     /*
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront1, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront2, view, proj, spokeColor);
@@ -188,6 +178,26 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.tireEdge->Draw(m_carModel.hubFrontLeftMatrix, view, proj, tireColor);
     m_carModel.rimEdge->Draw(m_carModel.hubInteriorFrontLeftMatrix, view, proj, spokeColor);
     m_carModel.tireEdge->Draw(m_carModel.hubInteriorFrontLeftMatrix, view, proj, tireColor);
+
+
+
+
+    m_carModel.headLight->Draw(m_carModel.headLightLeftMatrix, view, proj, headLightColor);
+    m_carModel.headLight->Draw(m_carModel.headLightRightMatrix, view, proj, headLightColor);
+    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightLowerLeftMatrix, view, proj, blinkerLightOrange);
+    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperLeftMatrix, view, proj, blinkerLightSilver);
+    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightLowerRightMatrix, view, proj, blinkerLightOrange);
+    m_carModel.blinkerLight->Draw(m_carModel.blinkerLightUpperRightMatrix, view, proj, blinkerLightSilver);
+    m_carModel.tailLight->Draw(m_carModel.tailLightRightMatrix, view, proj, tailLightColor);
+    m_carModel.tailLight->Draw(m_carModel.tailLightLeftMatrix, view, proj, tailLightColor);
+    m_carModel.thirdBrakeLight->Draw(m_carModel.thirdBrakeLightMatrix, view, proj, tailLightColor);
+
+    m_carModel.reverseLight->Draw(m_carModel.tailBlinkerLightLeftMatrix, view, proj, blinkerLightOrange);
+    m_carModel.reverseLight->Draw(m_carModel.tailBlinkerLightRightMatrix, view, proj, blinkerLightOrange);
+
+    m_carModel.reverseLight->Draw(m_carModel.reverseLightRightMatrix, view, proj, reverseLightColor);
+    m_carModel.reverseLight->Draw(m_carModel.reverseLightLeftMatrix, view, proj, reverseLightColor);
+
 }
 
 void Vehicle::GearDown()
@@ -1120,6 +1130,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.density = 1.2;
     m_car.Cd = 0.31;
     m_car.redline = 7200;
+    m_car.revlimit = 7800;
     m_car.finalDriveRatio = 3.44;
     m_car.wheelRadius = 0.3186;
     m_car.wheelWidth = 0.235;
@@ -1167,6 +1178,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.isTurningPressed = false;
     m_car.isAccelerating = false;
     m_car.isBraking = false;
+    m_car.isRevlimitHit = false;
+    m_car.isTransmissionManual = true;
+
     m_car.wheelBase = 2.41;
 
     // test values for wheel slip
@@ -1224,6 +1238,23 @@ void Vehicle::ResetVehicle()
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
+}
+
+void Vehicle::RevLimiter()
+{
+    if (m_car.omegaE < m_car.redline)
+    {
+        m_car.isRevlimitHit = false;
+    }
+    if (m_car.omegaE > m_car.revlimit)
+    {
+        m_car.isRevlimitHit = true;
+    }
+    if (m_car.isRevlimitHit == true)
+    {
+        m_car.isThrottlePressed = false;
+        m_car.throttleInput = 0.0;
+    }
 }
 
 //*************************************************************
@@ -1990,11 +2021,12 @@ void Vehicle::UpdateResistance()
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
+    DebugClearUI();
     DirectX::SimpleMath::Vector3 prevVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 prevPos = m_car.q.position;
     double preVel = m_car.q.velocity.Length();
 
-    DebugClearUI();
+    RevLimiter();
     ThrottleBrakeDecay(aTimeDelta);
     SteeringInputDecay(aTimeDelta);
     double preRot = m_car.carRotation;
@@ -2016,12 +2048,15 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     //  If the engine is at the redline rpm value,
     //  shift gears upward.
-    if (m_car.omegaE > m_car.redline) 
+    if (m_car.isTransmissionManual == false)
     {
-        double oldGearRatio = m_car.gearRatio[m_car.gearNumber];
-        ++m_car.gearNumber;
-        double newGearRatio = m_car.gearRatio[m_car.gearNumber];
-        m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
+        if (m_car.omegaE > m_car.redline)
+        {
+            double oldGearRatio = m_car.gearRatio[m_car.gearNumber];
+            ++m_car.gearNumber;
+            double newGearRatio = m_car.gearRatio[m_car.gearNumber];
+            m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
+        }
     }
 
     m_car.speed = velocity;
@@ -2034,6 +2069,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DebugPushUILine("HorsePower", hp);
     double testTorque = (hp * 5252) / m_car.omegaE;
     DebugPushUILine("testTorque", testTorque);
+    DebugPushUILine("m_car.isRevlimitHit", m_car.isRevlimitHit);
     //orsepower = Torque x RPM / 5, 252.
     //TestGetForceLateral();
 
@@ -2065,6 +2101,12 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     
     UpdateResistance();
     DebugPushUILine("m_car.airResistance", m_car.airResistance);
+
+
+    /////////////////////////////////////////////////////////////////
+    // Updated UI Vector
+    DebugPushUILineWholeNumber("Speed", static_cast<int>(m_car.speed * 2.23694) , "MPH");
+    DebugPushUILineWholeNumber("Gear ", m_car.gearNumber , "");
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
@@ -2077,6 +2119,18 @@ void Vehicle::DebugPushUILine(std::string aString, double aVal)
 {
     std::pair<std::string, double> newPair = std::make_pair(aString, aVal);
     m_debugUI.push_back(newPair);
+}
+
+void Vehicle::DebugPushUILineDecimalNumber(std::string aString1, double aVal, std::string aString2)
+{
+    std::string textLine = aString1 + " " + std::to_string(aVal) + " " +aString2;
+    m_debugUIVector.push_back(textLine);
+}
+
+void Vehicle::DebugPushUILineWholeNumber(std::string aString1, int aVal, std::string aString2)
+{
+    std::string textLine = aString1 + " " + std::to_string(aVal) + " " + aString2;
+    m_debugUIVector.push_back(textLine);
 }
 
 void Vehicle::TestGetForceLateral()

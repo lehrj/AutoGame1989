@@ -96,6 +96,7 @@ private:
     void SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
 
     void DrawDebugValue();
+    void DrawDebugVehicleData();
     void TestDraw();
 
     void Update(DX::StepTimer const& aTimer);

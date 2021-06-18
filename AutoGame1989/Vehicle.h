@@ -26,6 +26,7 @@ struct Car
     double totalResistance;
     double omegaE;
     double redline;
+    double revlimit;
     double finalDriveRatio;
     double wheelRadius;
     double wheelWidth;
@@ -59,6 +60,8 @@ struct Car
     double wheelBase;
     bool isAccelerating;
     bool isBraking;
+    bool isRevlimitHit;
+    bool isTransmissionManual;
 
     DirectX::SimpleMath::Vector3 testAcceleration = DirectX::SimpleMath::Vector3::Zero;
     double testAccel = 0.0;
@@ -332,7 +335,7 @@ public:
     Vehicle();
 
     std::vector<std::pair<std::string, double>> DebutGetUI() { return m_debugUI; };
-
+    std::vector<std::string> DebutGetUIVector() { return m_debugUIVector; };
     void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
     void GearDown();
     void GearUp();
@@ -345,7 +348,8 @@ public:
     double GetCarRotation() const { return m_car.carRotation; };
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_car.q.velocity; };
     double GetAccel() const { return m_car.testAccel; };
-    double GetRPM() { return m_car.omegaE; };
+    double GetRedLine() const { return m_car.redline; };
+    double GetRPM() const { return m_car.omegaE; };
     double GetRotation() const { return m_car.carRotation; };
     float GetSpeed() { return m_car.speed; };
     double GetSteering() const { return m_car.steeringAngle; };
@@ -361,15 +365,20 @@ public:
     void SteeringInputDecay(const double aTimeDelta);
 
     void ResetVehicle();
+    void RevLimiter();
     void ToggleGas();
     void ToggleBrake();
     void Turn(double aTurnInput);
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
 
 private:
-    void DebugClearUI() { m_debugUI.clear(); };
+    void DebugClearUI() { m_debugUI.clear();
+        m_debugUIVector.clear(); };
+   
     void DebugPushUILine(std::string aString, double aVal);
-    
+    void DebugPushUILineDecimalNumber(std::string aString1, double aVal, std::string aString2);
+    void DebugPushUILineWholeNumber(std::string aString1, int aVal, std::string aString2);
+
     void DebugTestMove(const double aTimer, const double aTimeDelta);
 
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
@@ -417,6 +426,7 @@ private:
     double m_testMin = 1.0;
 
     std::vector<std::pair<std::string, double>> m_debugUI;
+    std::vector<std::string> m_debugUIVector;
 
     double m_debugWheelDistance = 0.0;
     double m_debugVehicleDistanceTraveled = 0.0;

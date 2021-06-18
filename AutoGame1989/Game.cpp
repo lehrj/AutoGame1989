@@ -765,6 +765,39 @@ void Game::DrawDebugLines(const  DirectX::SimpleMath::Vector3 aPos, const Direct
     m_batch3->DrawLine(origin, zOffset);
 }
 
+void Game::DrawDebugVehicleData()
+{
+    std::vector<std::string> uiVector = m_vehicle->DebutGetUIVector();
+    int vecSize = uiVector.size();
+    DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
+    textLinePos.x = 200;
+    for (int i = 0; i < vecSize; ++i)
+    {
+        //std::string textLine = uiVector[i].first + " = " + std::to_string(uiVector[i].second);
+        std::string textLine = uiVector[i];
+        DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+        textLinePos.x = textLineOrigin.x + 20;
+        m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+        textLinePos.y += 30;
+    }
+
+    // Draw RPM with color based off redline value
+    double rpm = m_vehicle->GetRPM();
+    double redline = m_vehicle->GetRedLine();
+    std::string textLine = "RPM  " + std::to_string(static_cast<int>(rpm));
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    if (rpm < redline)
+    {
+        m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    }
+    else
+    {
+        m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Red, 0.f, textLineOrigin);
+    }
+    textLinePos.y += 30;
+}
+
 void Game::DrawDebugValue()
 {
     std::vector<std::pair<std::string, double>> uiVector = m_vehicle->DebutGetUI();
@@ -3059,9 +3092,9 @@ void Game::Render()
     {
         //DrawLightBar();
         //DrawCameraFocus();
-        DrawLightFocus1();
-        DrawLightFocus2();
-        DrawLightFocus3();
+        //DrawLightFocus1();
+        //DrawLightFocus2();
+        //DrawLightFocus3();
         //DrawWorld();
         DrawTerrain2();
         //DrawWorldCube();
@@ -3136,6 +3169,7 @@ void Game::Render()
 
     m_spriteBatch->Begin();
     //DrawDebugValue();
+    DrawDebugVehicleData();
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
@@ -3555,34 +3589,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             m_carAim -= static_cast<float>(aTimer.GetElapsedSeconds()) * 0.11f;
             m_lightPos1.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
-        }
-    }
-    if (kb.Up)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_lightPos0.x += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
-        }
-    }
-    if (kb.Down)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_lightPos0.x -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
-        }
-    }
-    if (kb.Left)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_lightPos0.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
-        }
-    }
-    if (kb.Right)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_lightPos0.z += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.NumPad1)
