@@ -139,6 +139,25 @@ void Camera::OnResize(uint32_t aWidth, uint32_t aHeight)
 	UpdateViewMatrix();
 }
 
+void Camera::PanClockwise(double aRotation)
+{
+	m_carmeraPan += aRotation;
+	DirectX::SimpleMath::Vector3 viewLine = m_followCamPos - m_followCamTarget;
+	viewLine = DirectX::SimpleMath::Vector3::Transform(viewLine, DirectX::SimpleMath::Matrix::CreateRotationY(-aRotation));
+	m_followCamPos = viewLine + m_followCamTarget;
+	SetPos(viewLine + m_followCamTarget);
+
+}
+
+void Camera::PanCounterClockwise(double aRotation)
+{
+	m_carmeraPan += aRotation;
+	DirectX::SimpleMath::Vector3 viewLine = m_followCamPos - m_followCamTarget;
+	viewLine = DirectX::SimpleMath::Vector3::Transform(viewLine, DirectX::SimpleMath::Matrix::CreateRotationY(aRotation));
+	m_followCamPos = viewLine + m_followCamTarget;
+	SetPos(viewLine + m_followCamTarget);
+}
+
 void Camera::Reset()
 {
 	m_position = m_homePosition;
@@ -344,7 +363,6 @@ void Camera::SetUpPos(const DirectX::SimpleMath::Vector3 aPos)
 void Camera::UpdateTransitionCamera(DX::StepTimer const& aTimer)
 {
 	DirectX::SimpleMath::Vector3 cameraStartPos = m_cameraStartPos;
-
 	DirectX::SimpleMath::Vector3 cameraEndPos = m_cameraEndPos;
 
 	float cameraDistance = DirectX::SimpleMath::Vector3::Distance(cameraStartPos, cameraEndPos);

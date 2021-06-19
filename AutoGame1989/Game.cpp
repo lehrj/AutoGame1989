@@ -3635,18 +3635,42 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
     }
     */
-    if (kb.U)
+    if (m_kbStateTracker.pressed.U)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos2.y -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+            DirectX::SimpleMath::Vector3 endPos(-11.0, 2.0f, 0.0f);
+            //DirectX::SimpleMath::Vector3 targetEndPos = m_vehicle->GetPos();
+            DirectX::SimpleMath::Vector3 targetEndPos(0.0, 10.0, 0.0);
+            //DirectX::SimpleMath::Vector3 centerPointPos = m_vehicle->GetPos();
+            DirectX::SimpleMath::Vector3 centerPointPos(0.0, 00.0, 0.0);
+            double rotation = Utility::ToRadians(90.0);
+            m_camera->SetCameraStartPos(m_camera->GetPos());
+            //m_camera->SetCameraEndPos(m_camera->GetSwingCamPos(pGolf->GetShotStartPos(), pGolf->GetDirectionToHoleInRads()));
+            m_camera->SetCameraEndPos(endPos);
+            m_camera->SetTargetStartPos(m_camera->GetTargetPos());
+            //m_camera->SetTargetEndPos(m_camera->GetSwingTargPos(pGolf->GetShotStartPos(), pGolf->GetDirectionToHoleInRads()));
+            m_camera->SetTargetEndPos(targetEndPos);
+            //m_camera->TurnEndPosAroundPoint(Utility::ToRadians(pPlay->GetShotDirection()), pGolf->GetShotStartPos());
+            m_camera->TurnEndPosAroundPoint(rotation, centerPointPos);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
+            
+        }
+    }
+    if (kb.I)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_camera->PanClockwise(aTimer.GetElapsedSeconds());
+            //m_lightPos2.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (kb.O)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos2.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+            m_camera->PanCounterClockwise(aTimer.GetElapsedSeconds());
+            //m_lightPos2.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
     if (m_kbStateTracker.pressed.N)

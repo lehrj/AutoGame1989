@@ -456,6 +456,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.rearTireRotation = axelRotation;
     m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
     /// Axels End ////////////////////////////////////////////////////////////
+    /// 
     /// Independent Wheels Start /////////////////////////////////////////////
     m_carModel.tire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), m_car.wheelWidth, m_car.wheelRadius * 2.0, 32);
     /// Front Left Wheel Start
@@ -1381,8 +1382,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //aDQ->velocity.y = 0.0;
         //aDQ->velocity.z = 0.0;
     }
-
-    
+  
     //if (m_car.brakeInput == 0.0 && m_car.maxThrottleInput == 0.0)
     if (m_car.isBrakePressed == false && m_car.isThrottlePressed == false && aQ->velocity.Length() > 0.1)
     //if (aQ->velocity.Length() > 0.1)
@@ -1393,9 +1393,12 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //aDQ->velocity = (aTimeDelta * (rollingResistance)) * headingVec;
         //aDQ->velocity = (aTimeDelta * (rollingResistance)) * headingVec;
 
-        double testFd = Fd / mass;
-        aDQ->velocity = (aTimeDelta * (-testFd)) * headingVec;
-        //aDQ->velocity *=  0.5;
+        double testFd = -Fd / mass;
+
+        aDQ->velocity = (aTimeDelta * (testFd)) * headingVec;
+        //newQ->velocity = (aTimeDelta * (-testFd)) * headingVec;
+
+        DebugPushUILineWholeNumber("testFd", testFd, "");
     }
     
 
