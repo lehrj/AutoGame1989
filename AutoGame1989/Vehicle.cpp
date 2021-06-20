@@ -1158,8 +1158,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.inputDeadZone = 0.05;
     m_car.throttleInput = 0.0;
     m_car.brakeInput = 0.0;
+    m_car.maxThrottleInput = 1.0;
     m_car.maxThrottleRate = 1.0;
-    //m_car.maxBrakeRate = 5.0;
+    m_car.maxBrakeInput = 1.0;
     m_car.maxBrakeRate = 15.0;
 
     m_car.brakeDecayRate = 1.2;
@@ -1292,6 +1293,15 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         d = 457.2;
     }
 
+    d = d * m_car.throttleInput;
+    if (m_isFuelOn == false)
+    {
+        d = 0.0;
+    }
+    if (m_car.throttleInput < 0.0002)
+    {
+        //d = d * -1;
+    }
     //  Declare some convenience variables representing
     //  the intermediate values of velocity.
     double vx = newQ.velocity.x;
@@ -1302,13 +1312,18 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //  ensures there won't be a divide by zero later on
     //  if all of the velocity components are zero.
     double v = sqrt(vx * vx + vy * vy + vz * vz) + 1.0e-8;
+    double testV = sqrt(newQ.velocity.Length() * newQ.velocity.Length()) + 1.0e-8;
+    //DebugPushUILineDecimalNumber("v     ", v, "");
+    //DebugPushUILineDecimalNumber("testV ", testV, "");
+
 
     //  Compute the total drag force.
     double density = aCar->density;
     double Cd = aCar->Cd;
     double area = aCar->area;
     double Fd = 0.5 * density * area * Cd * v * v;
-    DebugPushUILine("Fd", Fd);
+    //DebugPushUILine("Fd", Fd);
+ 
     // drag force without wind
     double Fdx = -Fd * v;
     double Fdy = -Fd * v;
@@ -1338,14 +1353,42 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     DirectX::SimpleMath::Matrix headingRotation = DirectX::SimpleMath::Matrix::CreateRotationY(carHeading);
     DirectX::SimpleMath::Vector3 headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, headingRotation);
 
+    double tmp = gearRatio * finalDriveRatio / wheelRadius;
+    if (newQ.velocity.Length() < 0.001 && m_car.throttleInput < 0.01)
+    {
+        Fd = 0.0;
+        Fr = 0.0;
+        tmp = 0.0;
+    }
+
+    double c1 = -Fd / mass;
+    
+    double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
+    double c3 = (tmp * d + Fr) / mass;
+
+    if (newQ.velocity.Length() < 0.001 && m_car.throttleInput < 0.01)
+    {
+        c1 = 0.0;
+        c2 = 0.0;
+        c3 = 0.0;
+    }
+
+    //DebugPushUILineDecimalNumber("c1 ", c1, "");
+    //DebugPushUILineDecimalNumber("tmp ", tmp, "");
+    //DebugPushUILineDecimalNumber("c2 ", c2, "");
+    //DebugPushUILineDecimalNumber("c3 ", c3, "");
+    //DebugPushUILineDecimalNumber("(aTimeDelta * (c1 + c2 + c3)) ", (aTimeDelta * (c1 + c2 + c3)), "");
+
     //if (m_car.accelerationInput < m_car.inputDeadZone)
     //if (m_car.isAccelerating == true || m_car.throttleInput > 0.0)
-    if (m_car.throttleInput > 0.0)
+    if (m_car.throttleInput > 0.0 || m_isFuelOn == false)
     {
+        /*
         double c1 = -Fd / mass;
         double tmp = gearRatio * finalDriveRatio / wheelRadius;
         double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
         double c3 = (tmp * d + Fr) / mass;
+        */
         //dq[0] = ds * (c1 + c2 + c3);
         //aDQ->velocity.x = aTimeDelta * (c1 + c2 + c3); // ToDo: update 3D x, y, z motion;
         //aDQ->velocity.x = (aTimeDelta * (c1 + c2 + c3)) * headingVec.x;
@@ -1365,7 +1408,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         {
             //dq[0] = ds * (-m_car.maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
             //aDQ->velocity.x = aTimeDelta * (-aCar->maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
-            aDQ->velocity = (aTimeDelta * (-aCar->maxBrakeRate)) * headingVec;
+            //aDQ->velocity = (aTimeDelta * (-aCar->maxBrakeRate)) * headingVec;
+            aDQ->velocity = (aTimeDelta * (-aCar->brakeInput * aCar->maxBrakeRate)) * headingVec;
         }
         else
         {
@@ -1377,13 +1421,33 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     }
     else
     {
-        aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
-        //aDQ->velocity.x = 0.0;
-        //aDQ->velocity.y = 0.0;
-        //aDQ->velocity.z = 0.0;
+        //aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
+        /*
+        double c1 = -Fd / mass;
+        double tmp = gearRatio * finalDriveRatio / wheelRadius;
+        double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
+        double c3 = (tmp * d + Fr) / mass;
+        //dq[0] = ds * (c1 + c2 + c3);
+        //aDQ->velocity.x = aTimeDelta * (c1 + c2 + c3); // ToDo: update 3D x, y, z motion;
+        //aDQ->velocity.x = (aTimeDelta * (c1 + c2 + c3)) * headingVec.x;
+        //aDQ->velocity.y = (aTimeDelta * (c1 + c2 + c3)) * headingVec.y;
+        //aDQ->velocity.z = (aTimeDelta * (c1 + c2 + c3)) * headingVec.z;
+        */
+
+        if (newQ.velocity.Length() < 0.001 && m_car.throttleInput < 0.01)
+        {
+            aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
+        }
+        else
+        {
+            aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
+            m_car.testTorque = (c1 + c2 + c3) / aTimeDelta;
+        }
+        
     }
   
     //if (m_car.brakeInput == 0.0 && m_car.maxThrottleInput == 0.0)
+    /*
     if (m_car.isBrakePressed == false && m_car.isThrottlePressed == false && aQ->velocity.Length() > 0.1)
     //if (aQ->velocity.Length() > 0.1)
     {
@@ -1398,9 +1462,9 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         aDQ->velocity = (aTimeDelta * (testFd)) * headingVec;
         //newQ->velocity = (aTimeDelta * (-testFd)) * headingVec;
 
-        DebugPushUILineWholeNumber("testFd", testFd, "");
+        //DebugPushUILineWholeNumber("testFd", testFd, "");
     }
-    
+    */
 
     //  Compute right-hand side values.
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
@@ -1466,6 +1530,92 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     //m_car.testRearAnglularVelocity += (total torque / (Mass * radius ^ 2 / 2)) * time step
     //m_car.testRearAnglularVelocity = (m_car.testTorque / (m_car.testRearCylinderMass * (m_car.wheelRadius * m_car.wheelRadius) / 2)) * aTimeDelta;
 
+
+    
+
+    double b;
+    double d;
+    double omegaE = aCar->omegaE;
+
+    if (omegaE <= 1000.0)
+    {
+        b = 0.0;
+        d = 220.0;
+    }
+    else if (omegaE < 4600.0)
+    {
+        b = 0.025;
+        d = 195.0;
+    }
+    else
+    {
+        b = -0.032;
+        d = 457.2;
+    }
+
+    d = d * m_car.throttleInput;
+    if (m_isFuelOn == false)
+    {
+        d = 0.0;
+    }
+    if (m_car.throttleInput < 0.0002)
+    {
+        //d = d * -1;
+    }
+    //  Declare some convenience variables representing
+    //  the intermediate values of velocity.
+
+    //  Compute the velocity magnitude. The 1.0e-8 term
+    //  ensures there won't be a divide by zero later on
+    //  if all of the velocity components are zero.
+    //double v = sqrt(vx * vx + vy * vy + vz * vz) + 1.0e-8;
+    double v = sqrt(aCar->q.velocity.Length() * aCar->q.velocity.Length()) + 1.0e-8;
+    //  Compute the total drag force.
+    double density = aCar->density;
+    double Cd = aCar->Cd;
+    double area = aCar->area;
+    double Fd = 0.5 * density * area * Cd * v * v;
+
+    double gravity = aCar->gravity;
+    double muR = aCar->muR;
+    double mass = aCar->mass;
+    double Fr = muR * mass * gravity;
+
+    //  Compute the right-hand sides of the six ODEs
+    //  newQ[0] is the intermediate value of velocity.
+    //  The acceleration of the car is determined by 
+    //  whether the car is accelerating, cruising, or
+    //  braking. The braking acceleration is assumed to
+    //  be a constant -5.0 m/s^2.   
+    // Accelerating
+    int gearNumber = aCar->gearNumber;
+    double gearRatio = aCar->gearRatio[gearNumber];
+    double finalDriveRatio = aCar->finalDriveRatio;
+    double wheelRadius = aCar->wheelRadius;
+    double pi = acos(-1.0);
+
+    double c1 = -Fd / mass;
+    double tmp = gearRatio * finalDriveRatio / wheelRadius;
+    double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
+    double c3 = (tmp * d + Fr) / mass;
+
+    DebugPushUILineDecimalNumber("c1 ", c1, "");
+    DebugPushUILineDecimalNumber("tmp ", tmp, "");
+    DebugPushUILineDecimalNumber("c2 ", c2, "");
+    DebugPushUILineDecimalNumber("c3 ", c3, "");
+    DebugPushUILineDecimalNumber("(aTimeDelta * (c1 + c2 + c3)) = ", (aTimeDelta * (c1 + c2 + c3)), "");
+    DebugPushUILineDecimalNumber("(c1 + c2 + c3)                = ", (c1 + c2 + c3), "");
+    
+
+    double vX = sqrt(aCar->q.velocity.Length() * aCar->q.velocity.Length()) + 1.0e-8;
+    double cX1 = -Fd / mass;
+    double tmpX = gearRatio * finalDriveRatio / wheelRadius;
+    double cX2 = 60.0 * tmpX * tmpX * b * vX / (2.0 * pi * mass);
+    double cX3 = (tmpX * d + Fr) / mass;
+
+    //DirectX::SimpleMath::Vector3 testA = (cX1 * (aCar->q.velocity * aCar->q.velocity)) + (cX2 * aCar->q.velocity) + cX3;
+    //DirectX::SimpleMath::Vector3 testA2 = cX1 * aCar->q.velocity * aCar->q.velocity + cX2 * aCar->q.velocity + cX3;
+
     return;
 }
 
@@ -1520,18 +1670,6 @@ void Vehicle::SteeringInputDecay(const double aTimeDelta)
     //m_car.isTurningPressed
 }
 
-void Vehicle::ToggleGas()
-{
-    if (m_car.isAccelerating == true)
-    {
-        m_car.isAccelerating = false;
-    }
-    else
-    {
-        m_car.isAccelerating = true;
-    }
-}
-
 void Vehicle::ToggleBrake()
 {
     if (m_car.isBraking == true)
@@ -1541,6 +1679,30 @@ void Vehicle::ToggleBrake()
     else
     {
         m_car.isBraking = true;
+    }
+}
+
+void Vehicle::ToggleFuel()
+{
+    if (m_isFuelOn == true)
+    {
+        m_isFuelOn = false;
+    }
+    else
+    {
+        m_isFuelOn = true;
+    }
+}
+
+void Vehicle::ToggleGas()
+{
+    if (m_car.isAccelerating == true)
+    {
+        m_car.isAccelerating = false;
+    }
+    else
+    {
+        m_car.isAccelerating = true;
     }
 }
 
@@ -2029,7 +2191,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DirectX::SimpleMath::Vector3 prevPos = m_car.q.position;
     double preVel = m_car.q.velocity.Length();
 
-    RevLimiter();
+    //RevLimiter();
     ThrottleBrakeDecay(aTimeDelta);
     SteeringInputDecay(aTimeDelta);
     double preRot = m_car.carRotation;
@@ -2048,7 +2210,11 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     
     //  Compute the new engine rpm value
     m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
-
+    DirectX::SimpleMath::Vector3 testRPMforce = m_car.q.velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    DebugPushUILineDecimalNumber("testRPMforce.x ", testRPMforce.x, "");
+    DebugPushUILineDecimalNumber("testRPMforce.y ", testRPMforce.y, "");
+    DebugPushUILineDecimalNumber("testRPMforce.z ", testRPMforce.z, "");
+    DebugPushUILineDecimalNumber("testRPMforce.Length() ", testRPMforce.Length(), "");
     //  If the engine is at the redline rpm value,
     //  shift gears upward.
     if (m_car.isTransmissionManual == false)
@@ -2105,11 +2271,22 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     UpdateResistance();
     DebugPushUILine("m_car.airResistance", m_car.airResistance);
 
-
+  
     /////////////////////////////////////////////////////////////////
     // Updated UI Vector
-    DebugPushUILineWholeNumber("Speed", static_cast<int>(m_car.speed * 2.23694) , "MPH");
+    DebugPushUILineWholeNumber("m_isFuelOn ", m_isFuelOn, "");
+    //DebugPushUILineWholeNumber("Speed", static_cast<int>(m_car.speed * 2.23694) , "MPH");
+    DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
+    DebugPushUILineWholeNumber("Speed", m_car.speed * 3.6, "KPH");
     DebugPushUILineWholeNumber("Gear ", m_car.gearNumber , "");
+    DebugPushUILineDecimalNumber("maxThrottleRate ", m_car.maxThrottleRate, "");
+    DebugPushUILineDecimalNumber("maxThrottleInput ", m_car.maxThrottleInput, "");
+    DebugPushUILineDecimalNumber("throttleInput     ", m_car.throttleInput, "");
+    DebugPushUILineDecimalNumber("maxBrakeRate ", m_car.maxBrakeRate, "");
+    DebugPushUILineDecimalNumber("maxBrakeInput ", m_car.maxBrakeInput, "");
+    DebugPushUILineDecimalNumber("brakeInput ", m_car.brakeInput, "");
+    DebugPushUILineDecimalNumber("m_car.testTorque ", m_car.testTorque, "");
+  
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)

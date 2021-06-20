@@ -41,8 +41,8 @@ struct Car
     double throttleInput;    
     double brakeDecayRate;
     double throttleDecayRate;
-    const double maxThrottleInput = 1.0;
-    const double maxBrakeInput = 1.0;
+    double maxThrottleInput; /////////////////////////////
+    double maxBrakeInput; /////////////////////////////////
     double maxThrottleRate;
     double maxBrakeRate;
     bool isThrottlePressed;
@@ -366,8 +366,10 @@ public:
 
     void ResetVehicle();
     void RevLimiter();
-    void ToggleGas();
     void ToggleBrake();
+    void ToggleFuel();
+    void ToggleGas();
+
     void Turn(double aTurnInput);
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
 
@@ -432,5 +434,7 @@ private:
     double m_debugVehicleDistanceTraveled = 0.0;
 
     bool m_testIsBreakLightOn = false;
+
+    bool m_isFuelOn = true;
 };
 

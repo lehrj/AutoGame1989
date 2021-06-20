@@ -796,6 +796,14 @@ void Game::DrawDebugVehicleData()
         m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Red, 0.f, textLineOrigin);
     }
     textLinePos.y += 30;
+
+    // Draw Timer
+    textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+
+    textLinePos.y += 30;
 }
 
 void Game::DrawDebugValue()
@@ -1954,7 +1962,7 @@ void Game::DrawTerrain()
 void Game::DrawTerrain2()
 {
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, m_terrainVertexArrayBase2, m_terrainVertexCount2);
-    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
+    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
 }
 
 void Game::DrawTimer()
@@ -2492,7 +2500,6 @@ bool Game::InitializeTerrainArray2()
     DirectX::XMFLOAT4 testBlue = DirectX::XMFLOAT4(0.000000000f, 0.000000000f, 1.0, 1.0);
     DirectX::XMFLOAT4 testGray = DirectX::XMFLOAT4(0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f);
     DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
-
     //baseColor = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
     //baseColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
     //XMGLOBALCONST XMVECTORF32 SandyBrown = { { { 0.956862807f, 0.643137276f, 0.376470625f, 1.000000000f } } };
@@ -2537,14 +2544,31 @@ bool Game::InitializeTerrainArray2()
             }
             if ((i + 2) % 6 == 0)
             {
-                m_terrainVertexArrayBase2[i].color = testGray;
+                m_terrainVertexArrayBase2[i].color = testWhite;
             }
             if (i % 6 == 0)
             {
-                m_terrainVertexArrayBase2[i].color = testGray;
+                m_terrainVertexArrayBase2[i].color = testWhite;
             }
         }
     }
+
+
+    std::vector<DirectX::SimpleMath::Vector3> testNorms;
+    testNorms.resize(m_terrainVertexCount2);
+    std::vector<DirectX::SimpleMath::Vector3> testNorms2;
+    testNorms2.resize(m_terrainVertexCount2);
+    for (int i = 0; i < m_terrainVertexCount2; ++i)
+    {
+        //m_terrainVertexArray2[i].normal
+        m_terrainVertexArray2[i].normal =  DirectX::SimpleMath::Vector3::UnitY;
+        m_terrainVertexArrayBase2[i].normal =  DirectX::SimpleMath::Vector3::UnitY;
+        testNorms[i] =  m_terrainVertexArray2[i].normal;
+        testNorms2[i] = m_terrainVertexArrayBase2[i].normal;
+    }
+
+    int breakVal = 0;
+    ++breakVal;
 
     return true;
 }
@@ -3688,7 +3712,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->ToggleGas();
+            //m_vehicle->ToggleGas();
+            m_vehicle->ToggleFuel();
         }
     }
     if (m_kbStateTracker.pressed.L)
