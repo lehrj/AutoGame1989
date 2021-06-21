@@ -773,7 +773,6 @@ void Game::DrawDebugVehicleData()
     textLinePos.x = 200;
     for (int i = 0; i < vecSize; ++i)
     {
-        //std::string textLine = uiVector[i].first + " = " + std::to_string(uiVector[i].second);
         std::string textLine = uiVector[i];
         DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
         textLinePos.x = textLineOrigin.x + 20;
@@ -810,83 +809,16 @@ void Game::DrawDebugValue()
 {
     std::vector<std::pair<std::string, double>> uiVector = m_vehicle->DebutGetUI();
     int vecSize = uiVector.size();
-    ///DirectX::SimpleMath::Vector2 textLinePos = m_fontPosDebug;
-    DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
-    //textLinePos.x -= 300.;    
+    DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2; 
     textLinePos.x = 200;
     for (int i = 0; i < vecSize; ++i)
     {
         std::string textLine = uiVector[i].first + " = " + std::to_string(uiVector[i].second);
-        //std::string textLine = uiVector[i].first + " = " + std::to_string(static_cast<int>(uiVector[i].second));
-        //DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
         DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
         textLinePos.x = textLineOrigin.x + 20;
         m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
         textLinePos.y += 30;
     }
-
-    /*
-    m_debugValue1 = m_vehicle->GetSpeed();
-    //m_debugValue1 = m_vehicle->GetVelocity().Length();
-
-    std::string textLine = "Value1 = " + std::to_string(m_debugValue1);
-    float textLinePosX = m_bitwiseFontPos.x - 250.;
-    float textLinePosY = m_bitwiseFontPos.y;
-    //float textLinePosY = m_bitwiseFontPos.y + 100;
-    //DirectX::SimpleMath::Vector2 textLinePos(textLinePosX, textLinePosY);
-    DirectX::SimpleMath::Vector2 textLinePos = m_fontPosDebug;
-    DirectX::SimpleMath::Vector2 textDrawPoint = m_fontPosDebug;
-    textLinePos.x -= 300.;
-    textDrawPoint.x -= 300.;
-    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-    //m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), m_fontPosDebug, Colors::White, 0.f, textLineOrigin);
-    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
-
-
-    m_debugValue2 = m_vehicle->GetDebugValue();
-    textLine = "Value2 = " + std::to_string(m_debugValue2);
-    textLinePosX = m_bitwiseFontPos.x;
-    //textLinePosY += 300;
-    //float textLinePosY = m_bitwiseFontPos.y + 100;
-    //textLinePos = m_fontPosDebug;
-    textLinePos.y += 100.;
-    textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
-    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
-
-    int gear = m_vehicle->GetGear();
-    textLine = "Value3 = " + std::to_string(gear);
-    textLinePosX = m_bitwiseFontPos.x;
-    //textLinePosY = m_bitwiseFontPos.y + 200;
-    //float textLinePosY = m_bitwiseFontPos.y + 100;
-    textLinePos.y += 100.;
-    textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
-    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
-
-    double rpm = m_vehicle->GetRPM();
-    textLine = "ColorVal4 = " + std::to_string(rpm);
-    textLinePosX = m_bitwiseFontPos.x;
-    //textLinePosY = m_bitwiseFontPos.y + 200;
-    //float textLinePosY = m_bitwiseFontPos.y + 100;
-    textLinePos.y += 100.;
-    textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
-    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin);
-    textLinePos.x += 2.0;
-    textLinePos.y += 2.0;
-    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
-    */
-
-    /*
-    textLine = "ColorVal5 = " + std::to_string(m_debugValue5);
-    textLinePosX = m_bitwiseFontPos.x;
-    //textLinePosY = m_bitwiseFontPos.y + 200;
-    //float textLinePosY = m_bitwiseFontPos.y + 100;
-    textLinePos.y += 100.;
-    textLineOrigin = DirectX::SimpleMath::Vector2(m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f);
-    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin);
-    textLinePos.x += 2.0;
-    textLinePos.y += 2.0;
-    m_font->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
-    */
 }
 
 void Game::DrawGridForStartScreen()
@@ -1962,7 +1894,7 @@ void Game::DrawTerrain()
 void Game::DrawTerrain2()
 {
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, m_terrainVertexArrayBase2, m_terrainVertexCount2);
-    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
+    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
 }
 
 void Game::DrawTimer()
@@ -2553,16 +2485,14 @@ bool Game::InitializeTerrainArray2()
         }
     }
 
-
     std::vector<DirectX::SimpleMath::Vector3> testNorms;
     testNorms.resize(m_terrainVertexCount2);
     std::vector<DirectX::SimpleMath::Vector3> testNorms2;
     testNorms2.resize(m_terrainVertexCount2);
     for (int i = 0; i < m_terrainVertexCount2; ++i)
     {
-        //m_terrainVertexArray2[i].normal
         m_terrainVertexArray2[i].normal =  DirectX::SimpleMath::Vector3::UnitY;
-        m_terrainVertexArrayBase2[i].normal =  DirectX::SimpleMath::Vector3::UnitY;
+        m_terrainVertexArrayBase2[i].normal =  - DirectX::SimpleMath::Vector3::UnitY;
         testNorms[i] =  m_terrainVertexArray2[i].normal;
         testNorms2[i] = m_terrainVertexArrayBase2[i].normal;
     }
@@ -3663,11 +3593,11 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            DirectX::SimpleMath::Vector3 endPos(-11.0, 2.0f, 0.0f);
-            //DirectX::SimpleMath::Vector3 targetEndPos = m_vehicle->GetPos();
-            DirectX::SimpleMath::Vector3 targetEndPos(0.0, 10.0, 0.0);
-            //DirectX::SimpleMath::Vector3 centerPointPos = m_vehicle->GetPos();
-            DirectX::SimpleMath::Vector3 centerPointPos(0.0, 00.0, 0.0);
+            DirectX::SimpleMath::Vector3 endPos(11.0, 2.0f, 0.0f);
+            DirectX::SimpleMath::Vector3 targetEndPos = m_vehicle->GetPos();
+            //DirectX::SimpleMath::Vector3 targetEndPos(0.0, 0.0, 0.0);
+            DirectX::SimpleMath::Vector3 centerPointPos = m_vehicle->GetPos();
+            //DirectX::SimpleMath::Vector3 centerPointPos(0.0, 00.0, 0.0);
             double rotation = Utility::ToRadians(90.0);
             m_camera->SetCameraStartPos(m_camera->GetPos());
             //m_camera->SetCameraEndPos(m_camera->GetSwingCamPos(pGolf->GetShotStartPos(), pGolf->GetDirectionToHoleInRads()));
@@ -3685,7 +3615,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->PanClockwise(aTimer.GetElapsedSeconds());
+            m_camera->SpinClockwise(aTimer.GetElapsedSeconds());
             //m_lightPos2.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
@@ -3693,7 +3623,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->PanCounterClockwise(aTimer.GetElapsedSeconds());
+            m_camera->SpinCounterClockwise(aTimer.GetElapsedSeconds());
             //m_lightPos2.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
     }
@@ -3713,7 +3643,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_vehicle->ToggleGas();
-            m_vehicle->ToggleFuel();
+            //m_vehicle->ToggleFuel();
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SPINCAMERA);
         }
     }
     if (m_kbStateTracker.pressed.L)

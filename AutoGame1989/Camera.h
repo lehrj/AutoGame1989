@@ -14,6 +14,8 @@ enum class CameraState
     CAMERASTATE_TRANSTONEWSHOT,
     CAMERASTATE_FOLLOWVEHICLE,
     CAMERASTATE_SPRINGCAMERA,
+    CAMERASTATE_SPINCAMERA,
+
 };
 
 // spring camera target
@@ -50,8 +52,7 @@ public:
     void InintializePreSwingCamera(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
     bool IsCameraAtDestination();
     void OnResize(uint32_t aWidth, uint32_t aHeight);
-    void PanClockwise(double aRotation);
-    void PanCounterClockwise(double aRotation);
+
     void Reset();
     void ResetCameraTransition(DX::StepTimer const& aTimer);
     void ResetIsCameraAtDestination() { m_isCameraAtDestination = false; };
@@ -80,6 +81,8 @@ public:
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetTransitionSpeed(const float aSpeed);
     void SetVehicleFocus(const Vehicle* aVehicle);
+    void SpinClockwise(double aRotation);
+    void SpinCounterClockwise(double aRotation);
     void TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation); //Chili
 
     
@@ -87,6 +90,7 @@ public:
     void UpdateFirstPersonCamera();
     void UpdatePitchYaw(const float aPitch, const float aYaw);
     void UpdatePos(const float aX, const float aY, const float aZ);
+    
     void UpdateTransitionCamera(DX::StepTimer const& aTimer);
     
     void UpdateTimer(DX::StepTimer const& aTimer) { m_cameraTimer = aTimer; };
@@ -105,6 +109,7 @@ private:
 
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
+    void UpdateSpinCamera(DX::StepTimer const& aTimer);
     void UpdateViewMatrix();
 
     DirectX::SimpleMath::Vector3    m_destinationPosition;
@@ -192,6 +197,17 @@ private:
     void InitializeSpringCamera(Target aTarget, float aSpringConstant, float ahDist, float aVDist);
     void UpdateSpringCamera(DX::StepTimer const& aTimeDelta);
 
-    double m_carmeraPan = 0.0;
+
+    // SpinCamera
+    double m_carmeraSpin = 0.0;
+    
+    //double m_carmeraSpinRotationAmount = Utility::ToRadians(270.0);
+    double m_carmeraSpinRotationAmount = Utility::ToRadians(360.0);
+    double m_carmeraSpinSpeed = m_carmeraSpinRotationAmount / 4.0;
+    //const DirectX::SimpleMath::Vector3 m_spinCamOffset = m_followCamPos - m_followCamTarget;
+    DirectX::SimpleMath::Vector3 m_spinCamOffset = m_followCamPos - m_followCamTarget;
+
+
+
 };
 

@@ -317,7 +317,33 @@ double Vehicle::GetYawRate(double aTimeDelta)
         int testBreak = 0;
         testBreak++;
     }
+    /////////////////////
+    /*
+    //double tractionForce = m_car.muR * m_car.mass * m_car.gravity;
+    double tractionForce = 0.7 * m_car.mass * m_car.gravity;
+    DirectX::SimpleMath::Vector3 tractionForce2 = m_car.muR * m_car.mass * DirectX::SimpleMath::Vector3(0.0, m_car.gravity, 0.0);
 
+    //double forceLateral = (((m_car.mass * (velocity * velocity)) / turnRadius) - (tractionForce * m_car.mass * -m_car.gravity)) * aTimeDelta;
+    double forceLateral = (((m_car.mass * (velocity * velocity)) / turnRadius) - (0.7 * m_car.mass * -m_car.gravity)) *aTimeDelta;
+    DebugPushUILineDecimalNumber("tractionForce ", tractionForce, "");
+    DebugPushUILineDecimalNumber("forceLateral ", forceLateral, "");
+
+    double tractionDeficit = tractionForce - forceLateral;
+    DebugPushUILineDecimalNumber("tractionDeficit - ", tractionDeficit, "");
+    tractionDeficit = forceLateral / tractionForce;
+    DebugPushUILineDecimalNumber("tractionDeficit / ", tractionDeficit, "");
+    DebugPushUILineDecimalNumber("pre omegaT ", omegaT, "");
+    double overSteer = tractionDeficit;
+    if (turnRadius < -0.001)
+    {
+        omegaT += overSteer;
+    }
+    else if (turnRadius > 0.01)
+    {
+        omegaT += overSteer;
+    }
+    DebugPushUILineDecimalNumber("postomegaT ", omegaT, "");
+    */
     return omegaT;
 }
 
@@ -1181,7 +1207,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.isAccelerating = false;
     m_car.isBraking = false;
     m_car.isRevlimitHit = false;
-    m_car.isTransmissionManual = true;
+    m_car.isTransmissionManual = false;
 
     m_car.wheelBase = 2.41;
 
@@ -1366,13 +1392,15 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
     double c3 = (tmp * d + Fr) / mass;
 
+    /*
     if (newQ.velocity.Length() < 0.001 && m_car.throttleInput < 0.01)
     {
         c1 = 0.0;
         c2 = 0.0;
         c3 = 0.0;
     }
-
+    */
+    
     //DebugPushUILineDecimalNumber("c1 ", c1, "");
     //DebugPushUILineDecimalNumber("tmp ", tmp, "");
     //DebugPushUILineDecimalNumber("c2 ", c2, "");
@@ -1398,9 +1426,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
         m_car.testTorque = (c1 + c2 + c3) / aTimeDelta;
     }
-    // braking
-    //else if (m_car.isBraking == true || m_car.brakeInput > 0.0)
-    else if (m_car.brakeInput > 0.0)
+    else if (m_car.brakeInput > 0.0)  // braking
     {
         //  Only brake if the velocity is positive.
         //if (newQ[0] > 0.1) 
@@ -1409,7 +1435,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
             //dq[0] = ds * (-m_car.maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
             //aDQ->velocity.x = aTimeDelta * (-aCar->maxBrakeRate); // temp for testing, ToDO: modify braking rate by brake input 
             //aDQ->velocity = (aTimeDelta * (-aCar->maxBrakeRate)) * headingVec;
-            aDQ->velocity = (aTimeDelta * (-aCar->brakeInput * aCar->maxBrakeRate)) * headingVec;
+            //aDQ->velocity = (aTimeDelta * (-aCar->brakeInput * aCar->maxBrakeRate)) * headingVec;
+            aDQ->velocity = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3))) * headingVec;
         }
         else
         {
@@ -1419,7 +1446,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
             //aDQ->velocity.z = 0.0;
         }
     }
-    else
+    else  // cruise
     {
         //aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
         /*

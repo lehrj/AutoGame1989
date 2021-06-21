@@ -38,8 +38,11 @@ Camera::Camera(int aWidth, int aHeight)
 		testTarget.up = DirectX::SimpleMath::Vector3::UnitY;
 		testTarget.position = DirectX::SimpleMath::Vector3::Zero;
 		float springConst = 152.0;
-		float hDist = 15.0;
-		float vDist = 3.0;
+		//float hDist = 15.0;
+		//float vDist = 3.0;
+		float hDist = - m_followCamPos.x;
+		float vDist = m_followCamPos.y;
+
 		InitializeSpringCamera(testTarget, springConst, hDist, vDist);
 	}
 
@@ -137,25 +140,6 @@ void Camera::OnResize(uint32_t aWidth, uint32_t aHeight)
 	UpdateOrthoganalMatrix();
 	UpdateProjectionMatrix();
 	UpdateViewMatrix();
-}
-
-void Camera::PanClockwise(double aRotation)
-{
-	m_carmeraPan += aRotation;
-	DirectX::SimpleMath::Vector3 viewLine = m_followCamPos - m_followCamTarget;
-	viewLine = DirectX::SimpleMath::Vector3::Transform(viewLine, DirectX::SimpleMath::Matrix::CreateRotationY(-aRotation));
-	m_followCamPos = viewLine + m_followCamTarget;
-	SetPos(viewLine + m_followCamTarget);
-
-}
-
-void Camera::PanCounterClockwise(double aRotation)
-{
-	m_carmeraPan += aRotation;
-	DirectX::SimpleMath::Vector3 viewLine = m_followCamPos - m_followCamTarget;
-	viewLine = DirectX::SimpleMath::Vector3::Transform(viewLine, DirectX::SimpleMath::Matrix::CreateRotationY(aRotation));
-	m_followCamPos = viewLine + m_followCamTarget;
-	SetPos(viewLine + m_followCamTarget);
 }
 
 void Camera::Reset()
@@ -360,6 +344,204 @@ void Camera::SetUpPos(const DirectX::SimpleMath::Vector3 aPos)
 	m_up = aPos;
 }
 
+void Camera::SetTransitionSpeed(const float aSpeed)
+{
+	if (aSpeed > 0.0)
+	{
+		m_cameraTransitionSpeed = aSpeed;
+	}
+	else
+	{
+		// add error handling to prevent transition stall or backwards motion that could break things
+		// cerr << "input range out of bounds"
+	}
+}
+
+void Camera::SetVehicleFocus(const Vehicle* aVehicle)
+{
+	m_vehicleFocus = aVehicle;
+}
+
+void Camera::SpinClockwise(double aRotation)
+{
+	m_carmeraSpin += aRotation;
+	DirectX::SimpleMath::Vector3 viewLine = m_followCamPos - m_followCamTarget;
+	viewLine = DirectX::SimpleMath::Vector3::Transform(viewLine, DirectX::SimpleMath::Matrix::CreateRotationY(-aRotation));
+	m_followCamPos = viewLine + m_followCamTarget;
+	SetPos(viewLine + m_followCamTarget);
+
+}
+
+void Camera::SpinCounterClockwise(double aRotation)
+{
+	m_carmeraSpin += aRotation;
+	DirectX::SimpleMath::Vector3 viewLine = m_followCamPos - m_followCamTarget;
+	viewLine = DirectX::SimpleMath::Vector3::Transform(viewLine, DirectX::SimpleMath::Matrix::CreateRotationY(aRotation));
+	m_followCamPos = viewLine + m_followCamTarget;
+	SetPos(viewLine + m_followCamTarget);
+}
+
+void Camera::TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation)
+{
+	DirectX::XMStoreFloat3(&aTranslation, DirectX::XMVector3Transform(
+		DirectX::XMLoadFloat3(&aTranslation),
+		DirectX::XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0.0f) *
+		DirectX::XMMatrixScaling(m_posTravelSpeed, m_posTravelSpeed, m_posTravelSpeed)
+	));
+	m_position = { m_position.x + aTranslation.x, m_position.y + aTranslation.y, m_position.z + aTranslation.z };
+}
+
+void Camera::UpdateCamera(DX::StepTimer const& aTimer)
+{
+	UpdateTimer(aTimer);
+	if (m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
+	{
+		UpdateFirstPersonCamera();
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	}
+	if (m_cameraState == CameraState::CAMERASTATE_SWINGVIEW)
+	{
+		// no update needed in current state
+	}
+	if (m_cameraState == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
+	{
+		// no update needed in current state
+	}
+	if (m_cameraState == CameraState::CAMERASTATE_PRESWINGVIEW)
+	{
+		// no update needed in current state
+	}
+	if (m_cameraState == CameraState::CAMERASTATE_TRANSITION)
+	{
+		bool testIsAtDest = m_isCameraAtDestination;
+		DirectX::SimpleMath::Vector3 testPos = m_position;
+		DirectX::SimpleMath::Vector3 testDestPos = m_destinationPosition;
+
+		if (IsCameraAtDestination() == false)
+		{
+			UpdateTransitionCamera(aTimer);
+		}
+		else
+		{
+			m_cameraState = CameraState::CAMERASTATE_SWINGVIEW;
+			m_isCameraAtDestination = false;
+		}
+	}
+	if (m_cameraState == CameraState::CAMERASTATE_RESET)
+	{
+		if (IsCameraAtDestination() == false)
+		{
+			UpdateTransitionCamera(aTimer);
+		}
+		else
+		{
+			m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
+			m_isCameraAtDestination = false;
+		}
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	}
+	if (m_cameraState == CameraState::CAMERASTATE_TRANSTONEWSHOT)
+	{
+		if (IsCameraAtDestination() == false)
+		{
+			UpdateTransitionCamera(aTimer);
+		}
+		else
+		{
+			SetCameraStartPos(GetPos());     
+			SetCameraEndPos(GetPreSwingCamPos(GetPos(), 0.0));
+			SetTargetStartPos(GetTargetPos());
+			SetTargetEndPos(GetPreSwingTargPos(GetPos(), 0.0));
+
+			m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
+			m_isCameraAtDestination = false;
+		}
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	}
+	if (m_cameraState == CameraState::CAMERASTATE_FOLLOWVEHICLE)
+	{
+		UpdateChaseCamera();
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	}
+	if (m_cameraState == CameraState::CAMERASTATE_SPINCAMERA)
+	{
+		UpdateSpinCamera(aTimer);
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_followCamPos, m_followCamTarget, m_up);
+	}
+	
+	if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
+	{
+		m_springTarget.position = m_vehicleFocus->GetPos();
+		//m_springTarget.forward = m_vehicleFocus->GetHeading();
+		DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
+		DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetCarRotation());
+
+		testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
+		m_springTarget.forward = testHeading;
+
+		UpdateSpringCamera(aTimer);
+		m_viewMatrix = m_springCameraMatrix;
+	}
+	else
+	{
+		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	}
+}
+
+void Camera::UpdateFirstPersonCamera()
+{
+	// apply setting for inverting first person camer Y axis controls 
+	if (m_isFpYaxisInverted == true)
+	{
+		m_rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(0, m_yaw, -m_pitch);
+	}
+	else
+	{
+		m_rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(0, m_yaw, m_pitch);
+	}
+
+	m_target = DirectX::XMVector3TransformCoord(m_defaultForward, m_rotationMatrix);
+	m_target.Normalize();
+
+	m_right = DirectX::XMVector3TransformCoord(m_defaultRight, m_rotationMatrix);
+	m_forward = DirectX::XMVector3TransformCoord(m_defaultForward, m_rotationMatrix);
+
+	m_up = DirectX::XMVector3Cross(m_right, m_forward);
+
+	m_position += DirectX::operator*(m_moveLeftRight, m_right);
+	m_position += DirectX::operator*(m_moveBackForward, m_forward);
+	m_position += DirectX::operator*(m_moveUpDown, m_up);
+
+	m_moveLeftRight = 0.0f;
+	m_moveBackForward = 0.0f;
+	m_moveUpDown = 0.0f;
+
+	m_target = m_position + m_target;
+}
+
+void Camera::UpdateSpinCamera(DX::StepTimer const& aTimer)
+{
+	m_spinCamOffset = m_actualPosition - m_springTarget.position;
+	double aTimeDelta = aTimer.GetElapsedSeconds();
+	//m_carmeraSpin += m_carmeraSpinSpeed * (1.0 + aTimeDelta);
+	m_carmeraSpin += m_carmeraSpinSpeed * ( aTimeDelta);
+	DirectX::SimpleMath::Vector3 newCamPos = m_spinCamOffset;
+	DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_carmeraSpin);
+	newCamPos = DirectX::SimpleMath::Vector3::Transform(newCamPos, rotMat);
+	newCamPos += m_vehicleFocus->GetPos();
+	m_followCamPos = newCamPos;
+	m_followCamTarget = m_vehicleFocus->GetPos();
+
+	if (m_carmeraSpin >= m_carmeraSpinRotationAmount)
+	{
+		m_carmeraSpin = 0.0;
+		m_springTarget.position = m_followCamTarget;
+		m_actualPosition = newCamPos;
+		ComputeSpringMatrix();
+		m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
+	}
+}
+
 void Camera::UpdateTransitionCamera(DX::StepTimer const& aTimer)
 {
 	DirectX::SimpleMath::Vector3 cameraStartPos = m_cameraStartPos;
@@ -406,153 +588,8 @@ void Camera::UpdateTransitionCamera(DX::StepTimer const& aTimer)
 	}
 	else
 	{
-
+		m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
 	}
-}
-void Camera::SetTransitionSpeed(const float aSpeed)
-{
-	if (aSpeed > 0.0)
-	{
-		m_cameraTransitionSpeed = aSpeed;
-	}
-	else
-	{
-		// add error handling to prevent transition stall or backwards motion that could break things
-		// cerr << "input range out of bounds"
-	}
-}
-
-void Camera::SetVehicleFocus(const Vehicle* aVehicle)
-{
-	m_vehicleFocus = aVehicle;
-}
-
-void Camera::TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation)
-{
-	DirectX::XMStoreFloat3(&aTranslation, DirectX::XMVector3Transform(
-		DirectX::XMLoadFloat3(&aTranslation),
-		DirectX::XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0.0f) *
-		DirectX::XMMatrixScaling(m_posTravelSpeed, m_posTravelSpeed, m_posTravelSpeed)
-	));
-	m_position = { m_position.x + aTranslation.x, m_position.y + aTranslation.y, m_position.z + aTranslation.z };
-}
-
-void Camera::UpdateCamera(DX::StepTimer const& aTimer)
-{
-	UpdateTimer(aTimer);
-	if (m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
-	{
-		UpdateFirstPersonCamera();
-	}
-	if (m_cameraState == CameraState::CAMERASTATE_SWINGVIEW)
-	{
-		// no update needed in current state
-	}
-	if (m_cameraState == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
-	{
-		// no update needed in current state
-	}
-	if (m_cameraState == CameraState::CAMERASTATE_PRESWINGVIEW)
-	{
-		// no update needed in current state
-	}
-	if (m_cameraState == CameraState::CAMERASTATE_TRANSITION)
-	{
-		bool testIsAtDest = m_isCameraAtDestination;
-		DirectX::SimpleMath::Vector3 testPos = m_position;
-		DirectX::SimpleMath::Vector3 testDestPos = m_destinationPosition;
-
-		if (IsCameraAtDestination() == false)
-		{
-			UpdateTransitionCamera(aTimer);
-		}
-		else
-		{
-			m_cameraState = CameraState::CAMERASTATE_SWINGVIEW;
-			m_isCameraAtDestination = false;
-		}
-	}
-	if (m_cameraState == CameraState::CAMERASTATE_RESET)
-	{
-		if (IsCameraAtDestination() == false)
-		{
-			UpdateTransitionCamera(aTimer);
-		}
-		else
-		{
-			m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
-			m_isCameraAtDestination = false;
-		}
-	}
-	if (m_cameraState == CameraState::CAMERASTATE_TRANSTONEWSHOT)
-	{
-		if (IsCameraAtDestination() == false)
-		{
-			UpdateTransitionCamera(aTimer);
-		}
-		else
-		{
-			SetCameraStartPos(GetPos());     
-			SetCameraEndPos(GetPreSwingCamPos(GetPos(), 0.0));
-			SetTargetStartPos(GetTargetPos());
-			SetTargetEndPos(GetPreSwingTargPos(GetPos(), 0.0));
-
-			m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
-			m_isCameraAtDestination = false;
-		}
-	}
-	if (m_cameraState == CameraState::CAMERASTATE_FOLLOWVEHICLE)
-	{
-		UpdateChaseCamera();
-	}
-	if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
-	{
-		m_springTarget.position = m_vehicleFocus->GetPos();
-		//m_springTarget.forward = m_vehicleFocus->GetHeading();
-		DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
-		DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetCarRotation());
-
-		testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
-		m_springTarget.forward = testHeading;
-
-		UpdateSpringCamera(aTimer);
-		m_viewMatrix = m_springCameraMatrix;
-	}
-	else
-	{
-		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
-	}
-}
-
-void Camera::UpdateFirstPersonCamera()
-{
-	// apply setting for inverting first person camer Y axis controls 
-	if (m_isFpYaxisInverted == true)
-	{
-		m_rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(0, m_yaw, -m_pitch);
-	}
-	else
-	{
-		m_rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(0, m_yaw, m_pitch);
-	}
-
-	m_target = DirectX::XMVector3TransformCoord(m_defaultForward, m_rotationMatrix);
-	m_target.Normalize();
-
-	m_right = DirectX::XMVector3TransformCoord(m_defaultRight, m_rotationMatrix);
-	m_forward = DirectX::XMVector3TransformCoord(m_defaultForward, m_rotationMatrix);
-
-	m_up = DirectX::XMVector3Cross(m_right, m_forward);
-
-	m_position += DirectX::operator*(m_moveLeftRight, m_right);
-	m_position += DirectX::operator*(m_moveBackForward, m_forward);
-	m_position += DirectX::operator*(m_moveUpDown, m_up);
-
-	m_moveLeftRight = 0.0f;
-	m_moveBackForward = 0.0f;
-	m_moveUpDown = 0.0f;
-
-	m_target = m_position + m_target;
 }
 
 void Camera::ComputeSpringMatrix()
@@ -564,7 +601,6 @@ void Camera::ComputeSpringMatrix()
 	DirectX::SimpleMath::Vector3 cameraUp = cameraForward.Cross(cameraLeft);
 	cameraUp.Normalize();
 	m_springCameraMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_actualPosition, m_springTarget.position, cameraUp);
-
 }
 
 void Camera::InitializeSpringCamera(Target aTarget, float aSpringConstant, float ahDist, float aVDist)
