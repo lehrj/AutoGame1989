@@ -3651,7 +3651,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->ToggleBrake();
+            m_camera->SetSpinCameraStart();
+            //m_vehicle->ToggleBrake();
         }
     }
     if (m_kbStateTracker.pressed.Z)

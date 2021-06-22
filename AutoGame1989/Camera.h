@@ -77,6 +77,7 @@ public:
 
     void SetCameraEndPos(DirectX::SimpleMath::Vector3 aEndPos);   
     void SetCameraStartPos(DirectX::SimpleMath::Vector3 aStartPos);
+    void SetSpinCameraStart();
     void SetTargetEndPos(DirectX::SimpleMath::Vector3 aEndPos);
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetTransitionSpeed(const float aSpeed);
@@ -173,7 +174,8 @@ private:
     DirectX::SimpleMath::Vector3 m_followCamTarget = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_followCamUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 m_followCamPosOffset = DirectX::SimpleMath::Vector3(-1.0, 1.0, 0.0);
-    DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 2.2, 0.0);
+    //DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 2.2, 0.0);
+    DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 0.0, 0.0);
     double                       m_followCamDistance = 1.0;
 
     Vehicle const * m_vehicleFocus;
@@ -200,10 +202,13 @@ private:
 
     // SpinCamera
     double m_carmeraSpin = 0.0;
-    
+    double m_carmeraSpinPitch = 0.0;
+    const double m_camSpinTime = 4.0;
     //double m_carmeraSpinRotationAmount = Utility::ToRadians(270.0);
-    double m_carmeraSpinRotationAmount = Utility::ToRadians(360.0);
-    double m_carmeraSpinSpeed = m_carmeraSpinRotationAmount / 4.0;
+    double m_carmeraSpinRotationAmount = Utility::ToRadians(270.0);
+    double m_carmeraSpinPitchAmount = Utility::ToRadians(0.0);
+    double m_carmeraSpinSpeed = m_carmeraSpinRotationAmount / m_camSpinTime;
+    double m_carmeraSpinPitchSpeed = m_carmeraSpinPitchAmount / m_camSpinTime;
     //const DirectX::SimpleMath::Vector3 m_spinCamOffset = m_followCamPos - m_followCamTarget;
     DirectX::SimpleMath::Vector3 m_spinCamOffset = m_followCamPos - m_followCamTarget;
 
