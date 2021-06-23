@@ -48,6 +48,8 @@ public:
     DirectX::SimpleMath::Matrix GetViewMatrix() const { return m_viewMatrix; };
     DirectX::SimpleMath::Vector3 GetTargetPos() const { return m_target; };
     DirectX::SimpleMath::Vector3 GetUp() const { return m_up; };
+    float GetViewPlaneNear() const { return m_nearPlane; };
+    float GetViewPlaneFar() const { return m_farPlane; };
     double GetYaw() const { return m_yaw; };
     void InintializePreSwingCamera(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
     bool IsCameraAtDestination();
@@ -170,7 +172,7 @@ private:
     bool                            m_isFpYaxisInverted = true; // toggle of turning on/off inverting the firstperson camera y axis control, set to true because I am weirdo that likes an inverted y axis
 
     DirectX::SimpleMath::Vector3 m_followCamDirection = DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-11.0, 2.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-8.0, 1.5f, 0.0f);
     DirectX::SimpleMath::Vector3 m_followCamTarget = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_followCamUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 m_followCamPosOffset = DirectX::SimpleMath::Vector3(-1.0, 1.0, 0.0);
@@ -206,7 +208,7 @@ private:
     const double m_camSpinTime = 4.0;
     //double m_carmeraSpinRotationAmount = Utility::ToRadians(270.0);
     double m_carmeraSpinRotationAmount = Utility::ToRadians(270.0);
-    double m_carmeraSpinPitchAmount = Utility::ToRadians(0.0);
+    double m_carmeraSpinPitchAmount = Utility::ToRadians(10.0);
     double m_carmeraSpinSpeed = m_carmeraSpinRotationAmount / m_camSpinTime;
     double m_carmeraSpinPitchSpeed = m_carmeraSpinPitchAmount / m_camSpinTime;
     //const DirectX::SimpleMath::Vector3 m_spinCamOffset = m_followCamPos - m_followCamTarget;

@@ -1191,13 +1191,15 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_car.brakeDecayRate = 1.2;
     m_car.throttleDecayRate = 1.2;
-    m_car.steeringAngleDecay = -0.2;
-    m_car.steeringSpeed = 0.5;
+    //m_car.steeringAngleDecay = -0.2;
+    //m_car.steeringSpeed = 0.5;
+    m_car.steeringAngleDecay = -0.3;
+    m_car.steeringSpeed = 0.1;
 
     m_car.carRotation = 0.0;
     m_car.steeringAngle = Utility::ToRadians(0.0);
 
-    m_car.steeringAngleMax = Utility::ToRadians(27.0);
+    m_car.steeringAngleMax = Utility::ToRadians(26.0);
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
     m_car.speed = 0.0;
 
@@ -1207,7 +1209,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.isAccelerating = false;
     m_car.isBraking = false;
     m_car.isRevlimitHit = false;
-    m_car.isTransmissionManual = false;
+    m_car.isTransmissionManual = true;
 
     m_car.wheelBase = 2.41;
 
@@ -1626,13 +1628,14 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
     double c3 = (tmp * d + Fr) / mass;
 
+    /*
     DebugPushUILineDecimalNumber("c1 ", c1, "");
     DebugPushUILineDecimalNumber("tmp ", tmp, "");
     DebugPushUILineDecimalNumber("c2 ", c2, "");
     DebugPushUILineDecimalNumber("c3 ", c3, "");
     DebugPushUILineDecimalNumber("(aTimeDelta * (c1 + c2 + c3)) = ", (aTimeDelta * (c1 + c2 + c3)), "");
     DebugPushUILineDecimalNumber("(c1 + c2 + c3)                = ", (c1 + c2 + c3), "");
-    
+    */
 
     double vX = sqrt(aCar->q.velocity.Length() * aCar->q.velocity.Length()) + 1.0e-8;
     double cX1 = -Fd / mass;
@@ -1648,7 +1651,7 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
 
 void Vehicle::SteeringInputDecay(const double aTimeDelta)
 {
-    m_car.steeringAngleDecay = -0.2;
+    //m_car.steeringAngleDecay = -0.2;
     if (m_car.isTurningPressed == false)
     {
         if (m_car.steeringAngle != 0.0)
@@ -2237,11 +2240,18 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     
     //  Compute the new engine rpm value
     m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    if (m_car.omegaE < 800.0)
+    {
+        m_car.omegaE = 800.0;
+    }
+    /*
     DirectX::SimpleMath::Vector3 testRPMforce = m_car.q.velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
     DebugPushUILineDecimalNumber("testRPMforce.x ", testRPMforce.x, "");
     DebugPushUILineDecimalNumber("testRPMforce.y ", testRPMforce.y, "");
     DebugPushUILineDecimalNumber("testRPMforce.z ", testRPMforce.z, "");
     DebugPushUILineDecimalNumber("testRPMforce.Length() ", testRPMforce.Length(), "");
+    */
+
     //  If the engine is at the redline rpm value,
     //  shift gears upward.
     if (m_car.isTransmissionManual == false)
@@ -2301,11 +2311,12 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
   
     /////////////////////////////////////////////////////////////////
     // Updated UI Vector
-    DebugPushUILineWholeNumber("m_isFuelOn ", m_isFuelOn, "");
+    //DebugPushUILineWholeNumber("m_isFuelOn ", m_isFuelOn, "");
     //DebugPushUILineWholeNumber("Speed", static_cast<int>(m_car.speed * 2.23694) , "MPH");
-    DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
-    DebugPushUILineWholeNumber("Speed", m_car.speed * 3.6, "KPH");
+    DebugPushUILineWholeNumber("Speed", m_car.speed * 2.23694, "MPH");
+    //DebugPushUILineWholeNumber("Speed", m_car.speed * 3.6, "KPH");
     DebugPushUILineWholeNumber("Gear ", m_car.gearNumber , "");
+    /*
     DebugPushUILineDecimalNumber("maxThrottleRate ", m_car.maxThrottleRate, "");
     DebugPushUILineDecimalNumber("maxThrottleInput ", m_car.maxThrottleInput, "");
     DebugPushUILineDecimalNumber("throttleInput     ", m_car.throttleInput, "");
@@ -2313,7 +2324,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DebugPushUILineDecimalNumber("maxBrakeInput ", m_car.maxBrakeInput, "");
     DebugPushUILineDecimalNumber("brakeInput ", m_car.brakeInput, "");
     DebugPushUILineDecimalNumber("m_car.testTorque ", m_car.testTorque, "");
-  
+    */
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)

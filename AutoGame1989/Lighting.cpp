@@ -386,8 +386,9 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
         auto ilights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());
         if (ilights)
         {
-            ilights->SetLightEnabled(0, false);
-            ilights->SetLightEnabled(1, false);
+            ilights->EnableDefaultLighting();
+            ilights->SetLightEnabled(0, true);
+            ilights->SetLightEnabled(1, true);
             ilights->SetLightEnabled(2, true);
             auto time = static_cast<float>(aTimer);
             float yaw = time * 0.4f;

@@ -39,7 +39,6 @@ Game::Game() noexcept :
     }
 
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
-
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
     InitializeWorldGrid();
@@ -448,10 +447,7 @@ void Game::CreateResources()
     // TODO: Initialize windows-size dependent objects here.
 
     m_view = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3(2.f, 2.f, 2.f), DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitY);
-
-    const float viewPlaneNear = 0.1f;
-    const float viewPlaneFar = 900.0f;
-    m_proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f, float(backBufferWidth) / float(backBufferHeight), viewPlaneNear, viewPlaneFar);
+    m_proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f, float(backBufferWidth) / float(backBufferHeight), m_camera->GetViewPlaneNear(), m_camera->GetViewPlaneFar());
 
     m_effect->SetView(m_view);
     m_effect->SetProjection(m_proj);
@@ -797,12 +793,14 @@ void Game::DrawDebugVehicleData()
     textLinePos.y += 30;
 
     // Draw Timer
+    /*
     textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
 
     textLinePos.y += 30;
+    */
 }
 
 void Game::DrawDebugValue()
@@ -1444,11 +1442,13 @@ void Game::DrawMenuMain()
     float menuTitlePosY = lineDrawY;
     DirectX::SimpleMath::Vector2 menuTitlePos(menuTitlePosX, menuTitlePosY);
     DirectX::SimpleMath::Vector2 menuOrigin = m_titleFont->MeasureString(menuTitle.c_str()) / 2.f;
-    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(4.f, 4.f), Colors::Green, 0.f, menuOrigin);
-    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(3.f, 3.f), Colors::Green, 0.f, menuOrigin);
-    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(2.f, 2.f), Colors::Green, 0.f, menuOrigin);
-    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(1.f, 1.f), Colors::Green, 0.f, menuOrigin);
-    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(-1.f, -1.f), Colors::LawnGreen, 0.f, menuOrigin);
+    DirectX::SimpleMath::Vector4 color1 = DirectX::Colors::DarkOrange;
+    DirectX::SimpleMath::Vector4 color2 = DirectX::Colors::Orange;
+    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(4.f, 4.f), color1, 0.f, menuOrigin);
+    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(3.f, 3.f), color1, 0.f, menuOrigin);
+    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(2.f, 2.f), color1, 0.f, menuOrigin);
+    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(1.f, 1.f), color1, 0.f, menuOrigin);
+    m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos + DirectX::SimpleMath::Vector2(-1.f, -1.f), color2, 0.f, menuOrigin);
     m_titleFont->DrawString(m_spriteBatch.get(), menuTitle.c_str(), menuTitlePos, Colors::White, 0.f, menuOrigin);
 
     lineDrawY += menuTitlePosY + lineDrawSpacingY;
@@ -1457,7 +1457,7 @@ void Game::DrawMenuMain()
     DirectX::SimpleMath::Vector2 menuObj0Origin = m_font->MeasureString(menuObj0String.c_str()) / 2.f;
 
     lineDrawY += menuObj0Pos.y;
-    std::string menuObj1String = "Character Select";
+    std::string menuObj1String = "Car Select";
     DirectX::SimpleMath::Vector2 menuObj1Pos(menuTitlePosX, lineDrawY);
     DirectX::SimpleMath::Vector2 menuObj1Origin = m_font->MeasureString(menuObj1String.c_str()) / 2.f;
 
@@ -1468,12 +1468,12 @@ void Game::DrawMenuMain()
 
     // Demo
     ////////////////////////////
-
+    /*
     lineDrawY += menuObj0Pos.y;
     std::string menuObjHydraString = "Hole 12 Golden Bell";
     DirectX::SimpleMath::Vector2 menuObjHydraPos(menuTitlePosX, lineDrawY);
     DirectX::SimpleMath::Vector2 menuObjHydraOrigin = m_font->MeasureString(menuObjHydraString.c_str()) / 2.f;
-
+    */
     ///////////////////////////
 
     lineDrawY += menuObj0Pos.y;
@@ -1481,7 +1481,7 @@ void Game::DrawMenuMain()
     DirectX::SimpleMath::Vector2 menuObj3Pos(menuTitlePosX, lineDrawY);
     DirectX::SimpleMath::Vector2 menuObj3Origin = m_font->MeasureString(menuObj3String.c_str()) / 2.f;
 
-    if (m_menuSelect < 0 || m_menuSelect > 4)
+    if (m_menuSelect < 0 || m_menuSelect > 3)
     {
         m_menuSelect = 0;
     }
@@ -1541,7 +1541,7 @@ void Game::DrawMenuMain()
     {
         m_font->DrawString(m_spriteBatch.get(), menuObj2String.c_str(), menuObj2Pos, Colors::White, 0.f, menuObj2Origin);
     }
-
+    /*
     if (m_menuSelect == 3)
     {
         m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos + DirectX::SimpleMath::Vector2(4.f, 4.f), Colors::White, 0.f, menuObjHydraOrigin);
@@ -1560,8 +1560,8 @@ void Game::DrawMenuMain()
     {
         m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos, Colors::White, 0.f, menuObjHydraOrigin);
     }
-
-    if (m_menuSelect == 4)
+    */
+    if (m_menuSelect == 3)
     {
         m_font->DrawString(m_spriteBatch.get(), menuObj3String.c_str(), menuObj3Pos + DirectX::SimpleMath::Vector2(4.f, 4.f), Colors::White, 0.f, menuObj3Origin);
         m_font->DrawString(m_spriteBatch.get(), menuObj3String.c_str(), menuObj3Pos + DirectX::SimpleMath::Vector2(-4.f, 4.f), Colors::White, 0.f, menuObj3Origin);
@@ -1894,7 +1894,7 @@ void Game::DrawTerrain()
 void Game::DrawTerrain2()
 {
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, m_terrainVertexArrayBase2, m_terrainVertexCount2);
-    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
+    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
 }
 
 void Game::DrawTimer()
@@ -2431,7 +2431,9 @@ bool Game::InitializeTerrainArray2()
     DirectX::XMFLOAT4 testRed = DirectX::XMFLOAT4(1.000000000f, 0.000000000f, 0.0, 1.0);
     DirectX::XMFLOAT4 testBlue = DirectX::XMFLOAT4(0.000000000f, 0.000000000f, 1.0, 1.0);
     DirectX::XMFLOAT4 testGray = DirectX::XMFLOAT4(0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f);
-    DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
+    //DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
+    DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(0.3, 0.3, 0.3, 1.0);
+    //testWhite = testGray;
     //baseColor = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
     //baseColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
     //XMGLOBALCONST XMVECTORF32 SandyBrown = { { { 0.956862807f, 0.643137276f, 0.376470625f, 1.000000000f } } };
@@ -2491,8 +2493,9 @@ bool Game::InitializeTerrainArray2()
     testNorms2.resize(m_terrainVertexCount2);
     for (int i = 0; i < m_terrainVertexCount2; ++i)
     {
-        m_terrainVertexArray2[i].normal =  DirectX::SimpleMath::Vector3::UnitY;
-        m_terrainVertexArrayBase2[i].normal =  - DirectX::SimpleMath::Vector3::UnitY;
+        m_terrainVertexArray2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
+        m_terrainVertexArray2[i].position.y += 0.03;
+        m_terrainVertexArrayBase2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
         testNorms[i] =  m_terrainVertexArray2[i].normal;
         testNorms2[i] = m_terrainVertexArrayBase2[i].normal;
     }
@@ -2978,6 +2981,57 @@ void Game::Render()
     m_effect->SetWorld(m_world);
     //world end
 
+    /*
+    m_effect->SetFogEnabled(true);
+    m_effect->SetFogStart(cos(m_timer.GetTotalSeconds()) + 0.0);
+    m_effect->SetFogEnd(cos(m_timer.GetTotalSeconds()) + 1.0);
+    */
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
+    if (ilights)
+    {        
+        double aTimer = m_timer.GetTotalSeconds();
+        const float timeStamp = static_cast<float>(aTimer);
+        ilights->EnableDefaultLighting();
+        ilights->SetLightEnabled(0, true);
+        ilights->SetLightEnabled(1, true);
+        ilights->SetLightEnabled(2, true);
+        auto time = static_cast<float>(aTimer);
+        float yaw = time * 0.4f;
+        float pitch = time * 0.7f;
+        float roll = time * 1.1f;
+        roll = cosf(-timeStamp * 1.2);
+        auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-roll, 0.0, 0.0);
+        auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+        auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, roll);
+        auto light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
+        auto light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
+        auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
+
+        float roll2 = time * 3.1f;
+        auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll2, 0.0);
+        DirectX::SimpleMath::Vector3 axis = -DirectX::SimpleMath::Vector3::UnitZ;
+        DirectX::SimpleMath::Vector3 light = XMVector3Rotate(axis, quat);
+        light.x += 1.0;
+
+        light.Normalize();
+        light0 = light;
+        /*
+        light0 = -DirectX::SimpleMath::Vector3::UnitY;
+        light1 = -DirectX::SimpleMath::Vector3::UnitY;
+        light2 = -DirectX::SimpleMath::Vector3::UnitY;
+        */
+        ilights->SetLightDirection(0, light0);
+        ilights->SetLightDirection(1, light1);
+        ilights->SetLightDirection(2, light2);
+        m_lightPos0 = light0;
+        m_lightPos1 = light1;
+        m_lightPos2 = light2;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     m_effect->Apply(m_d3dContext.Get());
 
     //auto sampler = m_states->LinearClamp();
@@ -3006,14 +3060,7 @@ void Game::Render()
 
         //DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
         //DrawWorldCubeTextured();
-        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SWINGVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW)
-        {
 
-        }
-        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_PRESWINGVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_PROJECTILEFLIGHTVIEW || m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
-        {
-
-        }
         if (m_isInDebugMode == true)
         {
             //DrawCameraFocus();
@@ -3027,6 +3074,7 @@ void Game::Render()
     m_effect2->GetVertexShaderBytecode(&shaderByteCode2, &byteCodeLength2);
     DX::ThrowIfFailed(m_d3dDevice->CreateInputLayout(VertexType2::InputElements, VertexType2::InputElementCount, shaderByteCode2, byteCodeLength2, m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(m_d3dContext.Get());
+
 
     //m_effect2->SetWorld(m_world);
     m_effect2->Apply(m_d3dContext.Get());
@@ -3063,14 +3111,16 @@ void Game::Render()
     }
 
     //////////////////////////////////////////////////////////////////
-    // Start testing draws
+// Start testing draws
 
-    m_effect2->EnableDefaultLighting();
+    //m_effect2->EnableDefaultLighting();
 
     auto ilights2 = dynamic_cast<DirectX::IEffectLights*>(m_effect2.get());
     if (ilights2)
     {
         ilights2->SetLightEnabled(0, true);
+        ilights2->SetLightEnabled(1, false);
+        ilights2->SetLightEnabled(2, true);
 
         auto time = static_cast<float>(m_timer.GetTotalSeconds());
 
@@ -3082,11 +3132,12 @@ void Game::Render()
 
         auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
 
-        light2 = -DirectX::SimpleMath::Vector3::UnitY;
+        light2 =  DirectX::SimpleMath::Vector3::UnitY;
 
         //light2 = m_lightPos1;
         //light2 = DirectX::SimpleMath::Vector3::UnitY;
         ilights2->SetLightDirection(0, light2);
+        ilights2->SetLightDirection(1, light2);
         ilights2->SetLightDirection(2, light2);
     }
 
@@ -3123,7 +3174,7 @@ void Game::Render()
 
     m_spriteBatch->Begin();
     //DrawDebugValue();
-    DrawDebugVehicleData();
+    
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
@@ -3148,6 +3199,7 @@ void Game::Render()
     }
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
+        DrawDebugVehicleData();
         //DrawUI();
     }
     if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
@@ -3303,24 +3355,29 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             if (m_menuSelect == 0) // GoTo Game State
             {
                 m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+                m_menuSelect = 0;
             }
             if (m_menuSelect == 1) // GoTo Character Select State
             {
                 m_currentGameState = GameState::GAMESTATE_CHARACTERSELECT;
+                m_menuSelect = 0;
             }
             if (m_menuSelect == 2) // GoTo Environment Select State
             {
                 m_currentGameState = GameState::GAMESTATE_ENVIRONTMENTSELECT;
+                m_menuSelect = 0;
             }
+            /*
             if (m_menuSelect == 3) // GoTo Demo Select State
             {
                 m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
             }
-            if (m_menuSelect == 4) // Quit Game
+            */
+            if (m_menuSelect == 3) // Quit Game
             {
                 ExitGame();
             }
-            m_menuSelect = 0;
+            //m_menuSelect = 0;
         }
         if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
         {
