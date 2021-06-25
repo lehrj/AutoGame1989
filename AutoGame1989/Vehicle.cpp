@@ -1179,6 +1179,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.numEqns = 6;
     m_car.time = 0.0;  
     m_car.q.position = DirectX::SimpleMath::Vector3::Zero;
+    //m_car.q.position = DirectX::SimpleMath::Vector3(-1.51, 0.0, -1.51);
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 
     m_car.inputDeadZone = 0.05;
@@ -1209,7 +1210,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.isAccelerating = false;
     m_car.isBraking = false;
     m_car.isRevlimitHit = false;
-    m_car.isTransmissionManual = true;
+    m_car.isTransmissionManual = false;
 
     m_car.wheelBase = 2.41;
 
@@ -1393,7 +1394,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     
     double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
     double c3 = (tmp * d + Fr) / mass;
-
+    
     /*
     if (newQ.velocity.Length() < 0.001 && m_car.throttleInput < 0.01)
     {
@@ -1552,101 +1553,22 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
         q.velocity += velocityUpdate;
     }
 
+
+
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
     
+
     // Test rear torque
     //m_car.testRearAnglularVelocity += (total torque / (Mass * radius ^ 2 / 2)) * time step
     //m_car.testRearAnglularVelocity = (m_car.testTorque / (m_car.testRearCylinderMass * (m_car.wheelRadius * m_car.wheelRadius) / 2)) * aTimeDelta;
 
-
-    
-
-    double b;
-    double d;
-    double omegaE = aCar->omegaE;
-
-    if (omegaE <= 1000.0)
-    {
-        b = 0.0;
-        d = 220.0;
-    }
-    else if (omegaE < 4600.0)
-    {
-        b = 0.025;
-        d = 195.0;
-    }
-    else
-    {
-        b = -0.032;
-        d = 457.2;
-    }
-
-    d = d * m_car.throttleInput;
-    if (m_isFuelOn == false)
-    {
-        d = 0.0;
-    }
-    if (m_car.throttleInput < 0.0002)
-    {
-        //d = d * -1;
-    }
-    //  Declare some convenience variables representing
-    //  the intermediate values of velocity.
-
-    //  Compute the velocity magnitude. The 1.0e-8 term
-    //  ensures there won't be a divide by zero later on
-    //  if all of the velocity components are zero.
-    //double v = sqrt(vx * vx + vy * vy + vz * vz) + 1.0e-8;
-    double v = sqrt(aCar->q.velocity.Length() * aCar->q.velocity.Length()) + 1.0e-8;
-    //  Compute the total drag force.
-    double density = aCar->density;
-    double Cd = aCar->Cd;
-    double area = aCar->area;
-    double Fd = 0.5 * density * area * Cd * v * v;
-
-    double gravity = aCar->gravity;
-    double muR = aCar->muR;
-    double mass = aCar->mass;
-    double Fr = muR * mass * gravity;
-
-    //  Compute the right-hand sides of the six ODEs
-    //  newQ[0] is the intermediate value of velocity.
-    //  The acceleration of the car is determined by 
-    //  whether the car is accelerating, cruising, or
-    //  braking. The braking acceleration is assumed to
-    //  be a constant -5.0 m/s^2.   
-    // Accelerating
-    int gearNumber = aCar->gearNumber;
-    double gearRatio = aCar->gearRatio[gearNumber];
-    double finalDriveRatio = aCar->finalDriveRatio;
-    double wheelRadius = aCar->wheelRadius;
-    double pi = acos(-1.0);
-
-    double c1 = -Fd / mass;
-    double tmp = gearRatio * finalDriveRatio / wheelRadius;
-    double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
-    double c3 = (tmp * d + Fr) / mass;
-
-    /*
-    DebugPushUILineDecimalNumber("c1 ", c1, "");
-    DebugPushUILineDecimalNumber("tmp ", tmp, "");
-    DebugPushUILineDecimalNumber("c2 ", c2, "");
-    DebugPushUILineDecimalNumber("c3 ", c3, "");
-    DebugPushUILineDecimalNumber("(aTimeDelta * (c1 + c2 + c3)) = ", (aTimeDelta * (c1 + c2 + c3)), "");
-    DebugPushUILineDecimalNumber("(c1 + c2 + c3)                = ", (c1 + c2 + c3), "");
-    */
-
-    double vX = sqrt(aCar->q.velocity.Length() * aCar->q.velocity.Length()) + 1.0e-8;
-    double cX1 = -Fd / mass;
-    double tmpX = gearRatio * finalDriveRatio / wheelRadius;
-    double cX2 = 60.0 * tmpX * tmpX * b * vX / (2.0 * pi * mass);
-    double cX3 = (tmpX * d + Fr) / mass;
-
-    //DirectX::SimpleMath::Vector3 testA = (cX1 * (aCar->q.velocity * aCar->q.velocity)) + (cX2 * aCar->q.velocity) + cX3;
-    //DirectX::SimpleMath::Vector3 testA2 = cX1 * aCar->q.velocity * aCar->q.velocity + cX2 * aCar->q.velocity + cX3;
-
     return;
+}
+
+void Vehicle::SetEnvironment(Environment* aEnviron)
+{
+    m_environment = aEnviron;
 }
 
 void Vehicle::SteeringInputDecay(const double aTimeDelta)
@@ -2234,7 +2156,18 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(- deltaSteer);
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Transform(m_car.q.velocity, rotMat);
 
+
+
     RungeKutta4(&m_car, aTimeDelta);
+
+    
+    DirectX::SimpleMath::Vector3 testPos = m_car.q.position;
+    //testPos.y += 3.0;
+    float testHeight = m_environment->GetTerrainHeightAtPos(testPos);
+    DebugPushUILineDecimalNumber("testHeight ", testHeight, "");
+    DebugPushUILineDecimalNumber("m_car.q.position.y ", m_car.q.position.y, "");
+    m_car.q.position.y = testHeight;
+    
 
     double velocity = m_car.q.velocity.Length();
     

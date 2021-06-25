@@ -86,7 +86,9 @@ class Environment
 {
 public:
     Environment();
-    
+
+    bool CheckTerrainTriangleHeight(DirectX::XMFLOAT3& aPos, DirectX::XMFLOAT3 v0, DirectX::XMFLOAT3 v1, DirectX::XMFLOAT3 v2) const;
+
     double GetAirDensity() const { return m_currentEnviron.airDensity; };
     std::string GetAirDensityString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].airDensityStr; };
     double GetAirDensity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].airDensity; };
@@ -109,6 +111,8 @@ public:
     float GetScale() const { return m_currentEnviron.scale; };
     float GetTeeDirectionDegrees() const { return m_currentEnviron.teeDirection; };
     DirectX::SimpleMath::Vector3 GetTeePosition() const { return m_currentEnviron.teePosition; };
+
+    float GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const;
 
     std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
     std::vector<DirectX::VertexPositionNormalColor> GetTerrainPositionNormalColorVertex();
@@ -197,7 +201,8 @@ private:
     const double                        m_mapZtransformStartScreen = -0.02;
 
     const double                        m_elevationScaleGamePlay = 0.007;
-    const double                        m_mapScaleGamePlay = 60.0;
+    //const double                        m_mapScaleGamePlay = 60.0;
+    const double                        m_mapScaleGamePlay = 1.0;
     const double                        m_mapXtransformGamePlay = -16.0 * m_mapScaleGamePlay;
     const double                        m_mapYtransformGamePlay = 0.0;
     const double                        m_mapZtransformGamePlay = -16.0 * m_mapScaleGamePlay;

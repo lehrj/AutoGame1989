@@ -2,7 +2,7 @@
 //#include "Camera.h"
 #include "pch.h"
 #include "Utility.h"
-
+#include "Environment.h"
 
 struct Motion
 {
@@ -362,6 +362,7 @@ public:
     void PressBrake(const double aBrakeInput);
     void PressThrottle(const double aThrottleInput);
     void ThrottleBrakeDecay(const double aTimeDelta);
+    void SetEnvironment(Environment* aEnviron);
     void SteeringInputDecay(const double aTimeDelta);
 
     void ResetVehicle();
@@ -401,6 +402,7 @@ private:
     
     Car                             m_car;
     CarModel                        m_carModel;
+    Environment const*              m_environment;
 
     DirectX::SimpleMath::Vector3    m_heading;   // direction the vehicle is facing
     double                          m_speed;        // speed vehicle is traveling

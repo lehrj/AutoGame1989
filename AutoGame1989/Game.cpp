@@ -26,7 +26,7 @@ Game::Game() noexcept :
     m_camera->InintializePreSwingCamera(DirectX::SimpleMath::Vector3::Zero, 0.0);
     m_lighting = new Lighting();
     m_vehicle = new Vehicle();
-
+    m_vehicle->SetEnvironment(m_environment);
     m_camera->SetVehicleFocus(m_vehicle);
 
     if (m_isInDebugMode == false)
@@ -2431,8 +2431,8 @@ bool Game::InitializeTerrainArray2()
     DirectX::XMFLOAT4 testRed = DirectX::XMFLOAT4(1.000000000f, 0.000000000f, 0.0, 1.0);
     DirectX::XMFLOAT4 testBlue = DirectX::XMFLOAT4(0.000000000f, 0.000000000f, 1.0, 1.0);
     DirectX::XMFLOAT4 testGray = DirectX::XMFLOAT4(0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f);
-    //DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
-    DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(0.3, 0.3, 0.3, 1.0);
+    DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
+    //DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(0.3, 0.3, 0.3, 1.0);
     //testWhite = testGray;
     //baseColor = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
     //baseColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
@@ -2487,21 +2487,23 @@ bool Game::InitializeTerrainArray2()
         }
     }
 
+    
     std::vector<DirectX::SimpleMath::Vector3> testNorms;
     testNorms.resize(m_terrainVertexCount2);
     std::vector<DirectX::SimpleMath::Vector3> testNorms2;
     testNorms2.resize(m_terrainVertexCount2);
     for (int i = 0; i < m_terrainVertexCount2; ++i)
     {
-        m_terrainVertexArray2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
+        //m_terrainVertexArray2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
         m_terrainVertexArray2[i].position.y += 0.03;
-        m_terrainVertexArrayBase2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
+        //m_terrainVertexArrayBase2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
         testNorms[i] =  m_terrainVertexArray2[i].normal;
         testNorms2[i] = m_terrainVertexArrayBase2[i].normal;
     }
 
     int breakVal = 0;
     ++breakVal;
+    
 
     return true;
 }
@@ -3132,7 +3134,7 @@ void Game::Render()
 
         auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
 
-        light2 =  DirectX::SimpleMath::Vector3::UnitY;
+        light2 =  - DirectX::SimpleMath::Vector3::UnitY;
 
         //light2 = m_lightPos1;
         //light2 = DirectX::SimpleMath::Vector3::UnitY;
