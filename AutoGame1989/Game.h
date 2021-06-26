@@ -61,6 +61,7 @@ private:
     void DrawCar2();
     void DrawCarTest();
     void DrawDebugLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
+    void DrawDebugNormalLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
     void DrawGridForStartScreen();   
     void DrawIntroScene();
     void DrawLightBar();
@@ -75,6 +76,7 @@ private:
     void DrawTeaserScreen();
     void DrawTerrain();
     void DrawTerrain2();
+    void DrawTerrainNormals();
     void DrawTimer();
     void DrawUIIntroScreen();
     void DrawWorld();
@@ -314,6 +316,7 @@ private:
     DirectX::VertexPositionNormalColor* m_terrainVertexArrayBase2;
     int                                  m_terrainVertexCount2;
 
+
     float                               m_debugValue1 = 0.0;
     float                               m_debugValue2 = 0.0;
     float                               m_debugValue3 = 0.0;
@@ -354,4 +357,6 @@ private:
     float                               m_terrainColorDimmer = 0.0;
   
     const float                         m_debugStartTime = -5.0;
+
+
 };

@@ -761,6 +761,40 @@ void Game::DrawDebugLines(const  DirectX::SimpleMath::Vector3 aPos, const Direct
     m_batch3->DrawLine(origin, zOffset);
 }
 
+void Game::DrawDebugNormalLines(const  DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor)
+{
+    const float line = .25f;
+    DirectX::XMVECTORF32 lineColor = aColor;
+    DirectX::XMVECTORF32 normColor = DirectX::Colors::White;
+    DirectX::SimpleMath::Vector3 focalPoint = aPos;
+    focalPoint.y = m_environment->GetTerrainHeightAtPos(focalPoint);
+    DirectX::SimpleMath::Vector3 normalVec = m_environment->GetTerrainNormal(aPos);
+    normalVec *= 5;
+    DirectX::SimpleMath::Vector3 yLine = focalPoint;
+    yLine.y += line;
+    DirectX::SimpleMath::Vector3 xLine = focalPoint;
+    xLine.x += line;
+    DirectX::SimpleMath::Vector3 zLine = focalPoint;
+    zLine.z += line;
+    DirectX::SimpleMath::Vector3 normLine = focalPoint;
+    normLine += normalVec;
+
+    DirectX::SimpleMath::Vector3 negZLine = focalPoint;
+    negZLine.z -= line;
+    DirectX::SimpleMath::Vector3 negXLine = focalPoint;
+    negXLine.x -= line;
+
+    VertexPositionColor origin(focalPoint, lineColor);
+    VertexPositionColor yOffset(yLine, lineColor);
+    VertexPositionColor xOffset(xLine, lineColor);
+    VertexPositionColor zOffset(zLine, lineColor);
+    VertexPositionColor normVertex(normLine, normColor);
+    m_batch3->DrawLine(origin, yOffset);
+    m_batch3->DrawLine(origin, xOffset);
+    m_batch3->DrawLine(origin, zOffset);
+    m_batch3->DrawLine(origin, normVertex);
+}
+
 void Game::DrawDebugVehicleData()
 {
     std::vector<std::string> uiVector = m_vehicle->DebutGetUIVector();
@@ -1897,6 +1931,25 @@ void Game::DrawTerrain2()
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
 }
 
+void Game::DrawTerrainNormals()
+{
+    DirectX::XMVECTORF32 lineColor = DirectX::Colors::Red;
+    DirectX::SimpleMath::Vector3 origin;
+    DirectX::SimpleMath::Vector3 normEnd;
+    // m_terrainVector2 m_terrainVertexArrayBase2    m_terrainVertexArray2
+    for (int i = 0; i < m_terrainVector2.size(); ++i)
+    {
+        origin = m_terrainVector2[i].position;
+        //normEnd = m_terrainVector2[i].normal + origin;
+        normEnd = m_terrainVertexArray2[i].normal + origin;
+
+
+        VertexPositionColor originVert(origin, lineColor);
+        VertexPositionColor normEndVert(normEnd, lineColor);
+        m_batch3->DrawLine(originVert, normEndVert);
+    }
+}
+
 void Game::DrawTimer()
 {
     std::string textLine = "Timer = " + std::to_string(m_testTimer);
@@ -2408,6 +2461,8 @@ bool Game::InitializeTerrainArray()
 bool Game::InitializeTerrainArray2()
 {
     std::vector<DirectX::VertexPositionNormalColor> vertexPC = m_environment->GetTerrainPositionNormalColorVertex();
+    m_terrainVector2.clear();
+    m_terrainVector2 = vertexPC;
 
     m_terrainVertexCount2 = vertexPC.size();
     m_terrainVertexArray2 = new DirectX::VertexPositionNormalColor[m_terrainVertexCount2];
@@ -3158,6 +3213,10 @@ void Game::Render()
     m_effect3->Apply(m_d3dContext.Get());
 
     m_batch3->Begin();
+
+    DrawTerrainNormals();
+
+    DrawDebugNormalLines(m_vehicle->GetPos(), DirectX::Colors::Blue);
 
     /*
     DrawDebugLines(m_vehicle->GetPos(), DirectX::Colors::White);

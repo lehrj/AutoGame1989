@@ -113,6 +113,8 @@ public:
     DirectX::SimpleMath::Vector3 GetTeePosition() const { return m_currentEnviron.teePosition; };
 
     float GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const;
+    float GetTerrainHeightAtPos2(DirectX::XMFLOAT3 aPos) const;
+    DirectX::SimpleMath::Vector3 GetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) const;
 
     std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
     std::vector<DirectX::VertexPositionNormalColor> GetTerrainPositionNormalColorVertex();
@@ -201,8 +203,7 @@ private:
     const double                        m_mapZtransformStartScreen = -0.02;
 
     const double                        m_elevationScaleGamePlay = 0.007;
-    //const double                        m_mapScaleGamePlay = 60.0;
-    const double                        m_mapScaleGamePlay = 1.0;
+    const double                        m_mapScaleGamePlay = 60.0;
     const double                        m_mapXtransformGamePlay = -16.0 * m_mapScaleGamePlay;
     const double                        m_mapYtransformGamePlay = 0.0;
     const double                        m_mapZtransformGamePlay = -16.0 * m_mapScaleGamePlay;

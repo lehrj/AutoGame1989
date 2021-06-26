@@ -54,6 +54,7 @@ struct Car
     double steeringAngleMax;
     double steeringSpeed; 
 
+    DirectX::SimpleMath::Quaternion headingQuat;
     double carRotation;
     DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
@@ -397,9 +398,11 @@ private:
     
     void TestGetForceLateral();
 
+    void UpdateHeadingQuat();
     void UpdateResistance();
     void UpdateModel(const double aTimer);
-    
+    void UpdateModel2(const double aTimer);
+
     Car                             m_car;
     CarModel                        m_carModel;
     Environment const*              m_environment;

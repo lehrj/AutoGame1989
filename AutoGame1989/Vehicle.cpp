@@ -1179,7 +1179,6 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.numEqns = 6;
     m_car.time = 0.0;  
     m_car.q.position = DirectX::SimpleMath::Vector3::Zero;
-    //m_car.q.position = DirectX::SimpleMath::Vector3(-1.51, 0.0, -1.51);
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 
     m_car.inputDeadZone = 0.05;
@@ -1192,16 +1191,15 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_car.brakeDecayRate = 1.2;
     m_car.throttleDecayRate = 1.2;
-    //m_car.steeringAngleDecay = -0.2;
-    //m_car.steeringSpeed = 0.5;
     m_car.steeringAngleDecay = -0.3;
     m_car.steeringSpeed = 0.1;
 
     m_car.carRotation = 0.0;
     m_car.steeringAngle = Utility::ToRadians(0.0);
-
     m_car.steeringAngleMax = Utility::ToRadians(26.0);
     m_car.heading = DirectX::SimpleMath::Vector3::Zero;
+    m_car.headingQuat = DirectX::SimpleMath::Quaternion::Identity;
+
     m_car.speed = 0.0;
 
     m_car.isThrottlePressed = false;
@@ -1703,6 +1701,51 @@ void Vehicle::ThrottleBrakeDecay(const double aTimeDelta)
     }
 }
 
+void Vehicle::UpdateHeadingQuat()
+{
+    DirectX::SimpleMath::Vector3 terrainNorm = m_environment->GetTerrainNormal(m_car.q.position);
+    DirectX::SimpleMath::Vector3 terrainNorm2 = terrainNorm;
+
+    DebugPushUILineDecimalNumber("terrainNorm.x ", terrainNorm.x, "");
+    DebugPushUILineDecimalNumber("terrainNorm.y ", terrainNorm.y, "");
+    DebugPushUILineDecimalNumber("terrainNorm.z ", terrainNorm.z, "");
+    DebugPushUILineDecimalNumber("m_car.carRotation ", m_car.carRotation, "");
+    terrainNorm.Normalize();
+    //DirectX::SimpleMath::Vector3 headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation));
+    DirectX::SimpleMath::Vector3 headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation));
+    headingVec.Normalize();
+    DirectX::SimpleMath::Vector3 crossProd = headingVec.Cross(terrainNorm);
+    
+    //DirectX::SimpleMath::Vector3 crossProd = terrainNorm.Cross(headingVec);
+    crossProd.Normalize();
+    //float w = sqrt((terrainNorm.Length() * terrainNorm.Length()) * (headingVec.Length() * headingVec.Length())) + terrainNorm.Dot(headingVec);
+    float w = sqrt((terrainNorm.Length() * terrainNorm.Length()) * (headingVec.Length() * headingVec.Length())) + headingVec.Dot(terrainNorm);
+    m_car.headingQuat.x = crossProd.x;
+    m_car.headingQuat.y = crossProd.y;
+    m_car.headingQuat.z = crossProd.z;
+    m_car.headingQuat.w = w;
+    m_car.headingQuat.Normalize();
+
+    auto s = std::sin(m_car.carRotation / 2.0);
+    DirectX::SimpleMath::Vector3 u = terrainNorm2;
+    u.Normalize();
+    //DirectX::SimpleMath::Quaternion testQ(std::cos(m_car.carRotation / 2), u.x * s, u.y * s, u.z * s);
+    DirectX::SimpleMath::Quaternion testQ( u.x * s, u.y * s, u.z * s, std::cos(m_car.carRotation / 2) );
+    testQ.Normalize();
+    DirectX::SimpleMath::Quaternion testQ2 = m_car.headingQuat;
+
+    //m_car.headingQuat = testQ;
+
+    DirectX::SimpleMath::Quaternion testQ3 = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(terrainNorm2, m_car.carRotation);
+    m_car.headingQuat = testQ3;
+
+    //DirectX::SimpleMath::Quaternion testM4 = DirectX::SimpleMath::Matrix::
+
+    //DirectX::SimpleMath::Quaternion testQ4 = DirectX::SimpleMath::Quaternion::
+
+    int xx = 0;
+}
+
 void Vehicle::UpdateModel(const double aTimer)
 {
     double wheelTurnRads = GetWheelRotationRadians(aTimer) + m_testRotation;
@@ -1718,9 +1761,447 @@ void Vehicle::UpdateModel(const double aTimer)
     DirectX::SimpleMath::Matrix updateMat = testTurn;
     updateMat *= updateMatrix;
     
+    //
+    DirectX::SimpleMath::Matrix updateMat2 = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_car.headingQuat);
+    updateMat2 *= testTurn;
+    updateMat2 *= updateMatrix;
+    updateMat = updateMat2;
+    //
+    DirectX::SimpleMath::Vector3 terrainNorm = m_environment->GetTerrainNormal(m_car.q.position);
+    DirectX::SimpleMath::Matrix testMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(terrainNorm, m_car.carRotation);
+    testMat *= updateMatrix;
+    updateMat = testMat;
+
+    //
+    m_carModel.bodyMatrix = m_carModel.localBodyMatrix;
+    //m_carModel.bodyMatrix *= testTurn;
+    m_carModel.bodyMatrix *= updateMat;
+
+    m_carModel.bodyTopMatrix = m_carModel.localBodyTopMatrix;
+    //m_carModel.bodyTopMatrix *= testTurn;
+    m_carModel.bodyTopMatrix *= updateMat;
+    ///////
+
+
+    DirectX::SimpleMath::Matrix wheelSpinMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads);
+    DirectX::SimpleMath::Matrix wheelSpinRearMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRadsRear);
+
+    DirectX::SimpleMath::Matrix stearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
+    
+    m_carModel.frontAxelMatrix = m_carModel.frontAxelRotation * wheelSpinMat * stearingTurn;
+    m_carModel.frontAxelMatrix *= m_carModel.frontAxelTranslation;
+    //m_carModel.frontAxelMatrix *= testTurn;
+    m_carModel.frontAxelMatrix *= updateMat;
+
+    m_carModel.frontTireMatrix = m_carModel.frontTireRotation * wheelSpinMat * stearingTurn;
+    m_carModel.frontTireMatrix *= m_carModel.frontTireTranslation;
+    //m_carModel.frontTireMatrix *= testTurn;
+    m_carModel.frontTireMatrix *= updateMat;
+
+    m_carModel.rearAxelMatrix = m_carModel.rearAxelRotation * wheelSpinRearMat;
+    m_carModel.rearAxelMatrix *= m_carModel.rearAxelTranslation;
+    //m_carModel.rearAxelMatrix *= testTurn;
+    m_carModel.rearAxelMatrix *= updateMat;
+  
+    m_carModel.rearTireMatrix = m_carModel.rearTireRotation * wheelSpinRearMat;
+    m_carModel.rearTireMatrix *= m_carModel.rearTireTranslation;
+    //m_carModel.rearTireMatrix *= testTurn;
+    m_carModel.rearTireMatrix *= updateMat;
+
+    /// Independant Wheels
+    DirectX::SimpleMath::Matrix wheelSpin = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRads);
+    DirectX::SimpleMath::Matrix stearingRotation = DirectX::SimpleMath::Matrix::CreateRotationZ(m_car.steeringAngle);
+    m_carModel.wheelFrontRightMatrix = wheelSpin * stearingRotation;
+    m_carModel.wheelFrontRightMatrix *= m_carModel.wheelFrontRightTranslation;
+    m_carModel.wheelFrontRightMatrix *= updateMat;
+
+    m_carModel.wheelFrontLeftMatrix = wheelSpin * stearingRotation;
+    m_carModel.wheelFrontLeftMatrix *= m_carModel.wheelFrontLeftTranslation;
+    m_carModel.wheelFrontLeftMatrix *= updateMat;
+
+    m_carModel.wheelRearLeftMatrix = wheelSpin;
+    m_carModel.wheelRearLeftMatrix *= m_carModel.wheelRearLeftTranslation;
+    m_carModel.wheelRearLeftMatrix *= updateMat;
+
+    m_carModel.wheelRearRightMatrix = wheelSpin;
+    m_carModel.wheelRearRightMatrix *= m_carModel.wheelRearRightTranslation;
+    m_carModel.wheelRearRightMatrix *= updateMat;
+
+    /// Independant Wheels Spokes
+    // front left wheel spokes
+    m_carModel.wheelSpokeFL1 = m_carModel.localWheelSpoke1;
+    m_carModel.wheelSpokeFL1 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFL1 *= m_carModel.wheelFrontLeftTranslation;
+    m_carModel.wheelSpokeFL1 *= updateMat;
+
+    m_carModel.wheelSpokeFL2 = m_carModel.localWheelSpoke2;
+    m_carModel.wheelSpokeFL2 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFL2 *= m_carModel.wheelFrontLeftTranslation;
+    m_carModel.wheelSpokeFL2 *= updateMat;
+
+    m_carModel.wheelSpokeFL3 = m_carModel.localWheelSpoke3;
+    m_carModel.wheelSpokeFL3 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFL3 *= m_carModel.wheelFrontLeftTranslation;
+    m_carModel.wheelSpokeFL3 *= updateMat;
+
+    m_carModel.wheelSpokeFL4 = m_carModel.localWheelSpoke4;
+    m_carModel.wheelSpokeFL4 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFL4 *= m_carModel.wheelFrontLeftTranslation;
+    m_carModel.wheelSpokeFL4 *= updateMat;
+
+    m_carModel.wheelSpokeFL5 = m_carModel.localWheelSpoke5;
+    m_carModel.wheelSpokeFL5 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFL5 *= m_carModel.wheelFrontLeftTranslation;
+    m_carModel.wheelSpokeFL5 *= updateMat;
+    // front right wheel spokes
+    m_carModel.wheelSpokeFR1 = m_carModel.localWheelSpoke1;
+    m_carModel.wheelSpokeFR1 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFR1 *= m_carModel.wheelFrontRightTranslation;
+    m_carModel.wheelSpokeFR1 *= updateMat;
+
+    m_carModel.wheelSpokeFR2 = m_carModel.localWheelSpoke2;
+    m_carModel.wheelSpokeFR2 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFR2 *= m_carModel.wheelFrontRightTranslation;
+    m_carModel.wheelSpokeFR2 *= updateMat;
+
+    m_carModel.wheelSpokeFR3 = m_carModel.localWheelSpoke3;
+    m_carModel.wheelSpokeFR3 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFR3 *= m_carModel.wheelFrontRightTranslation;
+    m_carModel.wheelSpokeFR3 *= updateMat;
+
+    m_carModel.wheelSpokeFR4 = m_carModel.localWheelSpoke4;
+    m_carModel.wheelSpokeFR4 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFR4 *= m_carModel.wheelFrontRightTranslation;
+    m_carModel.wheelSpokeFR4 *= updateMat;
+
+    m_carModel.wheelSpokeFR5 = m_carModel.localWheelSpoke5;
+    m_carModel.wheelSpokeFR5 *= wheelSpin * stearingRotation;
+    m_carModel.wheelSpokeFR5 *= m_carModel.wheelFrontRightTranslation;
+    m_carModel.wheelSpokeFR5 *= updateMat;
+    // rear left wheel spokes
+    m_carModel.wheelSpokeRearLeft1 = m_carModel.localWheelSpoke1;
+    m_carModel.wheelSpokeRearLeft1 *= wheelSpin;
+    m_carModel.wheelSpokeRearLeft1 *= m_carModel.wheelRearLeftTranslation;
+    m_carModel.wheelSpokeRearLeft1 *= updateMat;
+
+    m_carModel.wheelSpokeRearLeft2 = m_carModel.localWheelSpoke2;
+    m_carModel.wheelSpokeRearLeft2 *= wheelSpin;
+    m_carModel.wheelSpokeRearLeft2 *= m_carModel.wheelRearLeftTranslation;
+    m_carModel.wheelSpokeRearLeft2 *= updateMat;
+
+    m_carModel.wheelSpokeRearLeft3 = m_carModel.localWheelSpoke3;
+    m_carModel.wheelSpokeRearLeft3 *= wheelSpin;
+    m_carModel.wheelSpokeRearLeft3 *= m_carModel.wheelRearLeftTranslation;
+    m_carModel.wheelSpokeRearLeft3 *= updateMat;
+
+    m_carModel.wheelSpokeRearLeft4 = m_carModel.localWheelSpoke4;
+    m_carModel.wheelSpokeRearLeft4 *= wheelSpin;
+    m_carModel.wheelSpokeRearLeft4 *= m_carModel.wheelRearLeftTranslation;
+    m_carModel.wheelSpokeRearLeft4 *= updateMat;
+
+    m_carModel.wheelSpokeRearLeft5 = m_carModel.localWheelSpoke5;
+    m_carModel.wheelSpokeRearLeft5 *= wheelSpin;
+    m_carModel.wheelSpokeRearLeft5 *= m_carModel.wheelRearLeftTranslation;
+    m_carModel.wheelSpokeRearLeft5 *= updateMat;
+    // rear right wheel spokes
+    m_carModel.wheelSpokeRearRight1 = m_carModel.localWheelSpoke1;
+    m_carModel.wheelSpokeRearRight1 *= wheelSpin;
+    m_carModel.wheelSpokeRearRight1 *= m_carModel.wheelRearRightTranslation;
+    m_carModel.wheelSpokeRearRight1 *= updateMat;
+
+    m_carModel.wheelSpokeRearRight2 = m_carModel.localWheelSpoke2;
+    m_carModel.wheelSpokeRearRight2 *= wheelSpin;
+    m_carModel.wheelSpokeRearRight2 *= m_carModel.wheelRearRightTranslation;
+    m_carModel.wheelSpokeRearRight2 *= updateMat;
+
+    m_carModel.wheelSpokeRearRight3 = m_carModel.localWheelSpoke3;
+    m_carModel.wheelSpokeRearRight3 *= wheelSpin;
+    m_carModel.wheelSpokeRearRight3 *= m_carModel.wheelRearRightTranslation;
+    m_carModel.wheelSpokeRearRight3 *= updateMat;
+
+    m_carModel.wheelSpokeRearRight4 = m_carModel.localWheelSpoke4;
+    m_carModel.wheelSpokeRearRight4 *= wheelSpin;
+    m_carModel.wheelSpokeRearRight4 *= m_carModel.wheelRearRightTranslation;
+    m_carModel.wheelSpokeRearRight4 *= updateMat;
+
+    m_carModel.wheelSpokeRearRight5 = m_carModel.localWheelSpoke5;
+    m_carModel.wheelSpokeRearRight5 *= wheelSpin;
+    m_carModel.wheelSpokeRearRight5 *= m_carModel.wheelRearRightTranslation;
+    m_carModel.wheelSpokeRearRight5 *= updateMat;
+
+
+    // wheel spoke test
+    DirectX::SimpleMath::Vector3 spokeOffset(0.0, 0.1, 0.0);
+    DirectX::SimpleMath::Matrix testUpdateMat2 = DirectX::SimpleMath::Matrix::CreateTranslation(spokeOffset);;
+    m_carModel.wheelSpokeFront1 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront1 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront1 *= wheelSpinMat;
+    m_carModel.wheelSpokeFront1 *= stearingTurn;
+    DirectX::SimpleMath::Matrix testUpdateMat = updateMatrix;
+    //m_carModel.wheelSpokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(spokeOffset);
+    m_carModel.wheelSpokeFront1 *= m_carModel.frontAxelTranslation;
+    //m_carModel.wheelSpokeFront1 *= testTurn;
+    m_carModel.wheelSpokeFront1 *= updateMat;
+    //m_carModel.localWheelSPokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(spokeOffset);
+
+    const float spokeAngle = (2.0 * Utility::GetPi()) * 0.2;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /*
+    DirectX::SimpleMath::Matrix wheelSpinMatFL1 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle);
+    m_carModel.wheelSpokeFL1 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFL1 *= testUpdateMat2;
+    m_carModel.wheelSpokeFL1 *= wheelSpinMatFL1;
+    //m_carModel.wheelSpokeFL1 *= wheelSpinMat;
+    m_carModel.wheelSpokeFL1 = wheelSpin * stearingTurn;
+    m_carModel.wheelSpokeFL1 *= wheelSpinMatFL1;
+    //m_carModel.wheelSpokeFL1 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFL1 *= m_carModel.wheelFrontLeftTranslation;;
+    m_carModel.wheelSpokeFL1 *= updateMat;;
+    */
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Matrix wheelSpinMat2 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle);
+    m_carModel.wheelSpokeFront2 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront2 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront2 *= wheelSpinMat2;
+    //m_carModel.wheelSpokeFront2 *= wheelSpinMat;
+    m_carModel.wheelSpokeFront2 *= stearingTurn;
+
+    m_carModel.wheelSpokeFront2 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFront2 *= testTurn;
+    m_carModel.wheelSpokeFront2 *= updateMatrix;
+   
+    DirectX::SimpleMath::Matrix wheelSpinMat3 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle + spokeAngle);
+    m_carModel.wheelSpokeFront3 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront3 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront3 *= wheelSpinMat3;
+    m_carModel.wheelSpokeFront3 *= stearingTurn;
+
+    m_carModel.wheelSpokeFront3 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFront3 *= testTurn;
+    m_carModel.wheelSpokeFront3 *= updateMatrix;
+   
+    DirectX::SimpleMath::Matrix wheelSpinMat4 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle + spokeAngle + spokeAngle);
+    m_carModel.wheelSpokeFront4 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront4 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront4 *= wheelSpinMat4;
+    m_carModel.wheelSpokeFront4 *= stearingTurn;
+    
+    m_carModel.wheelSpokeFront4 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFront4 *= testTurn;
+    m_carModel.wheelSpokeFront4 *= updateMatrix;
+    
+    DirectX::SimpleMath::Matrix wheelSpinMat5 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle + spokeAngle + spokeAngle + spokeAngle);
+    m_carModel.wheelSpokeFront5 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront5 *= testUpdateMat2;
+    m_carModel.wheelSpokeFront5 *= wheelSpinMat5;
+    m_carModel.wheelSpokeFront5 *= stearingTurn;
+
+    m_carModel.wheelSpokeFront5 *= m_carModel.frontAxelTranslation;
+    m_carModel.wheelSpokeFront5 *= testTurn;
+    m_carModel.wheelSpokeFront5 *= updateMatrix;
+
+    // start backwheel spokes
+    DirectX::SimpleMath::Matrix rearSpokeRotation = m_carModel.rearAxelRotation * testUpdateMat2;
+    DirectX::SimpleMath::Matrix rearSpokeTranslation = m_carModel.rearAxelTranslation * testTurn * updateMatrix;
+    /*
+    m_carModel.wheelSpokeBack1 = m_carModel.rearAxelRotation;
+    m_carModel.wheelSpokeBack1 *= testUpdateMat2;
+    m_carModel.wheelSpokeBack1 *= wheelSpinMat;
+    m_carModel.wheelSpokeBack1 *= m_carModel.rearAxelTranslation;
+    m_carModel.wheelSpokeBack1 *= testTurn;
+    m_carModel.wheelSpokeBack1 *= updateMatrix;
+    */
+    m_carModel.wheelSpokeBack1 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack1 *= wheelSpinMat;
+    m_carModel.wheelSpokeBack1 *= rearSpokeTranslation;
+
+    m_carModel.wheelSpokeBack2 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack2 *= wheelSpinMat2;    
+    m_carModel.wheelSpokeBack2 *= rearSpokeTranslation;
+
+    m_carModel.wheelSpokeBack3 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack3 *= wheelSpinMat3;
+    m_carModel.wheelSpokeBack3 *= rearSpokeTranslation;
+
+    m_carModel.wheelSpokeBack4 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack4 *= wheelSpinMat4;
+    m_carModel.wheelSpokeBack4 *= rearSpokeTranslation;
+
+    m_carModel.wheelSpokeBack5 = rearSpokeRotation;
+    m_carModel.wheelSpokeBack5 *= wheelSpinMat5;
+    m_carModel.wheelSpokeBack5 *= rearSpokeTranslation;
+
+    // Rims
+    m_carModel.wheelRimFrontMatrix = m_carModel.frontAxelMatrix;
+    m_carModel.wheelRimBackMatrix = m_carModel.rearTireMatrix;
+    
+    // Hubs
+    DirectX::SimpleMath::Matrix testHubRotate = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRadsRear);
+    DirectX::SimpleMath::Matrix hubStearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
+
+    
+    DirectX::SimpleMath::Matrix testAxisEndTranslate = m_carModel.localHubFrontRightMatrix;
+    testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);;
+    
+    
+    testAxisEndTranslate = m_carModel.localHubFrontLeftMatrix;
+    testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
+    // Front Left Hub
+    m_carModel.hubFrontLeftMatrix = wheelSpin * m_carModel.localHubFrontLeftMatrix * stearingRotation * m_carModel.wheelFrontLeftTranslation * updateMat;
+    m_carModel.hubInteriorFrontLeftMatrix = wheelSpin * m_carModel.localHubInteriorFrontLeftMatrix * stearingRotation * m_carModel.wheelFrontLeftTranslation * updateMat;
+    // Front Right Hub
+    m_carModel.hubFrontRightMatrix = wheelSpin * m_carModel.localHubFrontRightMatrix * stearingRotation * m_carModel.wheelFrontRightTranslation * updateMat;
+    m_carModel.hubInteriorFrontRightMatrix = wheelSpin * m_carModel.localHubInteriorFrontRightMatrix * stearingRotation * m_carModel.wheelFrontRightTranslation * updateMat;
+    // Back Left Hub
+    m_carModel.hubBackLeftMatrix = wheelSpin * m_carModel.localHubBackLeftMatrix * m_carModel.wheelRearLeftTranslation * updateMat;
+    m_carModel.hubInteriorBackLeftMatrix = wheelSpin * m_carModel.localHubInteriorBackLeftMatrix * m_carModel.wheelRearLeftTranslation * updateMat;
+    // Back Right Hub
+    m_carModel.hubBackRightMatrix = wheelSpin * m_carModel.localHubBackRightMatrix * m_carModel.wheelRearRightTranslation * updateMat;
+    m_carModel.hubInteriorBackRightMatrix = wheelSpin * m_carModel.localHubInteriorBackRightMatrix * m_carModel.wheelRearRightTranslation * updateMat;
+    // fender flares
+    
+    m_carModel.fenderFlareFrontLeftMatrix = m_carModel.localfenderFlareFrontLeftMatrix;
+    m_carModel.fenderFlareFrontLeftMatrix *= updateMat;
+    m_carModel.fenderFlareFrontLeftInteriorMatrix = m_carModel.localfenderFlareFrontLeftInteriorMatrix;
+    m_carModel.fenderFlareFrontLeftInteriorMatrix *= updateMat;
+    m_carModel.fenderFlareFrontRightMatrix = m_carModel.localfenderFlareFrontRightMatrix;
+    m_carModel.fenderFlareFrontRightMatrix *= updateMat;
+    m_carModel.fenderFlareFrontRightInteriorMatrix = m_carModel.localfenderFlareFrontRightInteriorMatrix;
+    m_carModel.fenderFlareFrontRightInteriorMatrix *= updateMat;
+
+    m_carModel.fenderFlareRearLeftMatrix = m_carModel.localfenderFlareRearLeftMatrix;
+    m_carModel.fenderFlareRearLeftMatrix *= updateMat;
+    m_carModel.fenderFlareRearLeftInteriorMatrix = m_carModel.localfenderFlareRearLeftInteriorMatrix;
+    m_carModel.fenderFlareRearLeftInteriorMatrix *= updateMat;
+    m_carModel.fenderFlareRearRightMatrix = m_carModel.localfenderFlareRearRightMatrix;
+    m_carModel.fenderFlareRearRightMatrix *= updateMat;
+    m_carModel.fenderFlareRearRightInteriorMatrix = m_carModel.localfenderFlareRearRightInteriorMatrix;
+    m_carModel.fenderFlareRearRightInteriorMatrix *= updateMat;
+
+    // rocker skirt 
+    m_carModel.rockerSkirtMatrix = m_carModel.localRockerSkirtMatrix;
+    m_carModel.rockerSkirtMatrix *= updateMat;
+    // windshield
+    m_carModel.windShieldMatrix = m_carModel.localWindShieldMatrix;
+    //m_carModel.windShieldMatrix *= testTurn;
+    m_carModel.windShieldMatrix *= updateMat;
+    // windshield window
+    m_carModel.windShieldWindowMatrix = m_carModel.localWindShieldWindowMatrix;
+    //m_carModel.windShieldWindowMatrix *= testTurn;
+    m_carModel.windShieldWindowMatrix *= updateMat;
+    // front side window
+    m_carModel.frontSideWindowsMatrix = m_carModel.localfrontSideWindowsMatrix;
+    //m_carModel.frontSideWindowsMatrix *= testTurn;
+    m_carModel.frontSideWindowsMatrix *= updateMat;
+    // rear side window
+    m_carModel.rearSideWindowsMatrix = m_carModel.localrearSideWindowsMatrix;
+    m_carModel.rearSideWindowsMatrix *= updateMat;
+    // back window
+    m_carModel.backWindowMatrix = m_carModel.localBackWindowMatrix;
+    m_carModel.backWindowMatrix *= updateMat;
+    // triangle front window
+    m_carModel.triangleFrontWindowMatrix = m_carModel.localtriangleFrontWindowMatrix;
+    m_carModel.triangleFrontWindowMatrix *= updateMat;
+    // front bumper 
+    m_carModel.bumperFrontMatrix = m_carModel.localBumperFrontMatrix;
+    m_carModel.bumperFrontMatrix *= updateMat;
+    // back bumper
+    m_carModel.bumperBackMatrix = m_carModel.localBumperBackMatrix;
+    m_carModel.bumperBackMatrix *= updateMat;
+    // air dam
+    m_carModel.airDamMatrix = m_carModel.localAirDamMatrix;
+    m_carModel.airDamMatrix *= updateMat;
+    // grill
+    m_carModel.grillMatrix = m_carModel.localGrillMatrix;
+    m_carModel.grillMatrix *= updateMat;
+    m_carModel.grillLogoMatrix = m_carModel.localGrillLogoMatrix;
+    m_carModel.grillLogoMatrix *= updateMat;
+    m_carModel.grillSlatMatrix = m_carModel.localGrillSlatMatrix;
+    m_carModel.grillSlatMatrix *= updateMat;
+    // License Plate Rear
+    m_carModel.licensePlateRearMatrix = m_carModel.localLicensePlateRearMatrix;
+    m_carModel.licensePlateRearMatrix *= updateMat;
+    // left headlight
+    m_carModel.headLightLeftMatrix = m_carModel.localHeadLightLeftMatrix;
+    m_carModel.headLightLeftMatrix *= updateMat;
+    // right headlight
+    m_carModel.headLightRightMatrix = m_carModel.localHeadLightRightMatrix;
+    m_carModel.headLightRightMatrix *= updateMat;
+    // left blinker light
+    m_carModel.blinkerLightLowerLeftMatrix = m_carModel.localBlinkerLightLowerLeftMatrix;
+    m_carModel.blinkerLightLowerLeftMatrix *= updateMat;
+    m_carModel.blinkerLightUpperLeftMatrix = m_carModel.localBlinkerLightUpperLeftMatrix;
+    m_carModel.blinkerLightUpperLeftMatrix *= updateMat;
+    // right blinker light
+    m_carModel.blinkerLightLowerRightMatrix = m_carModel.localBlinkerLightLowerRightMatrix;
+    m_carModel.blinkerLightLowerRightMatrix *= updateMat;
+    m_carModel.blinkerLightUpperRightMatrix = m_carModel.localBlinkerLightUpperRightMatrix;
+    m_carModel.blinkerLightUpperRightMatrix *= updateMat;
+    // right tail light
+    m_carModel.tailLightRightMatrix = m_carModel.localTailLightRightMatrix;
+    m_carModel.tailLightRightMatrix *= updateMat;
+    // left tail light
+    m_carModel.tailLightLeftMatrix = m_carModel.localTailLightLeftMatrix;
+    m_carModel.tailLightLeftMatrix *= updateMat;
+    // reverse light
+    m_carModel.reverseLightLeftMatrix = m_carModel.localReverseLightLeftMatrix;
+    m_carModel.reverseLightLeftMatrix *= updateMat;
+    m_carModel.reverseLightRightMatrix = m_carModel.localReverseLightRightMatrix;
+    m_carModel.reverseLightRightMatrix *= updateMat;
+    // tail blinker light
+    m_carModel.tailBlinkerLightLeftMatrix = m_carModel.localTailBlinkerLightLeftMatrix;
+    m_carModel.tailBlinkerLightLeftMatrix *= updateMat;
+    m_carModel.tailBlinkerLightRightMatrix = m_carModel.localTailBlinkerLightRightMatrix;
+    m_carModel.tailBlinkerLightRightMatrix *= updateMat;
+    // third brake light
+    m_carModel.thirdBrakeLightMatrix = m_carModel.localThirdBrakeLightMatrix;
+    m_carModel.thirdBrakeLightMatrix *= updateMat;
+    // rear spoiler
+    m_carModel.rearSpoilerMatrix = m_carModel.locarearSpoilerMatrix;
+    //m_carModel.rearSpoilerMatrix *= testTurn;
+    m_carModel.rearSpoilerMatrix *= updateMat;
+    // side mirrors
+    m_carModel.sideMirrorLeftMatrix = m_carModel.localSideMirrorLeftMatrix;
+    m_carModel.sideMirrorLeftMatrix *= updateMat;
+    m_carModel.sideMirrorRightMatrix = m_carModel.localSideMirrorRightMatrix;
+    m_carModel.sideMirrorRightMatrix *= updateMat;    
+    // hood
+    m_carModel.hoodMatrix = m_carModel.localHoodMatrix;
+    //m_carModel.hoodMatrix *= testTurn;
+    m_carModel.hoodMatrix *= updateMat;
+    // pinstripe
+    m_carModel.pinstripeMatrix = m_carModel.localPinstripeMatrix;
+    m_carModel.pinstripeMatrix *= updateMat;
+
+}
+
+
+void Vehicle::UpdateModel2(const double aTimer)
+{
+    double wheelTurnRads = GetWheelRotationRadians(aTimer) + m_testRotation;
+    m_testRotation = wheelTurnRads;
+    //double wheelTurnRadsRear = GetWheelRotationRadiansRear(aTimer) + m_testRotationRear;
+    double wheelTurnRadsRear = GetWheelRotationRadiansRear(aTimer) + m_testRotation;
+    //m_testRotationRear = (wheelTurnRadsRear + wheelTurnRads) / 2;
+    m_testRotationRear = wheelTurnRadsRear;
+    //DebugPushUILine("GetWheelRotationRadiansRear(aTimer)", GetWheelRotationRadiansRear(aTimer));
+
+    DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
+    DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
+    DirectX::SimpleMath::Matrix updateMat = testTurn;
+    updateMat *= updateMatrix;
+
+    //
+    DirectX::SimpleMath::Matrix updateMat2 = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_car.headingQuat);
+    updateMat2 *= testTurn;
+    updateMat2 *= updateMatrix;
+    updateMat = updateMat2;
+    //
+
     m_carModel.bodyMatrix = m_carModel.localBodyMatrix;
     m_carModel.bodyMatrix *= testTurn;
-    m_carModel.bodyMatrix *=  updateMatrix;
+    m_carModel.bodyMatrix *= updateMatrix;
 
     m_carModel.bodyTopMatrix = m_carModel.localBodyTopMatrix;
     m_carModel.bodyTopMatrix *= testTurn;
@@ -1732,7 +2213,7 @@ void Vehicle::UpdateModel(const double aTimer)
     DirectX::SimpleMath::Matrix wheelSpinRearMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRadsRear);
 
     DirectX::SimpleMath::Matrix stearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
-    
+
     m_carModel.frontAxelMatrix = m_carModel.frontAxelRotation * wheelSpinMat * stearingTurn;
     m_carModel.frontAxelMatrix *= m_carModel.frontAxelTranslation;
     m_carModel.frontAxelMatrix *= testTurn;
@@ -1747,7 +2228,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.rearAxelMatrix *= m_carModel.rearAxelTranslation;
     m_carModel.rearAxelMatrix *= testTurn;
     m_carModel.rearAxelMatrix *= updateMatrix;
-  
+
     m_carModel.rearTireMatrix = m_carModel.rearTireRotation * wheelSpinRearMat;
     m_carModel.rearTireMatrix *= m_carModel.rearTireTranslation;
     m_carModel.rearTireMatrix *= testTurn;
@@ -1915,7 +2396,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.wheelSpokeFront2 *= m_carModel.frontAxelTranslation;
     m_carModel.wheelSpokeFront2 *= testTurn;
     m_carModel.wheelSpokeFront2 *= updateMatrix;
-   
+
     DirectX::SimpleMath::Matrix wheelSpinMat3 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle + spokeAngle);
     m_carModel.wheelSpokeFront3 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
     m_carModel.wheelSpokeFront3 *= testUpdateMat2;
@@ -1925,17 +2406,17 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.wheelSpokeFront3 *= m_carModel.frontAxelTranslation;
     m_carModel.wheelSpokeFront3 *= testTurn;
     m_carModel.wheelSpokeFront3 *= updateMatrix;
-   
+
     DirectX::SimpleMath::Matrix wheelSpinMat4 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle + spokeAngle + spokeAngle);
     m_carModel.wheelSpokeFront4 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
     m_carModel.wheelSpokeFront4 *= testUpdateMat2;
     m_carModel.wheelSpokeFront4 *= wheelSpinMat4;
     m_carModel.wheelSpokeFront4 *= stearingTurn;
-    
+
     m_carModel.wheelSpokeFront4 *= m_carModel.frontAxelTranslation;
     m_carModel.wheelSpokeFront4 *= testTurn;
     m_carModel.wheelSpokeFront4 *= updateMatrix;
-    
+
     DirectX::SimpleMath::Matrix wheelSpinMat5 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle + spokeAngle + spokeAngle + spokeAngle);
     m_carModel.wheelSpokeFront5 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
     m_carModel.wheelSpokeFront5 *= testUpdateMat2;
@@ -1962,7 +2443,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.wheelSpokeBack1 *= rearSpokeTranslation;
 
     m_carModel.wheelSpokeBack2 = rearSpokeRotation;
-    m_carModel.wheelSpokeBack2 *= wheelSpinMat2;    
+    m_carModel.wheelSpokeBack2 *= wheelSpinMat2;
     m_carModel.wheelSpokeBack2 *= rearSpokeTranslation;
 
     m_carModel.wheelSpokeBack3 = rearSpokeRotation;
@@ -1980,16 +2461,16 @@ void Vehicle::UpdateModel(const double aTimer)
     // Rims
     m_carModel.wheelRimFrontMatrix = m_carModel.frontAxelMatrix;
     m_carModel.wheelRimBackMatrix = m_carModel.rearTireMatrix;
-    
+
     // Hubs
     DirectX::SimpleMath::Matrix testHubRotate = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRadsRear);
     DirectX::SimpleMath::Matrix hubStearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
 
-    
+
     DirectX::SimpleMath::Matrix testAxisEndTranslate = m_carModel.localHubFrontRightMatrix;
     testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);;
-    
-    
+
+
     testAxisEndTranslate = m_carModel.localHubFrontLeftMatrix;
     testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
     // Front Left Hub
@@ -2005,7 +2486,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.hubBackRightMatrix = wheelSpin * m_carModel.localHubBackRightMatrix * m_carModel.wheelRearRightTranslation * updateMat;
     m_carModel.hubInteriorBackRightMatrix = wheelSpin * m_carModel.localHubInteriorBackRightMatrix * m_carModel.wheelRearRightTranslation * updateMat;
     // fender flares
-    
+
     m_carModel.fenderFlareFrontLeftMatrix = m_carModel.localfenderFlareFrontLeftMatrix;
     m_carModel.fenderFlareFrontLeftMatrix *= updateMat;
     m_carModel.fenderFlareFrontLeftInteriorMatrix = m_carModel.localfenderFlareFrontLeftInteriorMatrix;
@@ -2110,7 +2591,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.sideMirrorLeftMatrix = m_carModel.localSideMirrorLeftMatrix;
     m_carModel.sideMirrorLeftMatrix *= updateMat;
     m_carModel.sideMirrorRightMatrix = m_carModel.localSideMirrorRightMatrix;
-    m_carModel.sideMirrorRightMatrix *= updateMat;    
+    m_carModel.sideMirrorRightMatrix *= updateMat;
     // hood
     m_carModel.hoodMatrix = m_carModel.localHoodMatrix;
     m_carModel.hoodMatrix *= testTurn;
@@ -2120,6 +2601,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.pinstripeMatrix *= updateMat;
 
 }
+
 
 void Vehicle::UpdateResistance()
 {
@@ -2161,6 +2643,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     RungeKutta4(&m_car, aTimeDelta);
 
     
+    UpdateHeadingQuat();
     DirectX::SimpleMath::Vector3 testPos = m_car.q.position;
     //testPos.y += 3.0;
     float testHeight = m_environment->GetTerrainHeightAtPos(testPos);
