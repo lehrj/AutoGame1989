@@ -1928,7 +1928,7 @@ void Game::DrawTerrain()
 void Game::DrawTerrain2()
 {
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, m_terrainVertexArrayBase2, m_terrainVertexCount2);
-    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
+    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
 }
 
 void Game::DrawTerrainNormals()
@@ -3216,7 +3216,7 @@ void Game::Render()
 
     DrawTerrainNormals();
 
-    DrawDebugNormalLines(m_vehicle->GetPos(), DirectX::Colors::Blue);
+    DrawDebugNormalLines(m_vehicle->GetModelTestPos(), DirectX::Colors::Blue);
 
     /*
     DrawDebugLines(m_vehicle->GetPos(), DirectX::Colors::White);
@@ -3353,7 +3353,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
 
-
+    
     m_vehicle->UpdateVehicle(aTimer.GetTotalSeconds(), aTimer.GetElapsedSeconds());
     UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);

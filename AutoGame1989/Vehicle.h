@@ -71,10 +71,17 @@ struct Car
     double testTorque;
     double testRearAnglularVelocity;
     double testRearAngularVelocityAngle;
+
+    DirectX::SimpleMath::Vector3 terrainNormal;
+    DirectX::SimpleMath::Vector3 testModelPos;
 };
 
 struct CarModel
 {
+    std::unique_ptr<DirectX::GeometricPrimitive>    normAntenna;
+    DirectX::SimpleMath::Matrix normAntennaMatrix;
+    DirectX::SimpleMath::Matrix localnormAntennaMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    body;
     DirectX::SimpleMath::Matrix bodyMatrix;
     DirectX::SimpleMath::Matrix localBodyMatrix;
@@ -346,6 +353,8 @@ public:
     int GetGear() { return m_car.gearNumber; };
     DirectX::SimpleMath::Vector3 GetHeading() const { return m_car.heading; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_car.q.position; };
+    DirectX::SimpleMath::Vector3 GetModelTestPos() const { return m_car.testModelPos; };
+
     double GetCarRotation() const { return m_car.carRotation; };
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_car.q.velocity; };
     double GetAccel() const { return m_car.testAccel; };
@@ -398,7 +407,9 @@ private:
     
     void TestGetForceLateral();
 
-    void UpdateHeadingQuat();
+    void UpdateHeadingQuat(const double aTimer);
+    void UpdateHeadingQuat2();
+    void UpdateHeadingQuat3();
     void UpdateResistance();
     void UpdateModel(const double aTimer);
     void UpdateModel2(const double aTimer);
