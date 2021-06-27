@@ -1724,26 +1724,24 @@ void Vehicle::ThrottleBrakeDecay(const double aTimeDelta)
 
 void Vehicle::UpdateHeadingVec()
 {
-    /*
-    DirectX::SimpleMath::Vector3 newHeading = -DirectX::SimpleMath::Vector3::UnitZ;
-    DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_car.terrainNormal, m_car.carRotation);
-    newHeading = DirectX::SimpleMath::Vector3::Transform(newHeading, rotQuat);
-    m_car.headingVec = newHeading;
-    */
-
     DirectX::SimpleMath::Vector3 newHeading = -DirectX::SimpleMath::Vector3::UnitZ;
     DirectX::SimpleMath::Vector3 crossProd = m_car.terrainNormal;
 
     crossProd = crossProd.Cross(newHeading);
-    DirectX::SimpleMath::Quaternion rotQuat2 = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_car.terrainNormal, Utility::ToRadians(-90.0));
-    DirectX::SimpleMath::Vector3 newHeading2 = DirectX::SimpleMath::Vector3::Transform(crossProd, rotQuat2);
-    newHeading2.Normalize();
-    m_car.headingVec = newHeading2;
+    DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_car.terrainNormal, Utility::ToRadians(-90.0));
+    DirectX::SimpleMath::Vector3 updateHeading = DirectX::SimpleMath::Vector3::Transform(crossProd, rotQuat);
+    updateHeading.Normalize();
+    DirectX::SimpleMath::Vector3 oldHeading = m_car.headingVec;
+    DirectX::SimpleMath::Vector3 updateHeading2 = DirectX::SimpleMath::Vector3::SmoothStep(oldHeading, updateHeading, 0.75);
+    m_car.headingVec = updateHeading;
 
+
+
+    /*
     DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_car.terrainNormal, m_car.carRotation);
     newHeading = DirectX::SimpleMath::Vector3::Transform(newHeading, rotQuat);
     newHeading.Normalize();
-
+    */
     //m_car.headingVec = newHeading;
 
 }
@@ -2784,6 +2782,15 @@ void Vehicle::UpdateResistance()
 
 }
 
+void Vehicle::UpdateTerrainNorm()
+{
+    DirectX::SimpleMath::Vector3 newTerrainNorm = m_environment->GetTerrainNormal(m_car.q.position);
+    DirectX::SimpleMath::Vector3 oldTerrainNorm = m_car.terrainNormal;
+    DirectX::SimpleMath::Vector3 updateTerrainNorm = DirectX::SimpleMath::Vector3::SmoothStep(newTerrainNorm, oldTerrainNorm, 0.8);
+    m_car.terrainNormal = updateTerrainNorm;
+    //m_car.terrainNormal = m_environment->GetTerrainNormal(m_car.q.position);
+}
+
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {   
     
@@ -2811,8 +2818,12 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
 
 
-    m_car.terrainNormal = m_environment->GetTerrainNormal(m_car.q.position);
+    
+    UpdateTerrainNorm();
+
     m_car.testModelPos = m_car.q.position;
+
+
     RungeKutta4(&m_car, aTimeDelta);
     
     

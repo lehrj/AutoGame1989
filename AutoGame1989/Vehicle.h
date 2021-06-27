@@ -411,9 +411,11 @@ private:
     void UpdateHeadingQuat2();
     void UpdateHeadingQuat3();
     void UpdateHeadingVec();
-    void UpdateResistance();
+    
     void UpdateModel(const double aTimer);
     void UpdateModel2(const double aTimer);
+    void UpdateResistance();
+    void UpdateTerrainNorm();
 
     Car                             m_car;
     CarModel                        m_carModel;
