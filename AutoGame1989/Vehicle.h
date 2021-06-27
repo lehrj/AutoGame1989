@@ -56,7 +56,7 @@ struct Car
 
     DirectX::SimpleMath::Quaternion headingQuat;
     double carRotation;
-    DirectX::SimpleMath::Vector3 heading;          // direction the vehicle is facing
+    DirectX::SimpleMath::Vector3 headingVec;          // direction the vehicle is facing
     double speed;        // speed vehicle is traveling
     double wheelBase;
     bool isAccelerating;
@@ -351,7 +351,7 @@ public:
     double GetDebugValue() { return m_car.carRotation; };
     DirectX::SimpleMath::Vector3 GetDebugPoint() { return  m_debugPoint; };
     int GetGear() { return m_car.gearNumber; };
-    DirectX::SimpleMath::Vector3 GetHeading() const { return m_car.heading; };
+    DirectX::SimpleMath::Vector3 GetHeading() const { return m_car.headingVec; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_car.q.position; };
     DirectX::SimpleMath::Vector3 GetModelTestPos() const { return m_car.testModelPos; };
 
@@ -410,6 +410,7 @@ private:
     void UpdateHeadingQuat(const double aTimer);
     void UpdateHeadingQuat2();
     void UpdateHeadingQuat3();
+    void UpdateHeadingVec();
     void UpdateResistance();
     void UpdateModel(const double aTimer);
     void UpdateModel2(const double aTimer);
