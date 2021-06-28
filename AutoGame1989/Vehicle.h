@@ -33,7 +33,8 @@ struct Car
     int gearNumber;     //  gear the car is in
     int numberOfGears;  //  total number of gears
     double gearRatio[7];  //  gear ratios
-    double gravity;
+    //double gravity;
+    DirectX::SimpleMath::Vector3 gravity;
 
     //////////////////////
     double inputDeadZone;  // small deadzone to ignore gas and brake peddle input
@@ -63,6 +64,7 @@ struct Car
     bool isBraking;
     bool isRevlimitHit;
     bool isTransmissionManual;
+    bool isCarAirborne; 
 
     DirectX::SimpleMath::Vector3 testAcceleration = DirectX::SimpleMath::Vector3::Zero;
     double testAccel = 0.0;
@@ -342,6 +344,7 @@ class Vehicle
 public:
     Vehicle();
 
+    void DebugEBrake();
     std::vector<std::pair<std::string, double>> DebutGetUI() { return m_debugUI; };
     std::vector<std::string> DebutGetUIVector() { return m_debugUIVector; };
     void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
