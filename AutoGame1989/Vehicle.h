@@ -409,6 +409,7 @@ private:
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
     
     void TestGetForceLateral();
+    DirectX::SimpleMath::Vector3 TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
 
     void UpdateHeadingQuat(const double aTimer);
     void UpdateHeadingQuat2();
