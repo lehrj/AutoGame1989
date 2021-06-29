@@ -62,6 +62,7 @@ private:
     void DrawCarTest();
     void DrawDebugLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
     void DrawDebugNormalLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
+    void DrawDebugLinesVector();
     void DrawGridForStartScreen();   
     void DrawIntroScene();
     void DrawLightBar();

@@ -795,9 +795,21 @@ void Game::DrawDebugNormalLines(const  DirectX::SimpleMath::Vector3 aPos, const 
     m_batch3->DrawLine(origin, normVertex);
 }
 
+void Game::DrawDebugLinesVector()
+{
+    std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32>> lineTup = m_vehicle->DebugGetTestLines();
+    for (int i = 0; i < lineTup.size(); ++i)
+    {
+        DirectX::XMVECTORF32 lineColor = std::get<2>(lineTup[i]);
+        VertexPositionColor lineStart(std::get<0>(lineTup[i]), lineColor);
+        VertexPositionColor lineEnd(std::get<1>(lineTup[i]), lineColor);
+        m_batch3->DrawLine(lineStart, lineEnd);
+    }
+}
+
 void Game::DrawDebugVehicleData()
 {
-    std::vector<std::string> uiVector = m_vehicle->DebutGetUIVector();
+    std::vector<std::string> uiVector = m_vehicle->DebugGetUIVector();
     int vecSize = uiVector.size();
     DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
     textLinePos.x = 200;
@@ -839,7 +851,7 @@ void Game::DrawDebugVehicleData()
 
 void Game::DrawDebugValue()
 {
-    std::vector<std::pair<std::string, double>> uiVector = m_vehicle->DebutGetUI();
+    std::vector<std::pair<std::string, double>> uiVector = m_vehicle->DebugGetUI();
     int vecSize = uiVector.size();
     DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2; 
     textLinePos.x = 200;
@@ -3215,16 +3227,8 @@ void Game::Render()
     m_batch3->Begin();
 
     DrawTerrainNormals();
-
     DrawDebugNormalLines(m_vehicle->GetModelTestPos(), DirectX::Colors::Blue);
-
-    /*
-    DrawDebugLines(m_vehicle->GetPos(), DirectX::Colors::White);
-    DrawDebugLines(m_vehicle->GetDebugPoint(), DirectX::Colors::Yellow);
-    DrawDebugLines(m_camera->GetTargetPos(), DirectX::Colors::Blue);
-
-    float distance = DirectX::SimpleMath::Vector3::Distance(m_vehicle->GetPos(), m_vehicle->GetDebugPoint());
-    */
+    DrawDebugLinesVector();
 
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {

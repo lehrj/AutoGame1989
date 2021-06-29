@@ -345,8 +345,11 @@ public:
     Vehicle();
 
     void DebugEBrake();
-    std::vector<std::pair<std::string, double>> DebutGetUI() { return m_debugUI; };
-    std::vector<std::string> DebutGetUIVector() { return m_debugUIVector; };
+    std::vector<std::pair<std::string, double>> DebugGetUI() { return m_debugUI; };
+    std::vector<std::string> DebugGetUIVector() { return m_debugUIVector; };
+    std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32>> DebugGetTestLines() const { return m_debugLinesVec; };
+
+
     void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
     void GearDown();
     void GearUp();
@@ -388,12 +391,16 @@ public:
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
 
 private:
-    void DebugClearUI() { m_debugUI.clear();
-        m_debugUIVector.clear(); };
+    void DebugClearUI() { 
+        m_debugUI.clear();
+        m_debugUIVector.clear();
+        m_debugLinesVec.clear();
+    };
    
     void DebugPushUILine(std::string aString, double aVal);
     void DebugPushUILineDecimalNumber(std::string aString1, double aVal, std::string aString2);
     void DebugPushUILineWholeNumber(std::string aString1, int aVal, std::string aString2);
+    void DebugPushTestLine(DirectX::SimpleMath::Vector3 aLineBase, DirectX::SimpleMath::Vector3 aLineEnd, float aLength, float aYOffset, DirectX::XMVECTORF32 aColor);
 
     void DebugTestMove(const double aTimer, const double aTimeDelta);
 
@@ -450,6 +457,7 @@ private:
     double m_testMax = 0.0;
     double m_testMin = 1.0;
 
+    std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32>> m_debugLinesVec;
     std::vector<std::pair<std::string, double>> m_debugUI;
     std::vector<std::string> m_debugUIVector;
 
