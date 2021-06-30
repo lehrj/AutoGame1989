@@ -24,7 +24,7 @@ Camera::Camera(int aWidth, int aHeight)
 	m_homeYaw = 0.0f;
 
 	m_nearPlane = 0.1f;
-	m_farPlane = 900.0f;
+	m_farPlane = 1200.0f;
 
 
 	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;

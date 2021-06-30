@@ -65,6 +65,18 @@ struct Car
     bool isRevlimitHit;
     bool isTransmissionManual;
     bool isCarAirborne; 
+    DirectX::SimpleMath::Vector3 terrainNormal;
+    DirectX::SimpleMath::Vector3 forward;
+    DirectX::SimpleMath::Vector3 up;
+    DirectX::SimpleMath::Vector3 right;
+
+    DirectX::SimpleMath::Vector3 testModelPos;
+    double testModelRotation;
+    DirectX::SimpleMath::Vector3 testTerrainNormal;
+    DirectX::SimpleMath::Vector3 testHeadingVec;
+    DirectX::SimpleMath::Vector3 testHeading1;
+    DirectX::SimpleMath::Vector3 testHeading2;
+    DirectX::SimpleMath::Vector3 testHeading3;
 
     DirectX::SimpleMath::Vector3 testAcceleration = DirectX::SimpleMath::Vector3::Zero;
     double testAccel = 0.0;
@@ -73,9 +85,6 @@ struct Car
     double testTorque;
     double testRearAnglularVelocity;
     double testRearAngularVelocityAngle;
-
-    DirectX::SimpleMath::Vector3 terrainNormal;
-    DirectX::SimpleMath::Vector3 testModelPos;
 };
 
 struct CarModel
@@ -417,6 +426,8 @@ private:
     
     void TestGetForceLateral();
     DirectX::SimpleMath::Vector3 TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
+
+    void UpdateCarAlignment();
 
     void UpdateHeadingQuat(const double aTimer);
     void UpdateHeadingQuat2();

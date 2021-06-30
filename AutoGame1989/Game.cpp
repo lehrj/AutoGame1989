@@ -3295,7 +3295,6 @@ void Game::Tick()
     Render();
 }
 
-// Updates the world.
 void Game::Update(DX::StepTimer const& aTimer)
 {
     double elapsedTime = double(aTimer.GetElapsedSeconds());
