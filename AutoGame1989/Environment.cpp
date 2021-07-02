@@ -149,28 +149,12 @@ bool Environment::CalculateTerrainNormals()
             DirectX::SimpleMath::Vector3 vertex3 = m_heightMap[index3].position;
 
             // Calculate the two vectors for this face.
-            DirectX::SimpleMath::Vector3 vector1 = vertex1 - vertex3;
-            DirectX::SimpleMath::Vector3 vector2 = vertex3 - vertex2;
-
-            DirectX::SimpleMath::Vector3 vector3 = vertex2 - vertex1;
-            DirectX::SimpleMath::Vector3 vector4 = vertex3 - vertex1;
-
-            //DirectX::SimpleMath::Vector3 vector5 = DirectX::XMVector3Cross(vector1, vector2);
-            DirectX::SimpleMath::Vector3 vector5 = DirectX::XMVector3Cross(vector2, vector1);
-            vector5.Normalize();
-            DirectX::SimpleMath::Vector3 vector6 = DirectX::XMVector3Cross(vector3, vector4);
-            vector6.Normalize();
-
-            if (vector5 != vector6)
-            {
-                int testBreak = 0;
-            }
+            DirectX::SimpleMath::Vector3 vector1 = vertex2 - vertex1;
+            DirectX::SimpleMath::Vector3 vector2 = vertex3 - vertex1;
 
 
             int index = (j * (m_terrainWidth - 1)) + i;
-
             normals[index] = DirectX::XMVector3Cross(vector1, vector2);
-            normals[index] = vector6;
             normals[index].Normalize();
         }
     }
@@ -605,14 +589,6 @@ DirectX::SimpleMath::Vector3 Environment::GetTerrainNormal(DirectX::SimpleMath::
 {
     bool foundHeight = false;
     int i = 0;
-    /*
-    if (aPos.z >= 0.0)
-    {
-        //i = m_terrainModel.size() / 2;
-        //i -= 3;
-        i == 2001;
-    }
-    */
 
     for (i; i < m_terrainModel.size(); ++i)
     {
@@ -632,29 +608,6 @@ DirectX::SimpleMath::Vector3 Environment::GetTerrainNormal(DirectX::SimpleMath::
         foundHeight = CheckTerrainTriangleHeight(aPos, vertex1, vertex2, vertex3);
         if (foundHeight)
         {
-            
-            DirectX::SimpleMath::Vector3 norm1 = m_terrainModel[i - 2].normal;
-            DirectX::SimpleMath::Vector3 norm2 = m_terrainModel[i - 1].normal;
-            DirectX::SimpleMath::Vector3 norm3 = m_terrainModel[i].normal;
-           
-            float x = (norm1.x + norm2.x + norm3.x) / 3.0f;
-            float y = (norm1.y + norm2.y + norm3.y) / 3.0f;
-            float z = (norm1.z + norm2.z + norm3.z) / 3.0f;
-
-            DirectX::SimpleMath::Vector3 norm(x, y, z);
-
-            //norm = norm3;
-            norm *= -1;            
-            norm.Normalize();
-            ///////////////////////////////////////////////////////////
-            DirectX::SimpleMath::Vector3 a = m_terrainModel[i].position;
-            DirectX::SimpleMath::Vector3 b = m_terrainModel[i - 1].position;
-            DirectX::SimpleMath::Vector3 c;
-            c.x = a.y * b.z - a.z * b.y;
-            c.y = a.z * b.x - a.x * b.z;
-            c.z = a.x * b.y - a.y * b.x;
-            
-            /// //
             DirectX::SimpleMath::Vector3 p3 = m_terrainModel[i - 2].position;
             DirectX::SimpleMath::Vector3 p2 = m_terrainModel[i - 1].position;
             DirectX::SimpleMath::Vector3 p1 = m_terrainModel[i].position;
@@ -666,8 +619,7 @@ DirectX::SimpleMath::Vector3 Environment::GetTerrainNormal(DirectX::SimpleMath::
             testNormal.y = (U.z * V.x) - (U.x * V.z);
             testNormal.z = (U.x * V.y) - (U.y * V.x);
             testNormal.Normalize();
-            norm = testNormal;
-            return norm;
+            return testNormal;
         }
     }
 
@@ -742,15 +694,13 @@ void Environment::LoadEnvironmentData()
     m_environs[i].name = "12th";   
     m_environs[i].airDensity = 1.225;
     m_environs[i].gravity = -9.8;
-    //m_environs[i].holePosition = DirectX::SimpleMath::Vector3(4.9f, 0.0f, 0.82f);
-    m_environs[i].holePosition = DirectX::SimpleMath::Vector3(3.0f, 0.0f, -0.5f); // 12th positon
+    m_environs[i].holePosition = DirectX::SimpleMath::Vector3(3.0f, 0.0f, -0.5f); 
     m_environs[i].landingFrictionScale = 1.0;
     m_environs[i].landingHardnessScale = 1.0;
     m_environs[i].par = 3;
     m_environs[i].scale = 0.02;
     m_environs[i].teeDirection = 0.0f;
-    //m_environs[i].teePosition = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
-    m_environs[i].teePosition = DirectX::SimpleMath::Vector3(0.2f, 0.0f, 0.1f); // 155 yards ish pos
+    m_environs[i].teePosition = DirectX::SimpleMath::Vector3(0.2f, 0.0f, 0.1f); 
     m_environs[i].terrainColor = DirectX::Colors::Green;
     m_environs[i].wind = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, -0.9f);
 
@@ -771,7 +721,6 @@ void Environment::LoadEnvironmentData()
     m_environs[i].name = "Calm";
     m_environs[i].airDensity = 1.225;
     m_environs[i].gravity = -9.8;
-    //m_environs[i].holePosition = DirectX::SimpleMath::Vector3(4.9f, 0.0f, 0.82f);
     m_environs[i].holePosition = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.5f);
     m_environs[i].landingFrictionScale = 1.0;
     m_environs[i].landingHardnessScale = 1.0;
@@ -781,22 +730,6 @@ void Environment::LoadEnvironmentData()
     m_environs[i].teePosition = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
     m_environs[i].terrainColor = DirectX::Colors::Green;
     m_environs[i].wind = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-
-    /*
-    ++i;
-    m_environs[i].name = "Non Terrestrial (Alien Golf!!)";    
-    m_environs[i].airDensity = 11.2;
-    m_environs[i].gravity = -5.8;
-    m_environs[i].holePosition = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.0f);
-    m_environs[i].landingFrictionScale = 1.0;
-    m_environs[i].landingHardnessScale = 1.0;
-    m_environs[i].par = 5;
-    m_environs[i].scale = 0.02;
-    m_environs[i].teeDirection = 45.0f;
-    m_environs[i].teePosition = DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f);
-    m_environs[i].terrainColor = DirectX::Colors::Blue;
-    m_environs[i].wind = DirectX::SimpleMath::Vector3(3.0f, 0.0f, 0.69f);
-    */
 }
 
 void Environment::LoadFixtureBucket()
