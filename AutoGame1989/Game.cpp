@@ -2515,17 +2515,17 @@ bool Game::InitializeTerrainArray2()
         m_terrainVertexArray2[i].position = vertexPC[i].position;
         //m_terrainVertexArray2[i].normal = vertexPC[i].normal;
         // Flip normals around for lighting;
-        m_terrainVertexArray2[i].normal.x = -flipNormal.x;
-        m_terrainVertexArray2[i].normal.y = -flipNormal.y;
-        m_terrainVertexArray2[i].normal.z = -flipNormal.z;
+        m_terrainVertexArray2[i].normal.x = flipNormal.x;
+        m_terrainVertexArray2[i].normal.y = flipNormal.y;
+        m_terrainVertexArray2[i].normal.z = flipNormal.z;
         m_terrainVertexArray2[i].color = lineColor;
 
         m_terrainVertexArrayBase2[i].position = vertexPC[i].position;
         //m_terrainVertexArrayBase2[i].normal = vertexPC[i].normal;
         // flip normals around for lighting
-        m_terrainVertexArrayBase2[i].normal.x = -flipNormal.x;
-        m_terrainVertexArrayBase2[i].normal.y = -flipNormal.y;
-        m_terrainVertexArrayBase2[i].normal.z = -flipNormal.z;
+        m_terrainVertexArrayBase2[i].normal.x = flipNormal.x;
+        m_terrainVertexArrayBase2[i].normal.y = flipNormal.y;
+        m_terrainVertexArrayBase2[i].normal.z = flipNormal.z;
         if (i % 2 == 0)
         {
             m_terrainVertexArrayBase2[i].color = baseColor;

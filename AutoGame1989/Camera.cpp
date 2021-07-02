@@ -669,6 +669,7 @@ void Camera::UpdateChaseCamera()
 	//DirectX::SimpleMath::Vector3 cameraPos = m_followCamPos;
 	//DirectX::SimpleMath::Vector3 cameraPos = accelCamPos;
 	//DirectX::SimpleMath::Vector3 testAccelPos = DirectX::SimpleMath::Vector3::Lerp(accelCamPos, m_followCamPos, 0.0001);
+	//DirectX::SimpleMath::Vector3 testAccelPos = DirectX::SimpleMath::Vector3::SmoothStep(accelCamPos, m_followCamPos, 0.0001);
 	DirectX::SimpleMath::Vector3 testAccelPos = DirectX::SimpleMath::Vector3::SmoothStep(accelCamPos, m_followCamPos, 0.0001);
 	DirectX::SimpleMath::Vector3 cameraPos = testAccelPos;
 	cameraPos = DirectX::SimpleMath::Vector3::Transform(cameraPos, m_chaseCameQuat);
