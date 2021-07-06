@@ -1,6 +1,6 @@
 # AutoGame1989
 A retro themed racing game prototype in the early stage of development
-Teaser trailer at : https://youtu.be/yfxJeCJw8X8
+Teaser trailer at : https://youtu.be/yfxJeCJw8X8 & https://youtu.be/veNy0pTaHaE
 
 
 <p align="center">
