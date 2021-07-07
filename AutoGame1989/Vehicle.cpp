@@ -2815,11 +2815,9 @@ void Vehicle::UpdateResistance()
         Cd = drag coeffient == 0.4?ish
         */
     double velocity = m_car.q.velocity.Length();
-    //velocity = 20.0;
     double drag = .5 * m_car.Cd * m_car.density * m_car.area * (velocity * velocity);
 
     m_car.airResistance = drag;
-
 }
 
 void Vehicle::UpdateTerrainNorm()
@@ -2829,8 +2827,6 @@ void Vehicle::UpdateTerrainNorm()
     DirectX::SimpleMath::Vector3 oldTerrainNorm = m_car.terrainNormal;
     DirectX::SimpleMath::Vector3 updateTerrainNorm = DirectX::SimpleMath::Vector3::SmoothStep(newTerrainNorm, oldTerrainNorm, 0.8);
     m_car.terrainNormal = updateTerrainNorm;
-    m_car.terrainNormal = newTerrainNorm;
-    //m_car.terrainNormal = m_environment->GetTerrainNormal(m_car.q.position);
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
