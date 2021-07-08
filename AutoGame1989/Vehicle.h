@@ -337,6 +337,8 @@ struct CarModel
     DirectX::SimpleMath::Matrix fenderFlareFrontRightInteriorMatrix;
     DirectX::SimpleMath::Matrix localfenderFlareFrontRightInteriorMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive> fenderRearFlare;
+    std::unique_ptr<DirectX::GeometricPrimitive> fenderRearFlareInterior;
     DirectX::SimpleMath::Matrix fenderFlareRearLeftMatrix;
     DirectX::SimpleMath::Matrix localfenderFlareRearLeftMatrix;
     DirectX::SimpleMath::Matrix fenderFlareRearLeftInteriorMatrix;

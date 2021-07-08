@@ -85,10 +85,15 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareFrontLeftInteriorMatrix, view, proj, fenderFlareShadowColor);
     m_carModel.fenderFlare->Draw(m_carModel.fenderFlareFrontRightMatrix, view, proj, volvoYellow);
     m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareFrontRightInteriorMatrix, view, proj, fenderFlareShadowColor);
-    m_carModel.fenderFlare->Draw(m_carModel.fenderFlareRearLeftMatrix, view, proj, volvoYellow);
-    m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareRearLeftInteriorMatrix, view, proj, fenderFlareShadowColor);
-    m_carModel.fenderFlare->Draw(m_carModel.fenderFlareRearRightMatrix, view, proj, volvoYellow);
-    m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareRearRightInteriorMatrix, view, proj, fenderFlareShadowColor);
+    //m_carModel.fenderFlare->Draw(m_carModel.fenderFlareRearLeftMatrix, view, proj, volvoYellow);
+    //m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareRearLeftInteriorMatrix, view, proj, fenderFlareShadowColor);
+    //m_carModel.fenderFlare->Draw(m_carModel.fenderFlareRearRightMatrix, view, proj, volvoYellow);
+    //m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareRearRightInteriorMatrix, view, proj, fenderFlareShadowColor);
+    m_carModel.fenderRearFlare->Draw(m_carModel.fenderFlareRearLeftMatrix, view, proj, volvoYellow);
+    m_carModel.fenderRearFlareInterior->Draw(m_carModel.fenderFlareRearLeftInteriorMatrix, view, proj, fenderFlareShadowColor);
+    m_carModel.fenderRearFlare->Draw(m_carModel.fenderFlareRearRightMatrix, view, proj, volvoYellow);
+    m_carModel.fenderRearFlareInterior->Draw(m_carModel.fenderFlareRearRightInteriorMatrix, view, proj, fenderFlareShadowColor);
+
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, volvoYellow);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
@@ -1094,7 +1099,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     fenderFlareFrontLeftTranslation.z = -fenderFlareWidth * 0.4;
     fenderFlareFrontLeftTranslation.z = fenderFlareWidth * 0.31;
 
-    //fenderFlareFrontLeftTranslation.z = 0.0;
     m_carModel.fenderFlareFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.fenderFlareFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-9.0));
     m_carModel.fenderFlareFrontLeftMatrix *= m_carModel.wheelFrontLeftMatrix;
@@ -1126,13 +1130,20 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     /// Fender Flare Front Right End  ////////////////////////////////////////////////////////////////
 
     /// Fender Flare Rear Left Start ////////////////////////////////////////////////////////////////
+    double fenderRearFlareHeight = m_car.wheelRadius * 2.005;
+    double fenderRearFlareWidth = m_car.wheelWidth * 0.55;
+
+    m_carModel.fenderRearFlare = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), fenderRearFlareWidth, fenderRearFlareHeight, 32);
+    m_carModel.fenderRearFlareInterior = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), fenderRearFlareWidth, fenderRearFlareHeight, 32);
+
     DirectX::SimpleMath::Vector3 fenderFlareRearLeftTranslation;
     fenderFlareRearLeftTranslation.x = 0.0;
     fenderFlareRearLeftTranslation.y = (fenderFlareHeight * 0.07);
-    fenderFlareRearLeftTranslation.z = fenderFlareWidth * 0.31;
+    //fenderFlareRearLeftTranslation.z = fenderFlareWidth * 0.31;
+    fenderFlareRearLeftTranslation.z = fenderFlareWidth * 0.00;
 
     m_carModel.fenderFlareRearLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.fenderFlareRearLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-9.0));
+    m_carModel.fenderFlareRearLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-14.0));
     m_carModel.fenderFlareRearLeftMatrix *= m_carModel.wheelRearLeftMatrix;
     m_carModel.fenderFlareRearLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(fenderFlareRearLeftTranslation);
     m_carModel.localfenderFlareRearLeftMatrix = m_carModel.fenderFlareRearLeftMatrix;
@@ -1146,10 +1157,11 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     DirectX::SimpleMath::Vector3 fenderFlareRearRightTranslation;
     fenderFlareRearRightTranslation.x = 0.0;
     fenderFlareRearRightTranslation.y = (fenderFlareHeight * 0.07);
-    fenderFlareRearRightTranslation.z = -fenderFlareWidth * 0.31;
+    //fenderFlareRearRightTranslation.z = -fenderFlareWidth * 0.31;
+    fenderFlareRearRightTranslation.z = -fenderFlareWidth * 0.00;
 
     m_carModel.fenderFlareRearRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.fenderFlareRearRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(9.0));
+    m_carModel.fenderFlareRearRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(14.0));
     m_carModel.fenderFlareRearRightMatrix *= m_carModel.wheelRearRightMatrix;
     m_carModel.fenderFlareRearRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(fenderFlareRearRightTranslation);
     m_carModel.localfenderFlareRearRightMatrix = m_carModel.fenderFlareRearRightMatrix;
