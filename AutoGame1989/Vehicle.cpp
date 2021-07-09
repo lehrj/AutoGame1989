@@ -1139,7 +1139,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     DirectX::SimpleMath::Vector3 fenderFlareRearLeftTranslation;
     fenderFlareRearLeftTranslation.x = 0.0;
     fenderFlareRearLeftTranslation.y = (fenderFlareHeight * 0.07);
-    //fenderFlareRearLeftTranslation.z = fenderFlareWidth * 0.31;
     fenderFlareRearLeftTranslation.z = fenderFlareWidth * 0.00;
 
     m_carModel.fenderFlareRearLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -1157,7 +1156,6 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     DirectX::SimpleMath::Vector3 fenderFlareRearRightTranslation;
     fenderFlareRearRightTranslation.x = 0.0;
     fenderFlareRearRightTranslation.y = (fenderFlareHeight * 0.07);
-    //fenderFlareRearRightTranslation.z = -fenderFlareWidth * 0.31;
     fenderFlareRearRightTranslation.z = -fenderFlareWidth * 0.00;
 
     m_carModel.fenderFlareRearRightMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -1171,18 +1169,12 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.localfenderFlareRearRightInteriorMatrix = m_carModel.fenderFlareRearRightInteriorMatrix;
     /// Fender Flare Rear Right End  ////////////////////////////////////////////////////////////////
 
-
-
     // Normal Antenna start ///////////////////////////////////////////////////////////////////////////////
     m_carModel.normAntenna = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), 2.0, 0.3, 32);
-    //m_carModel.tire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), m_car.wheelWidth, m_car.wheelRadius * 2.0, 32);
-    //m_carModel.hood = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), hoodSize);
     m_carModel.normAntennaMatrix = DirectX::SimpleMath::Matrix::Identity;
-    //m_carModel.normAntennaMatrix = m_carModel.bodyMatrix;
     m_carModel.normAntennaMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 1.0, 0.0));
     m_carModel.localnormAntennaMatrix = m_carModel.normAntennaMatrix;
     // Normal Antenna end /////////////////////////////////////////////////////////////////////////////////
-
 }
 
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
@@ -1342,7 +1334,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //  dependent variables.
     Motion newQ;
 
-    newQ.position = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->position;
+    //newQ.position = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->position;
+    //newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
 
     //  Compute the constants that define the
@@ -1420,7 +1413,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, headingRotation4);
     headingVec = DirectX::SimpleMath::Vector3::Transform(headingDir, headingRotation4);
     headingVec = m_car.forward;
-    DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.0), headingVec, 4.0, 0.0, DirectX::Colors::Green);
+    DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.2), headingVec, 4.0, 0.0, DirectX::Colors::Green);
 
     //Fd = 0.0;
     //Fr = 0.0;
@@ -1433,13 +1426,31 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
 
     DirectX::SimpleMath::Vector3 testSlide = TestTerrainSlide(headingVec, aTimeDelta);
+    DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.2), testSlide, 4.0, 0.0, DirectX::Colors::White);
     testSlide.y = 0.0;
+    DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.2), testSlide, 4.0, 0.0, DirectX::Colors::White);
     float c4 = testSlide.Dot(headingVec);
     //c4 = -13.0;
+    DebugPushUILineDecimalNumber("c1 ", c1, "");
+    DebugPushUILineDecimalNumber("c2 ", c2, "");
+    DebugPushUILineDecimalNumber("c3 ", c3, "");
     DebugPushUILineDecimalNumber("c4 ", c4, "");
+    c4 = -10.0;
 
     DirectX::SimpleMath::Vector3 VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
 
+    float c = (aTimeDelta * (c1 + c2 + c3 + c4));
+    if (c >= 0.0)
+    {
+        VelocityUpdate = c * headingVec;
+    }
+    else
+    {
+        VelocityUpdate = c * -headingVec;
+    }
+    
+    //DirectX::SimpleMath::Vector3 VelocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
+    /*
     if (m_car.throttleInput > 0.0 || m_isFuelOn == false)
     {
         //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
@@ -1473,7 +1484,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
             aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
             m_car.testTorque = (c1 + c2 + c3) / aTimeDelta;
         }        
-        */
+        ///
         if (newQ.velocity.Length() < 0.000001 && m_car.throttleInput < 0.01 && VelocityUpdate.Length() < 0.01)
         {
             aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
@@ -1486,8 +1497,10 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         }
         //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
     }
+    */
+    
     //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-
+    aDQ->velocity = VelocityUpdate;
 
     DirectX::SimpleMath::Vector3 headingNorm = headingVec;
     headingNorm.Normalize();
@@ -1499,9 +1512,13 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
     
     //  Compute right-hand side values.
+    aDQ->position = aTimeDelta * newQ.velocity;
+    /*
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
     aDQ->position.y = aTimeDelta * newQ.velocity.y;
     aDQ->position.z = aTimeDelta * newQ.velocity.z;
+    */
+
 
     return;
 }
@@ -1558,7 +1575,6 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     DebugPushUILineDecimalNumber("velocityUpdate.y ", velocityUpdate.y, "");
     DebugPushUILineDecimalNumber("velocityUpdate.z ", velocityUpdate.z, "");
     DebugPushUILineDecimalNumber("velocityUpdate.Length() ", velocityUpdate.Length(), "");
-    //q.velocity += velocityUpdate; // for debuging hill angle roll
 
     /*
     DirectX::SimpleMath::Vector3 testSlide = TestTerrainSlide(q.position, aTimeDelta);
@@ -1706,7 +1722,7 @@ void Vehicle::UpdateCarAlignment()
     m_car.right = m_car.forward.Cross(m_car.up);
 
     DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), m_car.up, 4.0, 0.0, DirectX::Colors::Red);
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), m_car.forward, 4.0, 0.0, DirectX::Colors::White);
+    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), -m_car.forward, 4.0, 0.0, DirectX::Colors::Purple);
     DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), m_car.right, 4.0, 0.0, DirectX::Colors::Red);
 }
 
@@ -2902,7 +2918,6 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     
 
     DirectX::SimpleMath::Vector3 testPos = m_car.q.position;
-    //testPos.y += 3.0;
     float testHeight = m_environment->GetTerrainHeightAtPos(testPos);
     DebugPushUILineDecimalNumber("testHeight ", testHeight, "");
     DebugPushUILineDecimalNumber("m_car.q.position.y ", m_car.q.position.y, "");
@@ -3052,11 +3067,7 @@ void Vehicle::TestGetForceLateral()
 
 DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep)
 {
-    //DirectX::SimpleMath::Vector3 terrainNorm = m_environment->GetTerrainNormal(aPos);
     DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
-    //DirectX::SimpleMath::Vector3 terrainNorm(0.2, 1.0, 0.0);
-    //terrainNorm.Normalize();
-    //aHeading = DirectX::SimpleMath::Vector3(0.0, 0.0, 1.0);
     DirectX::SimpleMath::Vector3 terrainAcceleration = terrainNorm;
     float dotProd3 = terrainAcceleration.Dot(-aHeading);
     //terrainAcceleration *= (-m_car.gravity * aTimeStep);
@@ -3073,8 +3084,45 @@ DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide(DirectX::SimpleMath::Vect
     float dotProd1 = terrainAcceleration.Dot(aHeading);
     float dotProd2 = terrainAcceleration.Dot(-aHeading);
 
-    DebugPushUILineDecimalNumber("dotProd1 ", dotProd1, "");
-    DebugPushUILineDecimalNumber("dotProd2 ", dotProd2, "");
+    //DebugPushUILineDecimalNumber("dotProd1 ", dotProd1, "");
+    //DebugPushUILineDecimalNumber("dotProd2 ", dotProd2, "");
+
+    DirectX::SimpleMath::Vector3 headingNorm = aHeading;
+    headingNorm.y = 0.0;
+    headingNorm.Normalize();
+
+    DirectX::SimpleMath::Vector3 newAccel = headingNorm * dotProd1;
+
+    DirectX::SimpleMath::Vector3 testNorm = terrainAcceleration;
+    testNorm.y = 0.0;
+    testNorm.Normalize();
+    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), testNorm, 4.0, 0.0, DirectX::Colors::Orange);
+
+    return terrainAcceleration;
+    //return newAccel;
+}
+
+DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide2(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep)
+{
+    DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
+    DirectX::SimpleMath::Vector3 terrainAcceleration = terrainNorm;
+    float dotProd3 = terrainAcceleration.Dot(-aHeading);
+    //terrainAcceleration *= (-m_car.gravity * aTimeStep);
+    //terrainAcceleration *= (-m_car.gravity);
+    /*
+    terrainAcceleration.x *= (-m_car.gravity.y * aTimeStep);
+    terrainAcceleration.y *= (-m_car.gravity.y * aTimeStep);
+    terrainAcceleration.z *= (-m_car.gravity.y * aTimeStep);
+    */
+    terrainAcceleration.x *= (-m_car.gravity.y);
+    terrainAcceleration.y *= (-m_car.gravity.y);
+    terrainAcceleration.z *= (-m_car.gravity.y);
+
+    float dotProd1 = terrainAcceleration.Dot(aHeading);
+    float dotProd2 = terrainAcceleration.Dot(-aHeading);
+
+    //DebugPushUILineDecimalNumber("dotProd1 ", dotProd1, "");
+    //DebugPushUILineDecimalNumber("dotProd2 ", dotProd2, "");
 
     DirectX::SimpleMath::Vector3 headingNorm = aHeading;
     headingNorm.y = 0.0;

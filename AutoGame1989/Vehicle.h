@@ -428,6 +428,7 @@ private:
     
     void TestGetForceLateral();
     DirectX::SimpleMath::Vector3 TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
+    DirectX::SimpleMath::Vector3 TestTerrainSlide2(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
 
     void UpdateCarAlignment();
 
