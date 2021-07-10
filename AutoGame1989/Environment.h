@@ -193,7 +193,8 @@ private:
     std::vector<DirectX::VertexPositionNormal> m_terrainModel;
 
     // scaling variables for different types of heightmaps
-    const float                         m_heightScale = 0.007;
+    //const float                         m_heightScale = 0.007;
+    const float                         m_heightScale = 0.107;
     const double                        m_heightScaleStartScreen = 0.007;
 
     const double                        m_elevationScaleStartScreen = 0.007;
