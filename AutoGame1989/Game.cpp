@@ -1940,7 +1940,7 @@ void Game::DrawTerrain()
 void Game::DrawTerrain2()
 {
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, m_terrainVertexArrayBase2, m_terrainVertexCount2);
-    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
+    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_terrainVertexArray2, m_terrainVertexCount2);
 }
 
 void Game::DrawTerrainNormals()
@@ -3520,14 +3520,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->Turn(-aTimer.GetElapsedSeconds());
+            m_vehicle->TurnInput(-aTimer.GetElapsedSeconds());
         }
     }
     if (kb.Right)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->Turn(aTimer.GetElapsedSeconds());
+            m_vehicle->TurnInput(aTimer.GetElapsedSeconds());
         }
     }
     if (kb.D)

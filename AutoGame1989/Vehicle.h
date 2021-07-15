@@ -381,7 +381,7 @@ public:
     float GetSpeed() { return m_car.speed; };
     double GetSteering() const { return m_car.steeringAngle; };
     double GetTime() { return m_car.time; };
-    
+    DirectX::SimpleMath::Vector3 GetVehicleUp() const { return m_car.up; };
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
@@ -398,7 +398,7 @@ public:
     void ToggleFuel();
     void ToggleGas();
 
-    void Turn(double aTurnInput);
+    void TurnInput(double aTurnInput);
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
 
 private:
@@ -430,6 +430,7 @@ private:
     DirectX::SimpleMath::Vector3 TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
     DirectX::SimpleMath::Vector3 TestTerrainSlide2(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
     DirectX::SimpleMath::Vector3 TestTerrainSlide3(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
+    void TurnVehicle(double aTimeDelta);
     void UpdateCarAlignment();
 
     void UpdateHeadingQuat(const double aTimer);
