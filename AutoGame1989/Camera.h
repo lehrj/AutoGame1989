@@ -2,6 +2,8 @@
 #include "StepTimer.h"
 #include "Utility.h"
 #include "Vehicle.h"
+#include "Environment.h"
+
 
 enum class CameraState
 {
@@ -63,7 +65,7 @@ public:
     void RotateAtSpeed(float aDx, float aDy);  //Chili
     void RotateCounterClockWise();
     void RotateClockWise();
-    
+    void SetCameraEnvironment(const Environment* aEnviron);
     void SetCameraState(const CameraState aCameraState);
     void SetDestinationPos(const DirectX::SimpleMath::Vector3 aDestPos);
 
@@ -83,6 +85,7 @@ public:
     void SetTargetEndPos(DirectX::SimpleMath::Vector3 aEndPos);
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetTransitionSpeed(const float aSpeed);
+    
     void SetVehicleFocus(const Vehicle* aVehicle);
     void SpinClockwise(double aRotation);
     void SpinCounterClockwise(double aRotation);
@@ -179,6 +182,7 @@ private:
     DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 0.0, 0.0);
     double                       m_followCamDistance = 1.0;
 
+    Environment const* m_environment;
     Vehicle const * m_vehicleFocus;
 
     DirectX::SimpleMath::Quaternion m_testRotQuat = DirectX::SimpleMath::Quaternion::Identity;

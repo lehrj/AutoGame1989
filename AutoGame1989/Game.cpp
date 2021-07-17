@@ -28,6 +28,7 @@ Game::Game() noexcept :
     m_vehicle = new Vehicle();
     m_vehicle->SetEnvironment(m_environment);
     m_camera->SetVehicleFocus(m_vehicle);
+    m_camera->SetCameraEnvironment(m_environment);
 
     if (m_isInDebugMode == false)
     {

@@ -2948,7 +2948,7 @@ void Vehicle::UpdateTerrainNorm()
 
     DebugPushTestLine(m_car.q.position + (m_car.terrainNormal * 2.0), updateTerrainNorm, 4.0, 0.0, DirectX::Colors::White);
     DebugPushTestLine(m_car.q.position + (m_car.terrainNormal * 2.0), m_environment->GetTerrainNormal(m_car.q.position), 4.0, 0.0, DirectX::Colors::White);
-    m_car.terrainNormal = m_environment->GetTerrainNormal(m_car.q.position);
+    //m_car.terrainNormal = m_environment->GetTerrainNormal(m_car.q.position);
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
