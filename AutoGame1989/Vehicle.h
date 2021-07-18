@@ -70,6 +70,7 @@ struct Car
     DirectX::SimpleMath::Vector3 up;
     DirectX::SimpleMath::Vector3 right;
 
+    double terrainHightAtPos;
     DirectX::SimpleMath::Vector3 testModelPos;
     double testModelRotation;
     DirectX::SimpleMath::Vector3 testTerrainNormal;
@@ -385,6 +386,8 @@ public:
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+
+    void Jump();
 
     void PressBrake(const double aBrakeInput);
     void PressThrottle(const double aThrottleInput);

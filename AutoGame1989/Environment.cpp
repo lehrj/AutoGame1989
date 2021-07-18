@@ -1194,8 +1194,8 @@ bool Environment::LoadHeightMap(EnvironmentType aEnviron)
     }
     if (aEnviron == EnvironmentType::ENVIRONMENTTYPE_CLEANTEST)
     {
-        //filename = "../AutoGame1989/Art/HeightMaps/heightmapCleanTest2.bmp";
-        filename = "../AutoGame1989/Art/HeightMaps/TestMap0.bmp";
+        filename = "../AutoGame1989/Art/HeightMaps/heightmapCleanTest3.bmp";
+        //filename = "../AutoGame1989/Art/HeightMaps/TestMap0.bmp";
     }
     else
     {

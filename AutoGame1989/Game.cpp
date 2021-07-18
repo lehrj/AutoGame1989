@@ -3701,16 +3701,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             m_lightPos2.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
         }
-    }
-    /*
-    if (kb.L)
+    }    
+    if (m_kbStateTracker.pressed.R)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos2.z += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+            m_vehicle->ResetVehicle();
         }
-    }
-    */
+    }   
     if (m_kbStateTracker.pressed.U)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -3796,6 +3794,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->DebugEBrake();
+        }
+    }
+    if (m_kbStateTracker.pressed.Space)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->Jump();
         }
     }
     auto mouse = m_mouse->GetState();

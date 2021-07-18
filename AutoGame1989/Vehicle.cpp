@@ -1243,6 +1243,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_car.wheelBase = 2.41;
 
+    m_car.terrainHightAtPos = 0.0;
     // test values for wheel slip
     m_car.testRearCylinderMass = 75.0;
     m_car.testTorque = 0.0;
@@ -1259,6 +1260,12 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.testHeading2 = DirectX::SimpleMath::Vector3::UnitZ;
     m_car.testHeading2 = - DirectX::SimpleMath::Vector3::UnitX;
     InitializeModel(aContext);
+}
+
+void Vehicle::Jump()
+{
+    float jumpHeight = 10.0;
+    m_car.q.position.y += jumpHeight;
 }
 
 void Vehicle::PressBrake(const double aBrakeInput)
@@ -1303,7 +1310,10 @@ void Vehicle::ResetVehicle()
 
     m_car.steeringAngle = 0.0;
     m_car.q.position = DirectX::SimpleMath::Vector3::Zero;
-    m_car.headingVec = DirectX::SimpleMath::Vector3::UnitZ;
+    m_car.headingVec = DirectX::SimpleMath::Vector3::UnitX;
+    m_car.forward = DirectX::SimpleMath::Vector3::UnitX;
+    m_car.up = DirectX::SimpleMath::Vector3::UnitY;
+    m_car.right = DirectX::SimpleMath::Vector3::UnitZ;
     m_car.speed = 0.0;
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 }
@@ -1415,8 +1425,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     headingVec = m_car.forward;
     //DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.2), headingVec, 4.0, 0.0, DirectX::Colors::Green);
 
-    Fd = 0.0;
-    Fr = 0.0;
+    //Fd = 0.0;
+    //Fr = 0.0;
 
     double c1 = -Fd / mass;   
     double tmp = gearRatio * finalDriveRatio / wheelRadius;
@@ -1488,6 +1498,12 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
     //VelocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
     
+    if (m_car.isCarAirborne == true)
+    {
+        //VelocityUpdate += (m_car.gravity);
+        VelocityUpdate = (m_car.gravity);
+    }
+
     /*
     DebugPushUILineDecimalNumber("VelocityUpdate.x ", VelocityUpdate.x, "");
     DebugPushUILineDecimalNumber("VelocityUpdate.y ", VelocityUpdate.y, "");
@@ -1495,7 +1511,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     */
     
     //DirectX::SimpleMath::Vector3 VelocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
-    /*
+    
     if (m_car.throttleInput > 0.0 || m_isFuelOn == false)
     {
         //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
@@ -1507,6 +1523,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //  Only brake if the velocity is positive.
         if (newQ.velocity.Length() > 0.1)
         {
+            VelocityUpdate = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
             //aDQ->velocity = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3))) * headingVec;
             aDQ->velocity = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
         }
@@ -1517,7 +1534,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     }
     else  // cruise
     {
-        /*
+        
         //if (newQ.velocity.Length() < 0.001 && m_car.throttleInput < 0.01)
         if (newQ.velocity.Length() < 0.000001 && m_car.throttleInput < 0.01)
         {
@@ -1542,7 +1559,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         }
         //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
     }
-    */
+    
     
     //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
     aDQ->velocity = VelocityUpdate;
@@ -1731,8 +1748,7 @@ void Vehicle::TurnInput(double aTurnInput)
 }
 
 void Vehicle::TurnVehicle(double aTimeDelta)
-{
-    
+{  
     bool isVelocityBackwards = false;
     
     DirectX::SimpleMath::Vector3 testV = m_car.q.velocity;
@@ -2952,7 +2968,7 @@ void Vehicle::UpdateTerrainNorm()
 }
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
-{   
+{
     DebugClearUI();
     DirectX::SimpleMath::Vector3 prevVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 prevPos = m_car.q.position;
@@ -2962,6 +2978,22 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.testTerrainNormal = m_car.terrainNormal;
     m_car.testHeadingVec = m_car.headingVec;
 
+    m_car.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_car.q.position);
+    // prevent car from falling through terrain
+    if (m_car.terrainHightAtPos > m_car.q.position.y)
+    {
+        m_car.q.position.y = m_car.terrainHightAtPos;
+    }
+    // check if car is airborne
+    if (m_car.q.position.y - m_car.terrainHightAtPos > 0.1)
+    {
+        m_car.isCarAirborne = true;
+    }
+    else
+    {
+        m_car.isCarAirborne = false;
+    }
+
     //RevLimiter();
     ThrottleBrakeDecay(aTimeDelta);
     SteeringInputDecay(aTimeDelta);
@@ -2969,10 +3001,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     TurnVehicle(aTimeDelta);
 
-
     double postRot = m_car.carRotation;
     double deltaSteer = preRot - postRot;
-
 
     //DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(-deltaSteer);
     //DirectX::SimpleMath::Matrix rotMat2 = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_car.up, -deltaSteer);
@@ -2982,14 +3012,6 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DirectX::SimpleMath::Vector3 velNorm = m_car.q.velocity;
     velNorm.Normalize();
     //m_car.q.velocity = m_car.forward * velMag;
-
-
-
-    /*
-    DebugPushTestLine(m_car.q.position, m_car.testHeading1, 4.0, 1.0, DirectX::Colors::Orange);
-    DebugPushTestLine(m_car.q.position, m_car.testHeading2, 4.0, 1.0, DirectX::Colors::Orange);
-    DebugPushTestLine(m_car.q.position, m_car.headingVec, 4.0, 1.0, DirectX::Colors::Blue);
-    */
 
     UpdateTerrainNorm();
     
@@ -3013,7 +3035,6 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
         m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.velocity, headingMag, 0.5);;
     }
 
-
     DirectX::SimpleMath::Vector3 testVelocity = m_car.q.velocity;
     testVelocity.Normalize();
     DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.9), testVelocity, 4.0, 0.0, DirectX::Colors::Blue);
@@ -3021,14 +3042,11 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     UpdateHeadingQuat(aTimer);
     UpdateHeadingVec();
     
-
     DirectX::SimpleMath::Vector3 testPos = m_car.q.position;
     float testHeight = m_environment->GetTerrainHeightAtPos(testPos);
     DebugPushUILineDecimalNumber("testHeight ", testHeight, "");
     DebugPushUILineDecimalNumber("m_car.q.position.y ", m_car.q.position.y, "");
-    m_car.q.position.y = testHeight;
-
-
+    //m_car.q.position.y = testHeight;
 
     double velocity = m_car.q.velocity.Length();
     
@@ -3052,22 +3070,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     }
 
     m_car.speed = velocity;
-
-    DebugPushUILine("Speed Miles per Hour", m_car.speed * 2.23694);
-    DebugPushUILine("RPM", m_car.omegaE);
-    DebugPushUILine("m_car.testTorque", m_car.testTorque);
-    DebugPushUILine("Gear", m_car.gearNumber);
-    double hp = (m_car.testTorque * m_car.omegaE) / 5252;
-    DebugPushUILine("HorsePower", hp);
-    double testTorque = (hp * 5252) / m_car.omegaE;
-    DebugPushUILine("testTorque", testTorque);
-    DebugPushUILine("m_car.isRevlimitHit", m_car.isRevlimitHit);
-    //orsepower = Torque x RPM / 5, 252.
-    //TestGetForceLateral();
-    
     UpdateModel(aTimeDelta);
-    
-    //m_car.isBrakePressed = false;
+
     m_car.isThrottlePressed = false;
     m_car.isTurningPressed = false;
     m_car.isBrakePressed = false;
@@ -3075,28 +3079,12 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     m_car.testAccel = (m_car.q.velocity.Length() - prevVelocity.Length()) / aTimeDelta;
     m_car.testAcceleration = (m_car.q.velocity - prevVelocity) / aTimeDelta;
-
     m_car.testAcceleration = m_car.testAcceleration / m_car.q.velocity;
-    DebugPushUILine("m_car.testAcceleration.x", m_car.testAcceleration.x);
-    DebugPushUILine("m_car.testAcceleration.y", m_car.testAcceleration.y);
-    DebugPushUILine("m_car.testAcceleration.z", m_car.testAcceleration.z);
-    DebugPushUILine("m_car.testAcceleration.Length()", m_car.testAcceleration.Length());
-    DebugPushUILine("m_car.testAccel", m_car.testAccel);
-    DebugPushUILine("m_car.carRotation", m_car.carRotation);
     
     UpdateResistance();
     DebugPushUILine("m_car.airResistance", m_car.airResistance);
-
-  
-    /////////////////////////////////////////////////////////////////
-    // Updated UI Vector
-    //DebugPushUILineWholeNumber("m_isFuelOn ", m_isFuelOn, "");
-    //DebugPushUILineWholeNumber("Speed", static_cast<int>(m_car.speed * 2.23694) , "MPH");
     DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
-    //DebugPushUILineWholeNumber("Speed", m_car.speed * 3.6, "KPH");
     DebugPushUILineWholeNumber("Gear ", m_car.gearNumber , "");
-    
-
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
@@ -3228,77 +3216,3 @@ DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide(DirectX::SimpleMath::Vect
     //return newAccel;
 }
 
-DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide2(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep)
-{
-    DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
-    DirectX::SimpleMath::Vector3 terrainAcceleration = terrainNorm;
-    float dotProd3 = terrainAcceleration.Dot(-aHeading);
-    //terrainAcceleration *= (-m_car.gravity * aTimeStep);
-    //terrainAcceleration *= (-m_car.gravity);
-    /*
-    terrainAcceleration.x *= (-m_car.gravity.y * aTimeStep);
-    terrainAcceleration.y *= (-m_car.gravity.y * aTimeStep);
-    terrainAcceleration.z *= (-m_car.gravity.y * aTimeStep);
-    */
-    terrainAcceleration.x *= (-m_car.gravity.y);
-    terrainAcceleration.y *= (-m_car.gravity.y);
-    terrainAcceleration.z *= (-m_car.gravity.y);
-
-    float dotProd1 = terrainAcceleration.Dot(aHeading);
-    float dotProd2 = terrainAcceleration.Dot(-aHeading);
-
-    //DebugPushUILineDecimalNumber("dotProd1 ", dotProd1, "");
-    //DebugPushUILineDecimalNumber("dotProd2 ", dotProd2, "");
-
-    DirectX::SimpleMath::Vector3 headingNorm = aHeading;
-    headingNorm.y = 0.0;
-    headingNorm.Normalize();
-
-    DirectX::SimpleMath::Vector3 newAccel = headingNorm * dotProd1;
-
-    DirectX::SimpleMath::Vector3 testNorm = terrainAcceleration;
-    testNorm.y = 0.0;
-    testNorm.Normalize();
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), testNorm, 4.0, 0.0, DirectX::Colors::Orange);
-
-    return terrainAcceleration;
-    //return newAccel;
-}
-
-DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide3(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep)
-{
-    DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
-    DirectX::SimpleMath::Vector3 terrainAcceleration = terrainNorm;
-    float dotProd3 = terrainAcceleration.Dot(-aHeading);
-    //terrainAcceleration *= (-m_car.gravity * aTimeStep);
-    //terrainAcceleration *= (-m_car.gravity);
-    /*
-    terrainAcceleration.x *= (-m_car.gravity.y * aTimeStep);
-    terrainAcceleration.y *= (-m_car.gravity.y * aTimeStep);
-    terrainAcceleration.z *= (-m_car.gravity.y * aTimeStep);
-    */
-    terrainAcceleration.x *= (-m_car.gravity.y);
-    terrainAcceleration.y *= (-m_car.gravity.y);
-    terrainAcceleration.z *= (-m_car.gravity.y);
-
-    float dotProd1 = terrainAcceleration.Dot(aHeading);
-    float dotProd2 = terrainAcceleration.Dot(-aHeading);
-
-    //DebugPushUILineDecimalNumber("dotProd1 ", dotProd1, "");
-    //DebugPushUILineDecimalNumber("dotProd2 ", dotProd2, "");
-
-    DirectX::SimpleMath::Vector3 headingNorm = aHeading;
-    headingNorm.y = 0.0;
-    headingNorm.Normalize();
-
-    DirectX::SimpleMath::Vector3 newAccel = headingNorm * dotProd1;
-
-    DirectX::SimpleMath::Vector3 testNorm = terrainAcceleration;
-    testNorm.y = 0.0;
-    testNorm.Normalize();
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), testNorm, 4.0, 0.0, DirectX::Colors::Orange);
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), terrainAcceleration, 4.0, 0.0, DirectX::Colors::White);
-
-    return terrainAcceleration;
-    //return newAccel;
-}
