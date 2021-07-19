@@ -384,8 +384,8 @@ DirectX::SimpleMath::Vector3 Vehicle::GetVehicleDirection()
 double Vehicle::GetWheelRotationRadians(const double aTimeDelta)
 {
     DirectX::SimpleMath::Vector3 velocity = m_car.q.velocity;
-    float distance = DirectX::SimpleMath::Vector3::Distance(velocity, DirectX::SimpleMath::Vector3::Zero);
-    float stepDistance;
+    double distance = DirectX::SimpleMath::Vector3::Distance(velocity, DirectX::SimpleMath::Vector3::Zero);
+    double stepDistance;
     if (aTimeDelta != 0.0)
     {
         stepDistance = distance * aTimeDelta;
@@ -1437,14 +1437,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     DirectX::SimpleMath::Vector3 testSlide = TestTerrainSlide(headingVec, aTimeDelta);
 
-    /*
-    DebugPushUILineDecimalNumber("testSlide.x ", testSlide.x, "");
-    DebugPushUILineDecimalNumber("headingVec.x ", headingVec.x, "");
-    DebugPushUILineDecimalNumber("testSlide.y ", testSlide.y, "");
-    DebugPushUILineDecimalNumber("headingVec.y ", headingVec.y, "");
-    DebugPushUILineDecimalNumber("testSlide.z ", testSlide.z, "");
-    DebugPushUILineDecimalNumber("headingVec.z ", headingVec.z, "");
-    */
     //testSlide.Normalize();
     DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.2), testSlide, 4.0, 0.0, DirectX::Colors::Green);
     //testSlide.y = 0.0;
@@ -1456,19 +1448,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double c6 = headingVec.Dot(normalForce);
     c4 = c6;
     
-    /*
-    DebugPushUILineDecimalNumber("c1 ", c1, "");
-    DebugPushUILineDecimalNumber("c2 ", c2, "");
-    DebugPushUILineDecimalNumber("c3 ", c3, "");
-    DebugPushUILineDecimalNumber("c4 ", c4, "");
-    */
-
     double cz = aTimeDelta * (c1 + c2 + c3 + c4);
     DirectX::SimpleMath::Vector3 VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
     //VelocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
     //testSlide.y = 0.0;
     //VelocityUpdate += (testSlide * aTimeDelta);
-
 
 
     double c = (aTimeDelta * (c1 + c2 + c3 + c4));
@@ -1504,11 +1488,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         VelocityUpdate = (m_car.gravity);
     }
 
-    /*
-    DebugPushUILineDecimalNumber("VelocityUpdate.x ", VelocityUpdate.x, "");
-    DebugPushUILineDecimalNumber("VelocityUpdate.y ", VelocityUpdate.y, "");
-    DebugPushUILineDecimalNumber("VelocityUpdate.z ", VelocityUpdate.z, "");
-    */
     
     //DirectX::SimpleMath::Vector3 VelocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
     
@@ -1581,7 +1560,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     aDQ->position.y = aTimeDelta * newQ.velocity.y;
     aDQ->position.z = aTimeDelta * newQ.velocity.z;
     */
-
 
     return;
 }
