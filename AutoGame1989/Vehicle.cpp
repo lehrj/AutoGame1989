@@ -1407,64 +1407,16 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double wheelRadius = aCar->wheelRadius;
     double pi = acos(-1.0);
     double carHeading = m_car.carRotation;
-    DirectX::SimpleMath::Matrix headingRotation = DirectX::SimpleMath::Matrix::CreateRotationY(carHeading);
-    DirectX::SimpleMath::Matrix headingRotation2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0));
-    DirectX::SimpleMath::Matrix headingRotation3 = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_car.terrainNormal, Utility::ToRadians(-90.0));
-    DirectX::SimpleMath::Matrix headingRotation4 = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_car.terrainNormal, carHeading);
 
-    DirectX::SimpleMath::Vector3 headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, headingRotation);
-
-    //DirectX::SimpleMath::Vector3 headingDir = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-90.0)));
-    DirectX::SimpleMath::Vector3 headingDir = DirectX::SimpleMath::Vector3::Transform(m_car.terrainNormal, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0)));
-    DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.0), headingDir, 4.0, 0.0, DirectX::Colors::Yellow);
-
-    //headingVec = m_car.headingVec;
-    //headingVec = DirectX::SimpleMath::Vector3::Transform(m_car.headingVec, headingRotation2); 
-    //headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, headingRotation4);
-    headingVec = DirectX::SimpleMath::Vector3::Transform(headingDir, headingRotation4);
-    headingVec = m_car.forward;
-    //DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.2), headingVec, 4.0, 0.0, DirectX::Colors::Green);
-
-    //Fd = 0.0;
-    //Fr = 0.0;
+    DirectX::SimpleMath::Vector3 headingVec = m_car.forward;
 
     double c1 = -Fd / mass;   
     double tmp = gearRatio * finalDriveRatio / wheelRadius;
     double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
     double c3 = (tmp * d + Fr) / mass;
-    //DirectX::SimpleMath::Vector3 testV = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
+    double c4 = headingVec.Dot(m_car.terrainNormal * m_car.gravity);
 
-
-    DirectX::SimpleMath::Vector3 testSlide = TestTerrainSlide(headingVec, aTimeDelta);
-
-    //testSlide.Normalize();
-    DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.2), testSlide, 4.0, 0.0, DirectX::Colors::Green);
-    //testSlide.y = 0.0;
-    DebugPushTestLine(m_car.testModelPos + (m_car.terrainNormal * 2.2), testSlide, 4.0, 0.0, DirectX::Colors::Tan);
-    //float c4 = testSlide.Dot(headingVec);
-    double c4 = headingVec.Dot(testSlide);
-    DirectX::SimpleMath::Vector3 normalForce = m_car.terrainNormal * m_car.gravity;
-    double c5 = headingVec.Dot(m_car.terrainNormal);
-    double c6 = headingVec.Dot(normalForce);
-    c4 = c6;
-    
-    double cz = aTimeDelta * (c1 + c2 + c3 + c4);
     DirectX::SimpleMath::Vector3 VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-    //VelocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
-    //testSlide.y = 0.0;
-    //VelocityUpdate += (testSlide * aTimeDelta);
-
-
-    double c = (aTimeDelta * (c1 + c2 + c3 + c4));
-    if (c < 0.0)
-    {
-        VelocityUpdate = c * -headingVec;
-    }
-    else
-    {
-        VelocityUpdate = c * headingVec;
-    }
-
     
     if (c4 < 0.0)
     {
@@ -1487,9 +1439,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //VelocityUpdate += (m_car.gravity);
         VelocityUpdate = (m_car.gravity);
     }
-
-    
-    //DirectX::SimpleMath::Vector3 VelocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
     
     if (m_car.throttleInput > 0.0 || m_isFuelOn == false)
     {
@@ -1512,8 +1461,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         }
     }
     else  // cruise
-    {
-        
+    {     
         //if (newQ.velocity.Length() < 0.001 && m_car.throttleInput < 0.01)
         if (newQ.velocity.Length() < 0.000001 && m_car.throttleInput < 0.01)
         {
@@ -1538,22 +1486,9 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         }
         //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
     }
-    
-    
-    //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-    aDQ->velocity = VelocityUpdate;
-    //aDQ->velocity = testSlide;
-
-    DirectX::SimpleMath::Vector3 headingNorm = headingVec;
-    headingNorm.Normalize();
-    //aDQ->velocity = headingNorm * 0.1;
-    //aDQ->velocity = DirectX::SimpleMath::Vector3(-0.5, 0.0, 0.0);
-    //VelUpdate += testSlide;
-
-    //aDQ->velocity = VelocityUpdate;
-    //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
-    
+      
     //  Compute right-hand side values.
+    aDQ->velocity = VelocityUpdate;
     aDQ->position = aTimeDelta * newQ.velocity;
     /*
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
@@ -1616,17 +1551,9 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     DebugPushUILineDecimalNumber("velocityUpdate.y ", velocityUpdate.y, "");
     DebugPushUILineDecimalNumber("velocityUpdate.z ", velocityUpdate.z, "");
     DebugPushUILineDecimalNumber("velocityUpdate.Length() ", velocityUpdate.Length(), "");
-
-    /*
-    DirectX::SimpleMath::Vector3 testSlide = TestTerrainSlide(q.position, aTimeDelta);
-    testSlide.y = 0.0;
-    q.velocity += testSlide;
-    */
     
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
-    
-    //DebugPushTestLine(m_car.testModelPos, q.velocity, 4.0, 2.0, DirectX::Colors::White);
 
     // Test rear torque
     //m_car.testRearAnglularVelocity += (total torque / (Mass * radius ^ 2 / 2)) * time step
