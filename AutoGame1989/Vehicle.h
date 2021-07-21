@@ -427,6 +427,7 @@ private:
     double GetWheelRotationRadiansRear(const double aTimeDelta);
 
     void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
+    void RightHandSide2(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
     
     void TestGetForceLateral();
@@ -445,6 +446,7 @@ private:
     void UpdateModel2(const double aTimer);
     void UpdateResistance();
     void UpdateTerrainNorm();
+    void UpdateTransmission();
 
     Car                             m_car;
     CarModel                        m_carModel;
