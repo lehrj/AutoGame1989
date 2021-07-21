@@ -413,6 +413,10 @@ double Vehicle::GetWheelRotationRadians(const double aTimeDelta)
         int testBreak = 0;
         testBreak++;
     }
+    if (m_car.isVelocityBackwards == true)
+    {
+        rotations *= -1;
+    }
     //return turnRatio;
     return rotations;
 }
@@ -1240,7 +1244,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.isRevlimitHit = false;
     m_car.isTransmissionManual = false;
     m_car.isCarAirborne = false;
-
+    m_car.isVelocityBackwards = false;
     m_car.wheelBase = 2.41;
 
     m_car.terrainHightAtPos = 0.0;
@@ -2582,6 +2586,16 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     UpdateCarAlignment();
 
     RungeKutta4(&m_car, aTimeDelta);
+
+    if (m_car.forward.Dot(m_car.q.velocity) < 0.0)
+    {
+        m_car.isVelocityBackwards = true;
+    }
+    else
+    {
+        m_car.isVelocityBackwards = false;
+    }
+    DebugPushUILineDecimalNumber("m_car.isVelocityBackwards ",  m_car.isVelocityBackwards, "");
 
     DirectX::SimpleMath::Vector3 headingMag = m_car.forward;
     headingMag *= velMag;

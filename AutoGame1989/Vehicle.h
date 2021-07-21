@@ -65,6 +65,7 @@ struct Car
     bool isRevlimitHit;
     bool isTransmissionManual;
     bool isCarAirborne; 
+    bool isVelocityBackwards;
     DirectX::SimpleMath::Vector3 terrainNormal;
     DirectX::SimpleMath::Vector3 forward;
     DirectX::SimpleMath::Vector3 up;
