@@ -1201,6 +1201,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.time = 0.0;  
     m_car.q.position = DirectX::SimpleMath::Vector3::Zero;
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
+    m_car.q.bodyVelocity = DirectX::SimpleMath::Vector3::Zero;
+    m_car.q.engineVelocity = DirectX::SimpleMath::Vector3::Zero;
+    m_car.q.totalVelocity = DirectX::SimpleMath::Vector3::Zero;
 
     m_car.inputDeadZone = 0.05;
     m_car.throttleInput = 0.0;
@@ -1332,172 +1335,6 @@ void Vehicle::RevLimiter()
 //*************************************************************
 //  This method loads the right-hand sides for the car ODEs
 //*************************************************************
-void Vehicle::RightHandSide2(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ)
-{
-    //  Compute the intermediate values of the 
-    //  dependent variables.
-    Motion newQ;
-
-    //newQ.position = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->position;
-    //newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
-    newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
-
-    //  Compute the constants that define the
-    //  torque curve line.
-    double b;
-    double d;
-    double omegaE = aCar->omegaE;
-
-    if (omegaE <= 1000.0)
-    {
-        b = 0.0;
-        d = 220.0;
-    }
-    else if (omegaE < 4600.0)
-    {
-        b = 0.025;
-        d = 195.0;
-    }
-    else
-    {
-        b = -0.032;
-        d = 457.2;
-    }
-
-    d = d * m_car.throttleInput;
-    if (m_isFuelOn == false)
-    {
-        d = 0.0;
-    }
-
-    //  Compute the velocity magnitude. The 1.0e-8 term
-    //  ensures there won't be a divide by zero later on
-    //  if all of the velocity components are zero.
-    double v = sqrt(newQ.velocity.Length() * newQ.velocity.Length()) + 1.0e-8;
-
-    //  Compute the total drag force.
-    double density = aCar->density;
-    double Cd = aCar->Cd;
-    double area = aCar->area;
-    double Fd = 0.5 * density * area * Cd * v * v;
-
-    //  Compute the force of rolling friction. Because
-    //  the G constant has a negative sign, the value 
-    //  computed here will be negative
-    double gravity = aCar->gravity.y;
-    double muR = aCar->muR;
-    double mass = aCar->mass;
-    double Fr = muR * mass * gravity;
-
-    //  Compute the right-hand sides of the six ODEs
-    //  newQ[0] is the intermediate value of velocity.
-    //  The acceleration of the car is determined by 
-    //  whether the car is accelerating, cruising, or
-    //  braking.   
-    // Accelerating
-    int gearNumber = aCar->gearNumber;
-    double gearRatio = aCar->gearRatio[gearNumber];
-    double finalDriveRatio = aCar->finalDriveRatio;
-    double wheelRadius = aCar->wheelRadius;
-    double pi = acos(-1.0);
-    double carHeading = m_car.carRotation;
-
-    DirectX::SimpleMath::Vector3 headingVec = m_car.forward;
-
-    double c1 = -Fd / mass;
-    double tmp = gearRatio * finalDriveRatio / wheelRadius;
-    double c2 = 60.0 * tmp * tmp * b * v / (2.0 * pi * mass);
-    double c3 = (tmp * d + Fr) / mass;
-    double c4 = headingVec.Dot(m_car.terrainNormal * m_car.gravity);
-
-    DirectX::SimpleMath::Vector3 VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-    DebugPushUILineDecimalNumber("C4 ", c4, "");
-    if (c4 < 0.0)
-    {
-        VelocityUpdate = ((aTimeDelta * (c1 + c2 + c3)) * headingVec) + ((aTimeDelta * (c4)) * headingVec);
-        //VelocityUpdate = ((aTimeDelta * (c4)) * headingVec);
-        //VelocityUpdate *= -1;
-        //VelocityUpdate = VelocityUpdate.Backward;
-    }
-    else
-    {
-        //VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-        VelocityUpdate = ((aTimeDelta * (c1 + c2 + c3)) * headingVec) + ((aTimeDelta * (c4)) * headingVec);
-        VelocityUpdate = (aTimeDelta * -(c1 + c2 + c3)) * headingVec;
-    }
-    VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-    //VelocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
-
-    if (m_car.isCarAirborne == true)
-    {
-        //VelocityUpdate += (m_car.gravity);
-        VelocityUpdate = (m_car.gravity);
-    }
-
-    if (m_car.throttleInput > 0.0 || m_isFuelOn == false)
-    {
-        //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
-        aDQ->velocity = VelocityUpdate;
-    }
-    else if (m_car.brakeInput > 0.0)  // braking
-    {
-        //  Only brake if the velocity is positive.
-        if (newQ.velocity.Length() > 0.1)
-        {
-            VelocityUpdate = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
-            //aDQ->velocity = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3))) * headingVec;
-            aDQ->velocity = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
-        }
-        else
-        {
-            aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
-        }
-    }
-    else  // cruise
-    {
-        if (newQ.velocity.Length() < 0.000001 && m_car.throttleInput < 0.01)
-        {
-            aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
-        }
-        else
-        {
-            //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
-            aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-        }
-        ///
-        if (newQ.velocity.Length() < 0.000001 && m_car.throttleInput < 0.01 && VelocityUpdate.Length() < 0.01)
-        {
-            aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
-        }
-        else
-        {
-            //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
-            aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-        }
-        //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-    }
-
-    if (m_car.isCarAirborne == true)
-    {
-        //VelocityUpdate += (m_car.gravity);
-        VelocityUpdate = (m_car.gravity);
-    }
-
-    //  Compute right-hand side values.
-    aDQ->velocity = VelocityUpdate;
-    aDQ->position = aTimeDelta * newQ.velocity;
-    /*
-    aDQ->position.x = aTimeDelta * newQ.velocity.x;
-    aDQ->position.y = aTimeDelta * newQ.velocity.y;
-    aDQ->position.z = aTimeDelta * newQ.velocity.z;
-    */
-
-    return;
-}
-
-//*************************************************************
-//  This method loads the right-hand sides for the car ODEs
-//*************************************************************
 void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ)
 {
     //  Compute the intermediate values of the 
@@ -1507,13 +1344,14 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //newQ.position = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->position;
     //newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
+    //newQ.bodyVelocity= aQ->bodyVelocity + static_cast<float>(aQScale) * aDeltaQ->bodyVelocity;
+    //newQ.engineVelocity = aQ->engineVelocity + static_cast<float>(aQScale) * aDeltaQ->engineVelocity;
 
     //  Compute the constants that define the
     //  torque curve line.
     double powerCurve;
     double torque; // in newton meters
     double omegaE = aCar->omegaE;
-
 
     if (omegaE <= 1000.0)
     {
@@ -1581,7 +1419,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
 
     DirectX::SimpleMath::Vector3 terrainNormForce = m_car.terrainNormal * -gravity;
-    DirectX::SimpleMath::Vector3 VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
+    DirectX::SimpleMath::Vector3 velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
     /*
     DebugPushUILineDecimalNumber("tmp ", tmp, "");
     DebugPushUILineDecimalNumber("C1 ", c1, "");
@@ -1593,39 +1431,44 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     /*
     if (c4 < 0.0)
     {
-        VelocityUpdate = ((aTimeDelta * (c1 + c2 + c3)) * headingVec) + ((aTimeDelta * (c4)) * headingVec);
-        //VelocityUpdate = ((aTimeDelta * (c4)) * headingVec);
-        //VelocityUpdate *= -1;
-        //VelocityUpdate = VelocityUpdate.Backward;
+        velocityUpdate = ((aTimeDelta * (c1 + c2 + c3)) * headingVec) + ((aTimeDelta * (c4)) * headingVec);
+        //velocityUpdate = ((aTimeDelta * (c4)) * headingVec);
+        //velocityUpdate *= -1;
+        //velocityUpdate = VelocityUpdate.Backward;
     }
     else
     {
-        //VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-        VelocityUpdate = ((aTimeDelta * (c1 + c2 + c3)) * headingVec) + ((aTimeDelta * (c4)) * headingVec);
-        VelocityUpdate = (aTimeDelta * -(c1 + c2 + c3)) * headingVec;
+        //velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
+        velocityUpdate = ((aTimeDelta * (c1 + c2 + c3)) * headingVec) + ((aTimeDelta * (c4)) * headingVec);
+        velocityUpdate = (aTimeDelta * -(c1 + c2 + c3)) * headingVec;
     }
     */
-    VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-    //VelocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
+    velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
+    //velocityUpdate = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
     
     
+    DirectX::SimpleMath::Vector3 brakeForce = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate))) * headingVec;;
+
     if (m_car.throttleInput > 0.0 || m_isFuelOn == false)
     {
         //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
-        aDQ->velocity = VelocityUpdate;
+        aDQ->velocity = velocityUpdate;
     }
     else if (m_car.brakeInput > 0.0)  // braking 
     {
         //  Only brake if the velocity is positive.
         if (newQ.velocity.Length() > 0.1)
         {
-            VelocityUpdate = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
-            //aDQ->velocity = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3))) * headingVec;
-            aDQ->velocity = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
+            //velocityUpdate = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
+            //aDQ->velocity = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
+
+            velocityUpdate = ((aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec) + brakeForce;
+            aDQ->velocity = ((aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec) + brakeForce;
+
         }
         else
         {
-            VelocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+            velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
             aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
         }
     }
@@ -1633,45 +1476,45 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     {     
         if (newQ.velocity.Length() < 0.000001 && m_car.throttleInput < 0.01)
         {
-            VelocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+            velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
             aDQ->velocity = DirectX::SimpleMath::Vector3::Zero;
-            VelocityUpdate = (aTimeDelta * (c1 + c4)) * headingVec;
+            velocityUpdate = (aTimeDelta * (c1 + c4)) * headingVec;
         }
         else
         {
-            VelocityUpdate = (aTimeDelta* (c1 + c2 + c3 + c4))* headingVec;
-            VelocityUpdate = (aTimeDelta * (c1  + c3 + c4)) * headingVec;
+            velocityUpdate = (aTimeDelta* (c1 + c2 + c3 + c4))* headingVec;
+            velocityUpdate = (aTimeDelta * (c1  + c3 + c4)) * headingVec;
             //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
             aDQ->velocity = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
-            VelocityUpdate = (aTimeDelta * (c1 + c4)) * headingVec;
+            velocityUpdate = (aTimeDelta * (c1 + c4)) * headingVec;
         }        
     }
     
     DirectX::SimpleMath::Vector3 testVelocityUpdate = ((aTimeDelta * (c1 + c2 + c3)) * headingVec) + ((m_car.gravity + terrainNormForce) * aTimeDelta);
-    VelocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
+    //velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
 
     if (m_car.isCarAirborne == true)
     {
-        //VelocityUpdate += (m_car.gravity);
-        VelocityUpdate = (m_car.gravity);
+        //velocityUpdate += (m_car.gravity);
+        velocityUpdate = (m_car.gravity);
     }
     else
     {
 
-        VelocityUpdate = testVelocityUpdate;
+        //velocityUpdate = testVelocityUpdate;
     }
 
     
     if (m_car.isCarLanding == true)
     {
 
-        VelocityUpdate.y = -m_car.q.velocity.y;
-        //VelocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+        velocityUpdate.y = -m_car.q.velocity.y;
+        //velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     }
     
 
     //  Compute right-hand side values.
-    aDQ->velocity = VelocityUpdate;
+    aDQ->velocity = velocityUpdate;
     aDQ->position = aTimeDelta * newQ.velocity;
     /*
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
@@ -1728,6 +1571,10 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     q.position += posUpdate;
 
     DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
+    DirectX::SimpleMath::Vector3 bodyVelocityyUpdate = (dq1.bodyVelocity + 2.0 * dq2.bodyVelocity + 2.0 * dq3.bodyVelocity + dq4.bodyVelocity) / numEqns;
+    DirectX::SimpleMath::Vector3 engineVelocityUpdate = (dq1.engineVelocity + 2.0 * dq2.engineVelocity + 2.0 * dq3.engineVelocity + dq4.engineVelocity) / numEqns;
+    DirectX::SimpleMath::Vector3 totalVelocityUpdate = (dq1.totalVelocity + 2.0 * dq2.totalVelocity + 2.0 * dq3.totalVelocity + dq4.totalVelocity) / numEqns;
+
     const float stopTolerance = 0.1;
     // To prevent the car from continuing to roll forward if car velocity is less thatn the tollerance value and update velocity is zero
     if (q.velocity.Length() < stopTolerance && velocityUpdate == DirectX::SimpleMath::Vector3::Zero)
@@ -1750,6 +1597,7 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
+    //aCar->q = q;
 
     // Test rear torque
     //m_car.testRearAnglularVelocity += (total torque / (Mass * radius ^ 2 / 2)) * time step

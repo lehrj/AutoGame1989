@@ -8,6 +8,9 @@ struct Motion
 {
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
+    DirectX::SimpleMath::Vector3 bodyVelocity;
+    DirectX::SimpleMath::Vector3 engineVelocity;
+    DirectX::SimpleMath::Vector3 totalVelocity;
 };
 
 struct Car
@@ -429,7 +432,6 @@ private:
     double GetWheelRotationRadiansRear(const double aTimeDelta);
 
     void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
-    void RightHandSide2(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
     
     void TestGetForceLateral();
