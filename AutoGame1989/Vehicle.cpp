@@ -1265,6 +1265,36 @@ void Vehicle::Jump()
     m_car.q.position.y += jumpHeight;
 }
 
+void Vehicle::LandVehicle()
+{
+    DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
+    DirectX::SimpleMath::Vector3 landingVelocity = m_car.q.velocity;
+    DirectX::SimpleMath::Vector3 landingVelocityNorm = landingVelocity;
+    landingVelocityNorm.Normalize();
+
+    landingVelocityNorm = DirectX::SimpleMath::Vector3::UnitX;
+
+    float impact = landingVelocityNorm.Dot(m_car.terrainNormal);
+    //float impact = landingVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
+    float testFloat = DirectX::SimpleMath::Vector3::UnitX.Dot(DirectX::SimpleMath::Vector3::UnitX);
+
+
+    DirectX::SimpleMath::Vector3 updateVelocity;
+    updateVelocity.x = m_car.q.velocity.x * abs(impact);
+    updateVelocity.y = m_car.q.velocity.y * abs(impact);
+    updateVelocity.z = m_car.q.velocity.z * abs(impact);
+    updateVelocity.y = 0.0;
+
+    updateVelocity.x = m_car.q.velocity.x * .1;
+    updateVelocity.z = m_car.q.velocity.z * .1;
+    updateVelocity.x = 0.0;
+    updateVelocity.z = 0.0;
+
+     testFloat = 69.0;
+    m_car.q.velocity = updateVelocity;
+    //m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
+}
+
 void Vehicle::PressBrake(const double aBrakeInput)
 {
     m_testIsBreakLightOn = true;
@@ -1394,7 +1424,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double rollingFrictionCoefficient = aCar->muR;
     double mass = aCar->mass;
     double rollingFriction = rollingFrictionCoefficient * mass * gravity;
-
+    rollingFriction = rollingFrictionCoefficient * mass * (m_car.terrainNormal * m_car.gravity).y;
     //  Compute the right-hand sides of the six ODEs
     //  newQ[0] is the intermediate value of velocity.
     //  The acceleration of the car is determined by 
@@ -1443,43 +1473,14 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     preFrictionResistancevelocity.Normalize();
     preFrictionResistancevelocity = preFrictionResistancevelocity * (aTimeDelta * (c1 + (rollingFriction / mass)));
 
-    //velocityNorm = -DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (aTimeDelta * (-frontDragResistance / mass));
-    DirectX::SimpleMath::Vector3 rollingResistance = -velocityNorm * (aTimeDelta * (rollingFriction / mass));
-    //double rollingFriction = rollingFrictionCoefficient * mass * gravity;
-    //DirectX::SimpleMath::Vector3 rollingResistVec = rollingFrictionCoefficient * mass * (-m_car.terrainNormal * gravity);
-    DirectX::SimpleMath::Vector3 rollingResistVec = rollingFrictionCoefficient * mass * (-m_car.gravity);
-    float rollingDot2 = rollingResistVec.Dot(m_car.up);
-    //DirectX::SimpleMath::Vector3 rollingResist2 = m_car.forward * (rollingDot2 * aTimeDelta);
-    DirectX::SimpleMath::Vector3 rollingResist2 = m_car.forward * (rollingDot2 * aTimeDelta);
-    float rollingDot3 = rollingResistVec.Dot(DirectX::SimpleMath::Vector3::UnitY);
-    DirectX::SimpleMath::Vector3 rollingResist3 = DirectX::SimpleMath::Vector3::UnitX * (rollingDot3 * aTimeDelta);
 
 
-    DirectX::SimpleMath::Vector3 normalForce = m_car.terrainNormal * -gravity;
-    DirectX::SimpleMath::Vector3 testRollingResist = rollingFrictionCoefficient * mass * normalForce;
-    float testR = testRollingResist.Length();
-    testRollingResist.y = 0.0;
-    testRollingResist *= aTimeDelta;
+    if (m_car.isVelocityBackwards == true)
+    {
+        rollingFriction *= -1.0;
+    }
     engineForce2 = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass))) * headingVec;
-
-    DebugPushUILineDecimalNumber("testR ", testR, "");
-
-    //////// Testing resistance
-    DirectX::SimpleMath::Vector3 testTerrainNorm = DirectX::SimpleMath::Vector3::UnitY;
-    testTerrainNorm = DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0);
-    testTerrainNorm.Normalize();
-    DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitY;
-    //DirectX::SimpleMath::Vector3 testHeading = m_car.up;
-    testRollingResist = rollingFrictionCoefficient * mass * (testTerrainNorm * m_car.gravity);
-    //DirectX::SimpleMath::Vector3 testRollingResist2 = rollingFrictionCoefficient * mass * (testHeading.Dot(testTerrainNorm * m_car.gravity));
-
-    float testRollingResistLength = testRollingResist.Length();
-    float testRollingResistLength2 = rollingFrictionCoefficient * mass * (testHeading.Dot(testTerrainNorm * m_car.gravity));
-
-    float theta = Utility::ToRadians(80.0);
-    //float push = mass * gravity * sin(theta) + rollingFrictionCoefficient * mass * gravity * sin(theta);
-    float push = rollingFrictionCoefficient * mass * gravity * cos(theta);
 
 
     velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
@@ -1524,14 +1525,13 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         }        
     }
     
-    DirectX::SimpleMath::Vector3 testVelocityUpdate = ((aTimeDelta * (c1 + c2 + c3)) * headingVec) + ((m_car.gravity + terrainNormForce) * aTimeDelta);
-    //velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
+
+    DebugPushUILineDecimalNumber("airResistance.x ", airResistance.x, "");
+    DebugPushUILineDecimalNumber("airResistance.y ", airResistance.y, "");
+    DebugPushUILineDecimalNumber("airResistance.z ", airResistance.z, "");
 
 
-    //engineForce2 = engineForce2 * m_car.throttleInput;
-    //velocityUpdate = engineForce2 + brakeForce + slopeForce + rollingResist2;
     velocityUpdate = engineForce2 + brakeForce + slopeForce + airResistance;
-    velocityUpdate = engineForce2 + brakeForce;
 
     if (m_car.isCarAirborne == true)
     {
@@ -1540,14 +1540,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     }
     else
     {
-
         //velocityUpdate = testVelocityUpdate;
     }
 
-
     if (m_car.isCarLanding == true)
     {
-
         velocityUpdate.y = -m_car.q.velocity.y;
         //velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     }
@@ -2411,6 +2408,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.isCarLanding = false;
     m_car.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_car.q.position);
     // prevent car from falling through terrain
+    /*
     if (m_car.terrainHightAtPos > m_car.q.position.y)
     {
         m_car.q.position.y = m_car.terrainHightAtPos;
@@ -2418,16 +2416,18 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
         {
             if (m_car.isCarAirborne == true)
             {
+                LandVehicle();
                 m_car.isCarLanding = true;
             }
             //m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
         }
     }
-
+    */
     
     float height = m_car.q.position.y - m_car.terrainHightAtPos;
     DebugPushUILineDecimalNumber("height ", height, "");
     // check if car is airborne
+    
     if (m_car.q.position.y - m_car.terrainHightAtPos > 0.1)
     {
         m_car.isCarAirborne = true;
@@ -2436,10 +2436,13 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     {
         if (m_car.isCarAirborne == true)
         {
+            LandVehicle();
             m_car.isCarLanding = true;
         }
         m_car.isCarAirborne = false;
+        m_car.q.position.y = m_car.terrainHightAtPos;
     }
+    
 
     //RevLimiter();
     ThrottleBrakeDecay(aTimeDelta);
