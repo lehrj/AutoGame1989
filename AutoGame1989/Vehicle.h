@@ -493,5 +493,7 @@ private:
     bool m_testIsBreakLightOn = false;
 
     bool m_isFuelOn = true;
+
+    float m_testVelocity = 0.0;
 };
 

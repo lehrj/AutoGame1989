@@ -1267,6 +1267,7 @@ void Vehicle::Jump()
 
 void Vehicle::LandVehicle()
 {
+    float impactVelocity = m_car.q.velocity.Length();
     DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
     DirectX::SimpleMath::Vector3 landingVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 landingVelocityNorm = landingVelocity;
@@ -1278,6 +1279,7 @@ void Vehicle::LandVehicle()
     //float impact = landingVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
     float testFloat = DirectX::SimpleMath::Vector3::UnitX.Dot(DirectX::SimpleMath::Vector3::UnitX);
 
+    float testVel = m_testVelocity;
 
     DirectX::SimpleMath::Vector3 updateVelocity;
     updateVelocity.x = m_car.q.velocity.x * abs(impact);
@@ -1373,7 +1375,12 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     //newQ.position = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->position;
     //newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+    ////////////////newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
+
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
+    newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+
+
     //newQ.bodyVelocity= aQ->bodyVelocity + static_cast<float>(aQScale) * aDeltaQ->bodyVelocity;
     //newQ.engineVelocity = aQ->engineVelocity + static_cast<float>(aQScale) * aDeltaQ->engineVelocity;
 
@@ -1448,40 +1455,24 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double c4 = headingVec.Dot(m_car.terrainNormal * m_car.gravity);
 
 
-    DirectX::SimpleMath::Vector3 terrainNormForce = m_car.terrainNormal * -gravity;
-    DirectX::SimpleMath::Vector3 terrainNormForce2 = m_car.terrainNormal * -m_car.gravity;
-
     DirectX::SimpleMath::Vector3 velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
 
-    double testc4 = DirectX::SimpleMath::Vector3::UnitY.Dot(m_car.terrainNormal * m_car.gravity);
-
-    DirectX::SimpleMath::Vector3 engineForce = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
-    DirectX::SimpleMath::Vector3 engineForce2 = (aTimeDelta * (c2 + ((tmp * torque) / mass))) * headingVec;
-    //DirectX::SimpleMath::Vector3 slopeForce = m_car.forward * m_car.forward.Dot(m_car.terrainNormal * -gravity);
     DirectX::SimpleMath::Vector3 slopeForce = m_car.forward * m_car.forward.Dot(m_car.terrainNormal * m_car.gravity);
     slopeForce = slopeForce * aTimeDelta;
-    DirectX::SimpleMath::Vector3 slopeForce2 = m_car.forward * m_car.up.Dot(m_car.terrainNormal * gravity);
-    float slopeLength = slopeForce.Length();
-    float slopeLength2 = slopeForce2.Length();
 
-    //DirectX::SimpleMath::Vector3 brakeForce = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate))) * headingVec;
-    DirectX::SimpleMath::Vector3 brakeForce = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate))) * headingVec;
-
+    
     DirectX::SimpleMath::Vector3 velocityNorm = m_car.q.velocity;
     velocityNorm.Normalize();
-    DirectX::SimpleMath::Vector3 preFrictionResistancevelocity = -velocityUpdate;
-    preFrictionResistancevelocity.Normalize();
-    preFrictionResistancevelocity = preFrictionResistancevelocity * (aTimeDelta * (c1 + (rollingFriction / mass)));
 
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (aTimeDelta * (-frontDragResistance / mass));
 
-
+    DirectX::SimpleMath::Vector3 brakeForce = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate))) * headingVec;
     if (m_car.isVelocityBackwards == true)
     {
         rollingFriction *= -1.0;
     }
-    engineForce2 = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass))) * headingVec;
 
+    DirectX::SimpleMath::Vector3 engineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass))) * headingVec;
 
     velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
     if (m_car.throttleInput > 0.0 || m_isFuelOn == false)
@@ -1529,14 +1520,19 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     DebugPushUILineDecimalNumber("airResistance.x ", airResistance.x, "");
     DebugPushUILineDecimalNumber("airResistance.y ", airResistance.y, "");
     DebugPushUILineDecimalNumber("airResistance.z ", airResistance.z, "");
+    DebugPushUILineDecimalNumber("airResistance.Length() ", airResistance.Length(), "");
 
-
-    velocityUpdate = engineForce2 + brakeForce + slopeForce + airResistance;
+    velocityUpdate = engineForce + brakeForce + slopeForce + airResistance;
 
     if (m_car.isCarAirborne == true)
     {
         //velocityUpdate += (m_car.gravity);
-        velocityUpdate = (m_car.gravity);
+        //velocityUpdate = m_car.gravity + airResistance;
+        velocityUpdate = m_car.gravity;
+        velocityUpdate.x = 0.0;
+        velocityUpdate.z = 0.0;
+        velocityUpdate.y = gravity;
+
     }
     else
     {
@@ -1545,7 +1541,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     if (m_car.isCarLanding == true)
     {
-        velocityUpdate.y = -m_car.q.velocity.y;
+        //velocityUpdate.y = -m_car.q.velocity.y;
         //velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     }
 
@@ -1610,6 +1606,9 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     DirectX::SimpleMath::Vector3 bodyVelocityyUpdate = (dq1.bodyVelocity + 2.0 * dq2.bodyVelocity + 2.0 * dq3.bodyVelocity + dq4.bodyVelocity) / numEqns;
     DirectX::SimpleMath::Vector3 engineVelocityUpdate = (dq1.engineVelocity + 2.0 * dq2.engineVelocity + 2.0 * dq3.engineVelocity + dq4.engineVelocity) / numEqns;
     DirectX::SimpleMath::Vector3 totalVelocityUpdate = (dq1.totalVelocity + 2.0 * dq2.totalVelocity + 2.0 * dq3.totalVelocity + dq4.totalVelocity) / numEqns;
+
+    //pQ.velocity.z = static_cast<float>(pQ.velocity.z + (pQ1.velocity.z + 2.0 * pQ2.velocity.z + 2.0 * pQ3.velocity.z + pQ4.velocity.z) / numEqns);
+
 
     const float stopTolerance = 0.1;
     // To prevent the car from continuing to roll forward if car velocity is less thatn the tollerance value and update velocity is zero
@@ -2497,6 +2496,13 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DebugPushUILine("m_car.airResistance", m_car.airResistance);
     DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
     DebugPushUILineWholeNumber("Gear ", m_car.gearNumber , "");
+
+
+    DirectX::SimpleMath::Vector3 postPos = m_car.q.position;
+    DirectX::SimpleMath::Vector3 deltaPos = prevPos - postPos;
+    float deltaLength = deltaPos.Length();
+    m_testVelocity = deltaLength / aTimeDelta;
+    DebugPushUILineDecimalNumber("m_testVelocity = ", m_testVelocity, " m/s");
 }
 
 void Vehicle::UpdateTransmission()
