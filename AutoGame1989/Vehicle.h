@@ -392,7 +392,7 @@ public:
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
-    void Jump();
+    void Jump(double aTimer);
 
     void PressBrake(const double aBrakeInput);
     void PressThrottle(const double aThrottleInput);
@@ -453,6 +453,7 @@ private:
     void UpdateResistance();
     void UpdateTerrainNorm();
     void UpdateTransmission();
+    void UpdateVelocity(double aTimeDelta);
 
     Car                             m_car;
     CarModel                        m_carModel;
@@ -495,5 +496,7 @@ private:
     bool m_isFuelOn = true;
 
     float m_testVelocity = 0.0;
+    double m_testTimer = 0.0;
+    double m_testTimerTotal = 0.0;
 };
 

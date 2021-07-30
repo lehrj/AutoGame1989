@@ -1259,21 +1259,23 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     InitializeModel(aContext);
 }
 
-void Vehicle::Jump()
+void Vehicle::Jump(double aTimer)
 {
+    m_testTimer = aTimer;
     float jumpHeight = 10.0;
     m_car.q.position.y += jumpHeight;
 }
 
 void Vehicle::LandVehicle()
 {
+    double elapsedTime = m_testTimerTotal - m_testTimer;
     float impactVelocity = m_car.q.velocity.Length();
     DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
     DirectX::SimpleMath::Vector3 landingVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 landingVelocityNorm = landingVelocity;
     landingVelocityNorm.Normalize();
 
-    landingVelocityNorm = DirectX::SimpleMath::Vector3::UnitX;
+    //landingVelocityNorm = DirectX::SimpleMath::Vector3::UnitX;
 
     float impact = landingVelocityNorm.Dot(m_car.terrainNormal);
     //float impact = landingVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
@@ -1285,6 +1287,13 @@ void Vehicle::LandVehicle()
     updateVelocity.x = m_car.q.velocity.x * abs(impact);
     updateVelocity.y = m_car.q.velocity.y * abs(impact);
     updateVelocity.z = m_car.q.velocity.z * abs(impact);
+
+    updateVelocity = m_car.q.velocity * -impact;
+    updateVelocity = m_car.q.velocity;
+    updateVelocity.y = 0.0;
+
+    testFloat = 69.0;
+    /*
     updateVelocity.y = 0.0;
 
     updateVelocity.x = m_car.q.velocity.x * .1;
@@ -1292,7 +1301,10 @@ void Vehicle::LandVehicle()
     updateVelocity.x = 0.0;
     updateVelocity.z = 0.0;
 
-     testFloat = 69.0;
+
+    updateVelocity *= impact;
+    */
+
     m_car.q.velocity = updateVelocity;
     //m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 }
@@ -1531,7 +1543,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         velocityUpdate = m_car.gravity;
         velocityUpdate.x = 0.0;
         velocityUpdate.z = 0.0;
-        velocityUpdate.y = gravity;
+        velocityUpdate.y = gravity * aTimeDelta;
 
     }
     else
@@ -2395,6 +2407,7 @@ void Vehicle::UpdateTerrainNorm()
 
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {
+    m_testTimerTotal += aTimeDelta;
     DebugClearUI();
     DirectX::SimpleMath::Vector3 prevVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 prevPos = m_car.q.position;
@@ -2462,15 +2475,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     }
     DebugPushUILineDecimalNumber("m_car.isVelocityBackwards ",  m_car.isVelocityBackwards, "");
     
-    if (m_car.forward.Dot(m_car.q.velocity) < 0.0)
-    {
-        m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.velocity, -m_car.forward * m_car.q.velocity.Length(), 0.5);
-    }
-    else
-    {
-        m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.velocity, m_car.forward * m_car.q.velocity.Length(), 0.5);
-    }
-    
+
+    UpdateVelocity(aTimeDelta);
 
     DirectX::SimpleMath::Vector3 testVelocity = m_car.q.velocity;
     testVelocity.Normalize();
@@ -2527,6 +2533,47 @@ void Vehicle::UpdateTransmission()
             m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
         }
     }
+}
+
+void Vehicle::UpdateVelocity(double aTimeDelta)
+{
+    float lateralFrictionFactor = 0.2;
+    float backwardsFrictionFactor = 0.0;
+    DirectX::SimpleMath::Vector3 testVelocity = m_car.q.velocity;
+    DirectX::SimpleMath::Vector3 lateralVelocity;
+    lateralVelocity = m_car.right * testVelocity.Dot(m_car.right);
+    DirectX::SimpleMath::Vector3 lateralFriction = -lateralVelocity * lateralFrictionFactor;
+    DirectX::SimpleMath::Vector3 backwardsFriction = -testVelocity * backwardsFrictionFactor;
+    testVelocity += (backwardsFriction + lateralFriction) * aTimeDelta;
+
+    DebugPushUILineDecimalNumber("testVelocity.x = ", testVelocity.x, " m/s");
+    DebugPushUILineDecimalNumber("testVelocity.y = ", testVelocity.y, " m/s");
+    DebugPushUILineDecimalNumber("testVelocity.z = ", testVelocity.z, " m/s");
+
+    DirectX::SimpleMath::Vector3 velocityLine = testVelocity;
+    velocityLine.Normalize();
+    DebugPushTestLine(m_car.q.position + (m_car.testTerrainNormal * 2.0), velocityLine, 4.0, 0.0, DirectX::Colors::Red);
+    //////////////////////////
+
+    float lerpSize = 0.5;
+    if (m_car.isCarAirborne == true)
+    {
+
+    }
+    else
+    {
+        if (m_car.forward.Dot(m_car.q.velocity) < 0.0)
+        {
+            m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.velocity, -m_car.forward * m_car.q.velocity.Length(), lerpSize);
+            //m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(testVelocity, -m_car.forward * m_car.q.velocity.Length(), lerpSize);
+        }
+        else
+        {
+            m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.velocity, m_car.forward * m_car.q.velocity.Length(), lerpSize);
+            //m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(testVelocity, m_car.forward * m_car.q.velocity.Length(), lerpSize);
+        }
+    }
+    //m_car.q.velocity = testVelocity;
 }
 
 void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)

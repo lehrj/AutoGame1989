@@ -3798,7 +3798,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->Jump();
+            m_vehicle->Jump(static_cast<double>(aTimer.GetTotalSeconds()));
         }
     }
     auto mouse = m_mouse->GetState();
