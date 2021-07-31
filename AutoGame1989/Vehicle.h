@@ -9,7 +9,11 @@ struct Motion
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
     DirectX::SimpleMath::Vector3 bodyVelocity;
-    DirectX::SimpleMath::Vector3 engineVelocity;
+    DirectX::SimpleMath::Vector3 engineForce;
+    DirectX::SimpleMath::Vector3 brakeForce;
+    DirectX::SimpleMath::Vector3 slopeForce;
+    DirectX::SimpleMath::Vector3 airResistance;
+    DirectX::SimpleMath::Vector3 fallRate;
     DirectX::SimpleMath::Vector3 totalVelocity;
 };
 
