@@ -13,14 +13,13 @@ struct Motion
     DirectX::SimpleMath::Vector3 brakeForce;
     DirectX::SimpleMath::Vector3 slopeForce;
     DirectX::SimpleMath::Vector3 airResistance;
-    DirectX::SimpleMath::Vector3 fallRate;
+    DirectX::SimpleMath::Vector3 gravityForce;
     DirectX::SimpleMath::Vector3 totalVelocity;
 };
 
 struct Car
 {
     int numEqns;
-    //double s;
     double time;
     Motion q;
     double mass;
@@ -40,7 +39,6 @@ struct Car
     int gearNumber;     //  gear the car is in
     int numberOfGears;  //  total number of gears
     double gearRatio[7];  //  gear ratios
-    //double gravity;
     DirectX::SimpleMath::Vector3 gravity;
 
     //////////////////////

@@ -1206,7 +1206,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_car.q.slopeForce = DirectX::SimpleMath::Vector3::Zero;
     m_car.q.airResistance = DirectX::SimpleMath::Vector3::Zero;
-    m_car.q.fallRate = DirectX::SimpleMath::Vector3::Zero;
+    m_car.q.gravityForce = DirectX::SimpleMath::Vector3::Zero;
 
     m_car.q.engineForce = DirectX::SimpleMath::Vector3::Zero;
     m_car.q.totalVelocity = DirectX::SimpleMath::Vector3::Zero;
@@ -1268,7 +1268,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 void Vehicle::Jump(double aTimer)
 {
     m_testTimer = aTimer;
-    float jumpHeight = 10.0;
+    float jumpHeight = 100.0;
     //m_car.q.position.y += jumpHeight;
     m_car.q.velocity.y += jumpHeight;
 }
@@ -1535,13 +1535,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         }        
     }
     
-
-    DebugPushUILineDecimalNumber("airResistance.x ", airResistance.x, "");
-    DebugPushUILineDecimalNumber("airResistance.y ", airResistance.y, "");
-    DebugPushUILineDecimalNumber("airResistance.z ", airResistance.z, "");
-    DebugPushUILineDecimalNumber("airResistance.Length() ", airResistance.Length(), "");
-
-    velocityUpdate = engineForce + brakeForce + slopeForce + airResistance;
+    DirectX::SimpleMath::Vector3 gravForce = m_car.gravity * aTimeDelta;
+    velocityUpdate = engineForce + brakeForce + slopeForce + airResistance + gravForce;
 
     if (m_car.isCarAirborne == true)
     {
@@ -1551,6 +1546,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         velocityUpdate.x = 0.0;
         velocityUpdate.z = 0.0;
         velocityUpdate.y = gravity * aTimeDelta;
+        gravForce = m_car.gravity * aTimeDelta;
 
     }
     else
@@ -1568,7 +1564,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     aDQ->engineForce = engineForce;
     aDQ->brakeForce = brakeForce;
     aDQ->slopeForce = slopeForce;
+    aDQ->airResistance = airResistance;
+    aDQ->gravityForce = gravForce;
     aDQ->velocity = velocityUpdate;
+    aDQ->totalVelocity = velocityUpdate;
+
     aDQ->position = aTimeDelta * newQ.velocity;
     /*
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
@@ -1607,6 +1607,10 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
 
         //aCar->q.velocity = DirectX::SimpleMath::Vector3::Zero;
     }
+    if (m_car.isCarAirborne == false)
+    {
+        m_car.q.gravityForce = DirectX::SimpleMath::Vector3::Zero;
+    }
 
     // Compute the four Runge-Kutta steps, The return 
     // value of carRightHandSide method is an array
@@ -1627,33 +1631,45 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
     DirectX::SimpleMath::Vector3 bodyVelocityyUpdate = (dq1.bodyVelocity + 2.0 * dq2.bodyVelocity + 2.0 * dq3.bodyVelocity + dq4.bodyVelocity) / numEqns;
     DirectX::SimpleMath::Vector3 engineVelocityUpdate = (dq1.engineForce + 2.0 * dq2.engineForce + 2.0 * dq3.engineForce + dq4.engineForce) / numEqns;
+    DirectX::SimpleMath::Vector3 brakeVelocityUpdate = (dq1.brakeForce + 2.0 * dq2.brakeForce + 2.0 * dq3.brakeForce + dq4.brakeForce) / numEqns;
+    DirectX::SimpleMath::Vector3 slopeVelocityUpdate = (dq1.slopeForce + 2.0 * dq2.slopeForce + 2.0 * dq3.slopeForce + dq4.slopeForce) / numEqns;
+    DirectX::SimpleMath::Vector3 airResistnaceVelocityUpdate = (dq1.airResistance + 2.0 * dq2.airResistance + 2.0 * dq3.airResistance + dq4.airResistance) / numEqns;
+    DirectX::SimpleMath::Vector3 gravityVelocityUpdate = (dq1.gravityForce + 2.0 * dq2.gravityForce + 2.0 * dq3.gravityForce + dq4.gravityForce) / numEqns;
     DirectX::SimpleMath::Vector3 totalVelocityUpdate = (dq1.totalVelocity + 2.0 * dq2.totalVelocity + 2.0 * dq3.totalVelocity + dq4.totalVelocity) / numEqns;
-
-    //pQ.velocity.z = static_cast<float>(pQ.velocity.z + (pQ1.velocity.z + 2.0 * pQ2.velocity.z + 2.0 * pQ3.velocity.z + pQ4.velocity.z) / numEqns);1111114
 
 
     const float stopTolerance = 0.1;
     // To prevent the car from continuing to roll forward if car velocity is less thatn the tollerance value and update velocity is zero
     if (q.velocity.Length() < stopTolerance && velocityUpdate == DirectX::SimpleMath::Vector3::Zero)
     {
-        q.velocity = DirectX::SimpleMath::Vector3::Zero;
+        //q.velocity = DirectX::SimpleMath::Vector3::Zero;
     }
     else
     {
-        q.velocity += velocityUpdate;
+        //q.velocity += velocityUpdate;
     }
-    //q.velocity += velocityUpdate;
+    q.velocity += velocityUpdate;
 
+    q.engineForce += engineVelocityUpdate;
+    q.brakeForce += brakeVelocityUpdate;
+    q.airResistance += airResistnaceVelocityUpdate;
+    q.gravityForce += gravityVelocityUpdate;
+    q.slopeForce += slopeVelocityUpdate;
+    //q.totalVelocity += totalVelocityUpdate;
+    q.totalVelocity += velocityUpdate;
+    //q.totalVelocity = q.engineForce + q.brakeForce + q.slopeForce + q.airResistance;// +q.gravityForce;
+    //q.totalVelocity = q.engineForce;
+    DirectX::SimpleMath::Vector3 testVel = q.totalVelocity;
+    testVel.Normalize();
+    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.1), testVel, 4.0, 0.0, DirectX::Colors::Green);
+    //velocityUpdate = engineForce + brakeForce + slopeForce + airResistance;
+    aCar->q = q;
+    //q.velocity = q.totalVelocity;
 
-    DebugPushUILineDecimalNumber("velocityUpdate.x ", velocityUpdate.x, "");
-    DebugPushUILineDecimalNumber("velocityUpdate.y ", velocityUpdate.y, "");
-    DebugPushUILineDecimalNumber("velocityUpdate.z ", velocityUpdate.z, "");
-    DebugPushUILineDecimalNumber("velocityUpdate.Length() ", velocityUpdate.Length(), "");
-    
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
 
-    aCar->q = q;
+    
 
     // Test rear torque
     //m_car.testRearAnglularVelocity += (total torque / (Mass * radius ^ 2 / 2)) * time step
@@ -2517,7 +2533,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 void Vehicle::UpdateTransmission()
 {
     double velocity = m_car.q.velocity.Length();
-
+    //double downShiftLimit = 900.0;
     //  Compute the new engine rpm value
     m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
     if (m_car.omegaE < 800.0)
@@ -2535,6 +2551,15 @@ void Vehicle::UpdateTransmission()
             double newGearRatio = m_car.gearRatio[m_car.gearNumber];
             m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
         }
+        /*
+        if (m_car.omegaE < downShiftLimit && m_car.gearNumber > 1)
+        {
+            double oldGearRatio = m_car.gearRatio[m_car.gearNumber];
+            --m_car.gearNumber;
+            double newGearRatio = m_car.gearRatio[m_car.gearNumber];
+            m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
+        }
+        */
     }
 }
 
@@ -2567,11 +2592,13 @@ void Vehicle::UpdateVelocity(double aTimeDelta)
     {
         if (m_car.forward.Dot(m_car.q.velocity) < 0.0)
         {
+            m_car.q.totalVelocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.totalVelocity, -m_car.forward * m_car.q.totalVelocity.Length(), lerpSize);
             m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.velocity, -m_car.forward * m_car.q.velocity.Length(), lerpSize);
             //m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(testVelocity, -m_car.forward * m_car.q.velocity.Length(), lerpSize);
         }
         else
         {
+            m_car.q.totalVelocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.totalVelocity, m_car.forward * m_car.q.totalVelocity.Length(), lerpSize);
             m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.velocity, m_car.forward * m_car.q.velocity.Length(), lerpSize);
             //m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(testVelocity, m_car.forward * m_car.q.velocity.Length(), lerpSize);
         }
