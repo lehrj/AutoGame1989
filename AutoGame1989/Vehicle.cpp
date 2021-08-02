@@ -1268,7 +1268,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 void Vehicle::Jump(double aTimer)
 {
     m_testTimer = aTimer;
-    float jumpHeight = 100.0;
+    float jumpHeight = 10.0;
     //m_car.q.position.y += jumpHeight;
     m_car.q.velocity.y += jumpHeight;
 }
@@ -1535,9 +1535,21 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         }        
     }
     
-    DirectX::SimpleMath::Vector3 gravForce = m_car.gravity * aTimeDelta;
-    velocityUpdate = engineForce + brakeForce + slopeForce + airResistance + gravForce;
+    DirectX::SimpleMath::Vector3 gravForce = m_car.gravity *aTimeDelta;
+    DirectX::SimpleMath::Vector3 terrainNormalForce = (m_car.terrainNormal * -m_car.gravity.y) *aTimeDelta;
 
+    if (m_car.isCarAirborne == true)
+    {
+        terrainNormalForce = DirectX::SimpleMath::Vector3::Zero;
+    }
+
+    float gravDown = gravForce.y + terrainNormalForce.y;
+    
+
+    //velocityUpdate = engineForce + brakeForce + slopeForce + airResistance + gravForce;
+    velocityUpdate = engineForce + brakeForce + slopeForce + airResistance;
+    velocityUpdate.y += gravDown;
+    /*
     if (m_car.isCarAirborne == true)
     {
         //velocityUpdate += (m_car.gravity);
@@ -1553,10 +1565,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     {
         //velocityUpdate = testVelocityUpdate;
     }
+    */
 
     if (m_car.isCarLanding == true)
     {
-        //velocityUpdate.y = -m_car.q.velocity.y;
+        velocityUpdate.y = -m_car.q.velocity.y;
         //velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     }
 
@@ -1663,7 +1676,7 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     testVel.Normalize();
     DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.1), testVel, 4.0, 0.0, DirectX::Colors::Green);
     //velocityUpdate = engineForce + brakeForce + slopeForce + airResistance;
-    aCar->q = q;
+    //aCar->q = q;
     //q.velocity = q.totalVelocity;
 
     aCar->q.position = q.position;
