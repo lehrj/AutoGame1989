@@ -3787,6 +3787,20 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->GearUp();
         }
     }
+    if (m_kbStateTracker.pressed.C)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->PressClutch(true);
+        }
+    }
+    if (m_kbStateTracker.released.C)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->PressClutch(false);
+        }
+    }
     if (m_kbStateTracker.pressed.OemQuestion)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)

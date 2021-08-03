@@ -38,7 +38,7 @@ struct Car
     double wheelWidth;
     int gearNumber;     //  gear the car is in
     int numberOfGears;  //  total number of gears
-    double gearRatio[7];  //  gear ratios
+    double gearRatio[8];  //  gear ratios
     DirectX::SimpleMath::Vector3 gravity;
 
     //////////////////////
@@ -51,6 +51,7 @@ struct Car
     double maxBrakeInput; /////////////////////////////////
     double maxThrottleRate;
     double maxBrakeRate;
+    bool isClutchPressed;
     bool isThrottlePressed;
     bool isBrakePressed;
     bool isTurningPressed;
@@ -397,6 +398,7 @@ public:
     void Jump(double aTimer);
 
     void PressBrake(const double aBrakeInput);
+    void PressClutch(const bool aClutchInput);
     void PressThrottle(const double aThrottleInput);
     void ThrottleBrakeDecay(const double aTimeDelta);
     void SetEnvironment(Environment* aEnviron);

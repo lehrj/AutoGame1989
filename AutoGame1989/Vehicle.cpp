@@ -1182,20 +1182,22 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.finalDriveRatio = 3.44;
     m_car.wheelRadius = 0.3186;
     m_car.wheelWidth = 0.235;
-    m_car.numberOfGears = 6;
+    m_car.numberOfGears = 7;
     m_car.muR = 0.015;             //  coefficient of rolling friction
     m_car.airResistance = 0.0;
     //m_car.airDensity = 1.225; // ToDo : pull air density from environment data
     m_car.totalResistance = m_car.muR + m_car.airResistance;
     m_car.omegaE = 1000.0;         //  engine rpm
-    m_car.gearNumber = 1;          //  gear the car is in
-    m_car.gearRatio[0] = 0.0;
-    m_car.gearRatio[1] = 3.82;
-    m_car.gearRatio[2] = 2.20;
-    m_car.gearRatio[3] = 1.52;
-    m_car.gearRatio[4] = 1.22;
-    m_car.gearRatio[5] = 1.02;
-    m_car.gearRatio[6] = 0.84;
+    m_car.gearNumber = 2;          //  gear the car is in
+    m_car.gearRatio[0] = -3.82;
+    m_car.gearRatio[1] = 0.0;
+    m_car.gearRatio[2] = 3.82;
+    m_car.gearRatio[3] = 2.20;
+    m_car.gearRatio[4] = 1.52;
+    m_car.gearRatio[5] = 1.22;
+    m_car.gearRatio[6] = 1.02;
+    m_car.gearRatio[7] = 0.84;
+
     m_car.gravity = DirectX::SimpleMath::Vector3(0.0, -9.81, 0.0);
     m_car.numEqns = 6;
     m_car.time = 0.0;  
@@ -1234,6 +1236,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.right = m_car.forward.Cross(m_car.up);
     m_car.speed = 0.0;
 
+    m_car.isClutchPressed = false;
     m_car.isThrottlePressed = false;
     m_car.isBrakePressed = false;
     m_car.isTurningPressed = false;
@@ -1333,6 +1336,11 @@ void Vehicle::PressBrake(const double aBrakeInput)
     {
         m_car.brakeInput += aBrakeInput;
     }
+}
+
+void Vehicle::PressClutch(const bool aClutchInput)
+{
+    m_car.isClutchPressed = aClutchInput;
 }
 
 void Vehicle::PressThrottle(const double aThrottleInput)
@@ -1464,11 +1472,13 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double pi = acos(-1.0);
     double carHeading = m_car.carRotation;
 
+
     DirectX::SimpleMath::Vector3 headingVec = m_car.forward;
 
     double c1 = -frontDragResistance / mass;
     double tmp = gearRatio * finalDriveRatio / wheelRadius;
     tmp *= m_car.throttleInput;
+
     double c2 = 60.0 * tmp * tmp * powerCurve * v / (2.0 * pi * mass);
     double c3 = (tmp * torque + rollingFriction) / mass;
     double c4 = headingVec.Dot(m_car.terrainNormal * m_car.gravity);
@@ -1485,13 +1495,19 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (aTimeDelta * (-frontDragResistance / mass));
 
-    DirectX::SimpleMath::Vector3 brakeForce = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate))) * headingVec;
+    //DirectX::SimpleMath::Vector3 brakeForce = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate))) * headingVec;
+    DirectX::SimpleMath::Vector3 brakeForce = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate))) * velocityNorm;
     if (m_car.isVelocityBackwards == true)
     {
         rollingFriction *= -1.0;
     }
 
     DirectX::SimpleMath::Vector3 engineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass))) * headingVec;
+
+    if (aCar->isClutchPressed == true)
+    {
+        engineForce = (aTimeDelta * (c2 + ((rollingFriction) / mass))) * headingVec;
+    }
 
     velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
     if (m_car.throttleInput > 0.0 || m_isFuelOn == false)
@@ -2533,7 +2549,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     UpdateResistance();
     DebugPushUILine("m_car.airResistance", m_car.airResistance);
     DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
-    DebugPushUILineWholeNumber("Gear ", m_car.gearNumber , "");
+    DebugPushUILineWholeNumber("Gear ", m_car.gearNumber - 1 , "");
 
 
     DirectX::SimpleMath::Vector3 postPos = m_car.q.position;
@@ -2541,6 +2557,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     float deltaLength = deltaPos.Length();
     m_testVelocity = deltaLength / aTimeDelta;
     DebugPushUILineDecimalNumber("m_testVelocity = ", m_testVelocity, " m/s");
+    DebugPushUILineWholeNumber("Clutch ", m_car.isClutchPressed, "");
 }
 
 void Vehicle::UpdateTransmission()
