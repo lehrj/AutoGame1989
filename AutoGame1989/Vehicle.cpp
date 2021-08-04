@@ -1477,12 +1477,28 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     double c1 = -frontDragResistance / mass;
     double tmp = gearRatio * finalDriveRatio / wheelRadius;
-    tmp *= m_car.throttleInput;
-
+    //DebugPushUILineDecimalNumber("tmp1 = ", tmp, "");
+    //tmp *= m_car.throttleInput;
+    //torque *= m_car.throttleInput;
+    //DebugPushUILineDecimalNumber("tmp2 = ", tmp, "");
+    //DebugPushUILineDecimalNumber("torque = ", torque, "");
     double c2 = 60.0 * tmp * tmp * powerCurve * v / (2.0 * pi * mass);
     double c3 = (tmp * torque + rollingFriction) / mass;
     double c4 = headingVec.Dot(m_car.terrainNormal * m_car.gravity);
 
+    double testC2 = 60.0 * tmp * tmp * powerCurve * v;
+    double testC3 = (tmp * torque);
+    DebugPushUILineDecimalNumber("testC2 = ", testC2, "");
+    DebugPushUILineDecimalNumber("testC3 = ", testC3, "");
+
+    double testTorque = tmp * torque;
+
+    DebugPushUILineDecimalNumber("testTorque = ", testTorque, "");
+
+    if (m_car.isClutchPressed == true)
+    {
+        float tempBreak = 0.0;
+    }
 
     DirectX::SimpleMath::Vector3 velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
 
@@ -2568,7 +2584,7 @@ void Vehicle::UpdateTransmission()
     m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
     if (m_car.omegaE < 800.0)
     {
-        m_car.omegaE = 800.0;
+        //m_car.omegaE = 800.0;
     }
     //  If the engine is at the redline rpm value,
     //  shift gears upward.
