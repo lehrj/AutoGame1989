@@ -1482,6 +1482,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //torque *= m_car.throttleInput;
     //DebugPushUILineDecimalNumber("tmp2 = ", tmp, "");
     //DebugPushUILineDecimalNumber("torque = ", torque, "");
+    double testTmp = ((gearRatio * aCar->throttleInput) * finalDriveRatio) / wheelRadius;
+    tmp = testTmp;
     double c2 = 60.0 * tmp * tmp * powerCurve * v / (2.0 * pi * mass);
     double c3 = (tmp * torque + rollingFriction) / mass;
     double c4 = headingVec.Dot(m_car.terrainNormal * m_car.gravity);
@@ -1489,16 +1491,13 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double testC2 = 60.0 * tmp * tmp * powerCurve * v;
     double testC3 = (tmp * torque);
     DebugPushUILineDecimalNumber("testC2 = ", testC2, "");
-    DebugPushUILineDecimalNumber("testC3 = ", testC3, "");
+    //DebugPushUILineDecimalNumber("testC3 = ", testC3, "");
 
     double testTorque = tmp * torque;
 
-    DebugPushUILineDecimalNumber("testTorque = ", testTorque, "");
+    //DebugPushUILineDecimalNumber("testTorque = ", testTorque, "");
 
-    if (m_car.isClutchPressed == true)
-    {
-        float tempBreak = 0.0;
-    }
+
 
     DirectX::SimpleMath::Vector3 velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
 
@@ -1519,10 +1518,19 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     }
 
     DirectX::SimpleMath::Vector3 engineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass))) * headingVec;
+    double testEngineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass)));
+    testEngineForce = (aTimeDelta * (c2 + ((tmp * torque))));
+    DebugPushUILineDecimalNumber("testEngineForce = ", testEngineForce, "");
+
 
     if (aCar->isClutchPressed == true)
     {
         engineForce = (aTimeDelta * (c2 + ((rollingFriction) / mass))) * headingVec;
+    }
+
+    if (m_car.isClutchPressed == true)
+    {
+        float tempBreak = 0.0;
     }
 
     velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
@@ -1710,7 +1718,7 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     //velocityUpdate = engineForce + brakeForce + slopeForce + airResistance;
     //aCar->q = q;
     //q.velocity = q.totalVelocity;
-
+    aCar->q.engineForce = q.engineForce;
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
 
@@ -2574,6 +2582,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_testVelocity = deltaLength / aTimeDelta;
     DebugPushUILineDecimalNumber("m_testVelocity = ", m_testVelocity, " m/s");
     DebugPushUILineWholeNumber("Clutch ", m_car.isClutchPressed, "");
+    DebugPushUILineDecimalNumber("m_car.q.engineForce ", m_car.q.engineForce.Length(), "");
 }
 
 void Vehicle::UpdateTransmission()
