@@ -502,5 +502,7 @@ private:
     float m_testVelocity = 0.0;
     double m_testTimer = 0.0;
     double m_testTimerTotal = 0.0;
+
+    double m_testEnginePower = 0.0;
 };
 

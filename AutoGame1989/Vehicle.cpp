@@ -1519,9 +1519,22 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     DirectX::SimpleMath::Vector3 engineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass))) * headingVec;
     double testEngineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass)));
+    testEngineForce = (aTimeDelta * (c2 + ((tmp * torque) / mass)));
     testEngineForce = (aTimeDelta * (c2 + ((tmp * torque))));
+    //testEngineForce = (aTimeDelta * (c2 + ((tmp * torque)))) * wheelRadius;
     DebugPushUILineDecimalNumber("testEngineForce = ", testEngineForce, "");
 
+    if (testEngineForce > 500.0)
+    {
+        float test3 = 0.0;
+        m_testEnginePower = testEngineForce;
+    }
+
+    if (testEngineForce > m_testEnginePower)
+    {
+        m_testEnginePower = testEngineForce;
+    }
+    DebugPushUILineDecimalNumber("m_testEnginePower = ", m_testEnginePower, "");
 
     if (aCar->isClutchPressed == true)
     {
