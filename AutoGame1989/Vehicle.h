@@ -64,7 +64,9 @@ struct Car
     DirectX::SimpleMath::Quaternion headingQuat;
     double carRotation;
     DirectX::SimpleMath::Vector3 headingVec;          // direction the vehicle is facing
-    double speed;        // speed vehicle is traveling
+    double shiftCooldown;           // cooldown timer after gear is changed, before engine power is direct to driver train
+    double shiftDelay;              // time it takes to change gears in which the clutch is pressed and engine does not deliver power
+    double speed;                   // speed vehicle is traveling
     double wheelBase;
     bool isAccelerating;
     bool isBraking;
@@ -456,7 +458,7 @@ private:
     void UpdateModel2(const double aTimer);
     void UpdateResistance();
     void UpdateTerrainNorm();
-    void UpdateTransmission();
+    void UpdateTransmission(const double aTimeDelta);
     void UpdateVelocity(double aTimeDelta);
 
     Car                             m_car;

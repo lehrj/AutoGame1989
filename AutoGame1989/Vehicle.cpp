@@ -219,6 +219,7 @@ void Vehicle::GearDown()
 {
     if (m_car.gearNumber > 0 && m_car.gearNumber <= m_car.numberOfGears)
     {
+        m_car.shiftCooldown = m_car.shiftDelay;
         --m_car.gearNumber;
     }
 }
@@ -227,6 +228,7 @@ void Vehicle::GearUp()
 {
     if (m_car.gearNumber >= 0 && m_car.gearNumber < m_car.numberOfGears)
     {
+        m_car.shiftCooldown = m_car.shiftDelay;
         ++m_car.gearNumber;
     }
 }
@@ -1234,6 +1236,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.forward = DirectX::SimpleMath::Vector3::UnitX;
     m_car.up = DirectX::SimpleMath::Vector3::UnitY;
     m_car.right = m_car.forward.Cross(m_car.up);
+    m_car.shiftCooldown = 0.0;
+    m_car.shiftDelay = 0.5;
     m_car.speed = 0.0;
 
     m_car.isClutchPressed = false;
@@ -1518,6 +1522,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     }
 
     DirectX::SimpleMath::Vector3 engineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass))) * headingVec;
+    DirectX::SimpleMath::Vector3 rollingResistance = (aTimeDelta * (rollingFriction) / mass) * velocityNorm;
+
+
+
+
     double testEngineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass)));
     testEngineForce = (aTimeDelta * (c2 + ((tmp * torque) / mass)));
     testEngineForce = (aTimeDelta * (c2 + ((tmp * torque))));
@@ -1602,7 +1611,12 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //velocityUpdate = engineForce + brakeForce + slopeForce + airResistance + gravForce;
     velocityUpdate = engineForce + brakeForce + slopeForce + airResistance;
     velocityUpdate.y += gravDown;
-    /*
+    
+    if (m_car.shiftCooldown > 0.0)
+    {
+        velocityUpdate =  brakeForce + slopeForce + airResistance + rollingResistance;
+    }
+
     if (m_car.isCarAirborne == true)
     {
         //velocityUpdate += (m_car.gravity);
@@ -1614,6 +1628,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         gravForce = m_car.gravity * aTimeDelta;
 
     }
+    /*
     else
     {
         //velocityUpdate = testVelocityUpdate;
@@ -1735,7 +1750,7 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
 
-    
+    aCar->q = q;
 
     // Test rear torque
     //m_car.testRearAnglularVelocity += (total torque / (Mass * radius ^ 2 / 2)) * time step
@@ -2569,7 +2584,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     UpdateHeadingVec();
 
-    UpdateTransmission();
+    UpdateTransmission(aTimeDelta);
 
     m_car.speed = m_car.q.velocity.Length();
     UpdateModel(aTimeDelta);
@@ -2598,8 +2613,15 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DebugPushUILineDecimalNumber("m_car.q.engineForce ", m_car.q.engineForce.Length(), "");
 }
 
-void Vehicle::UpdateTransmission()
+void Vehicle::UpdateTransmission(const double aTimeDelta)
 {
+    // update shift delay cooldown
+    m_car.shiftCooldown -= aTimeDelta;
+    if (m_car.shiftCooldown < 0.0)
+    {
+        m_car.shiftCooldown = 0.0;
+    }
+
     double velocity = m_car.q.velocity.Length();
     //double downShiftLimit = 900.0;
     //  Compute the new engine rpm value
@@ -2615,7 +2637,8 @@ void Vehicle::UpdateTransmission()
         if (m_car.omegaE > m_car.redline)
         {
             double oldGearRatio = m_car.gearRatio[m_car.gearNumber];
-            ++m_car.gearNumber;
+            //++m_car.gearNumber;
+            GearUp();
             double newGearRatio = m_car.gearRatio[m_car.gearNumber];
             m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
         }
