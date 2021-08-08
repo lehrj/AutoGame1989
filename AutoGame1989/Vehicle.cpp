@@ -1443,7 +1443,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         torque = 0.0;
     }
     //DebugPushUILineDecimalNumber("torque ", torque, "");
-    
+    //torque = 10.0;
     //  Compute the velocity magnitude. The 1.0e-8 term
     //  ensures there won't be a divide by zero later on
     //  if all of the velocity components are zero.
@@ -1494,9 +1494,9 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     double testC2 = 60.0 * tmp * tmp * powerCurve * v;
     double testC3 = (tmp * torque);
-    DebugPushUILineDecimalNumber("testC2 = ", testC2, "");
-    //DebugPushUILineDecimalNumber("testC3 = ", testC3, "");
-
+    //DebugPushUILineDecimalNumber("testC2 = ", testC2, "");
+    DebugPushUILineDecimalNumber("testC3 = ", testC3, "");
+    DebugPushUILineDecimalNumber("c3 = ", c3, "");
     double testTorque = tmp * torque;
 
     //DebugPushUILineDecimalNumber("testTorque = ", testTorque, "");
@@ -1530,14 +1530,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double testEngineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass)));
     testEngineForce = (aTimeDelta * (c2 + ((tmp * torque) / mass)));
     testEngineForce = (aTimeDelta * (c2 + ((tmp * torque))));
+    testEngineForce = (aTimeDelta * (((tmp * torque))));
     //testEngineForce = (aTimeDelta * (c2 + ((tmp * torque)))) * wheelRadius;
     DebugPushUILineDecimalNumber("testEngineForce = ", testEngineForce, "");
 
-    if (testEngineForce > 500.0)
-    {
-        float test3 = 0.0;
-        m_testEnginePower = testEngineForce;
-    }
+
 
     if (testEngineForce > m_testEnginePower)
     {
@@ -1650,7 +1647,9 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     aDQ->velocity = velocityUpdate;
     aDQ->totalVelocity = velocityUpdate;
 
+    
     aDQ->position = aTimeDelta * newQ.velocity;
+
     /*
     aDQ->position.x = aTimeDelta * newQ.velocity.x;
     aDQ->position.y = aTimeDelta * newQ.velocity.y;
@@ -2625,7 +2624,17 @@ void Vehicle::UpdateTransmission(const double aTimeDelta)
     double velocity = m_car.q.velocity.Length();
     //double downShiftLimit = 900.0;
     //  Compute the new engine rpm value
-    m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    // test rpm with clutch depressed
+    if (m_car.isClutchPressed == true)
+    {
+        m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * (m_car.wheelRadius * 0.1));
+    }
+    else
+    {
+        m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    }
+
+
     if (m_car.omegaE < 800.0)
     {
         //m_car.omegaE = 800.0;
