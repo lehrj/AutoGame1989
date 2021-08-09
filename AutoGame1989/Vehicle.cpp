@@ -1499,9 +1499,11 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     DebugPushUILineDecimalNumber("c3 = ", c3, "");
     double testTorque = tmp * torque;
 
-    //DebugPushUILineDecimalNumber("testTorque = ", testTorque, "");
+    double xTestTorque = powerCurve * aCar->omegaE + torque;
+    DebugPushUILineDecimalNumber("xTestTorque = ", xTestTorque, "");
 
-
+    double horsePower = (xTestTorque * aCar->omegaE) / 5252.0;
+    DebugPushUILineDecimalNumber("horsePower = ", horsePower, "");
 
     DirectX::SimpleMath::Vector3 velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
 
@@ -1545,11 +1547,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     if (aCar->isClutchPressed == true)
     {
         engineForce = (aTimeDelta * (c2 + ((rollingFriction) / mass))) * headingVec;
-    }
-
-    if (m_car.isClutchPressed == true)
-    {
-        float tempBreak = 0.0;
     }
 
     velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
@@ -1639,7 +1636,9 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     }
 
     //  Compute right-hand side values.
-    aDQ->engineForce = engineForce;
+    //aDQ->engineForce = engineForce;
+    aDQ->engineForce = testEngineForce * headingVec;
+   
     aDQ->brakeForce = brakeForce;
     aDQ->slopeForce = slopeForce;
     aDQ->airResistance = airResistance;
@@ -2614,6 +2613,13 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
 void Vehicle::UpdateTransmission(const double aTimeDelta)
 {
+    /////////
+    // Test RPM velocity 
+     
+
+    // End Test
+    ///////////////////////
+
     // update shift delay cooldown
     m_car.shiftCooldown -= aTimeDelta;
     if (m_car.shiftCooldown < 0.0)
