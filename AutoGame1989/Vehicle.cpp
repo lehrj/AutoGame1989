@@ -239,7 +239,7 @@ double Vehicle::GetCarRotation()
     double steeringAngle = m_car.steeringAngle;
     //steeringAngle = 0.0;
 
-    DirectX::SimpleMath::Vector3 testRadVec(0.0, 0.0, -turnRadius);
+    DirectX::SimpleMath::Vector3 testRadVec(0.0, 0.0, static_cast<float>(-turnRadius));
     DirectX::SimpleMath::Matrix testTurnMat = DirectX::SimpleMath::Matrix::CreateRotationY(steeringAngle);
 
     testRadVec = DirectX::SimpleMath::Vector3::Transform(testRadVec, testTurnMat);
@@ -320,7 +320,8 @@ double Vehicle::GetYawRate(double aTimeDelta)
 
     
     /// ///////////////////
-    // testing wheel slip eqations and verables
+    // testing wheel slip eqations and variables
+    /*
     DirectX::SimpleMath::Vector3 testMuK = m_car.mass * ((m_car.q.velocity * m_car.q.velocity) / turnRadius);
     DirectX::SimpleMath::Vector3 testMuK2 = testMuK;
     testMuK = testMuK / (m_car.mass * m_car.gravity);
@@ -335,6 +336,7 @@ double Vehicle::GetYawRate(double aTimeDelta)
         int testBreak = 0;
         testBreak++;
     }
+    */
     /////////////////////
     /*
     //double tractionForce = m_car.muR * m_car.mass * m_car.gravity;
@@ -1525,8 +1527,9 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     DirectX::SimpleMath::Vector3 engineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass))) * headingVec;
     DirectX::SimpleMath::Vector3 rollingResistance = (aTimeDelta * (rollingFriction) / mass) * velocityNorm;
-
-
+    //engineForce = (aTimeDelta * (((xTestTorque + rollingFriction) / mass))) * headingVec;
+    //engineForce = (aTimeDelta * (((xTestTorque + rollingFriction)))) * headingVec;
+    //engineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction)))) * headingVec;
 
 
     double testEngineForce = (aTimeDelta * (c2 + ((tmp * torque + rollingFriction) / mass)));
@@ -2535,7 +2538,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     */
     
     float height = m_car.q.position.y - m_car.terrainHightAtPos;
-    DebugPushUILineDecimalNumber("height ", height, "");
+    //DebugPushUILineDecimalNumber("height ", height, "");
     // check if car is airborne
     
     if (m_car.q.position.y - m_car.terrainHightAtPos > 0.1)
@@ -2571,7 +2574,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     {
         m_car.isVelocityBackwards = false;
     }
-    DebugPushUILineDecimalNumber("m_car.isVelocityBackwards ",  m_car.isVelocityBackwards, "");
+    //DebugPushUILineDecimalNumber("m_car.isVelocityBackwards ",  m_car.isVelocityBackwards, "");
     
 
     UpdateVelocity(aTimeDelta);
@@ -2597,7 +2600,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.testAcceleration = m_car.testAcceleration / m_car.q.velocity;
     
     UpdateResistance();
-    DebugPushUILine("m_car.airResistance", m_car.airResistance);
+    //DebugPushUILine("m_car.airResistance", m_car.airResistance);
     DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
     DebugPushUILineWholeNumber("Gear ", m_car.gearNumber - 1 , "");
 
@@ -2607,7 +2610,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     float deltaLength = deltaPos.Length();
     m_testVelocity = deltaLength / aTimeDelta;
     DebugPushUILineDecimalNumber("m_testVelocity = ", m_testVelocity, " m/s");
-    DebugPushUILineWholeNumber("Clutch ", m_car.isClutchPressed, "");
+    //DebugPushUILineWholeNumber("Clutch ", m_car.isClutchPressed, "");
     DebugPushUILineDecimalNumber("m_car.q.engineForce ", m_car.q.engineForce.Length(), "");
 }
 
