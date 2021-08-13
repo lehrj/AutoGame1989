@@ -2683,10 +2683,6 @@ void Vehicle::UpdateVelocity(double aTimeDelta)
     DirectX::SimpleMath::Vector3 backwardsFriction = -testVelocity * backwardsFrictionFactor;
     testVelocity += (backwardsFriction + lateralFriction) * aTimeDelta;
 
-    DebugPushUILineDecimalNumber("testVelocity.x = ", testVelocity.x, " m/s");
-    DebugPushUILineDecimalNumber("testVelocity.y = ", testVelocity.y, " m/s");
-    DebugPushUILineDecimalNumber("testVelocity.z = ", testVelocity.z, " m/s");
-
     DirectX::SimpleMath::Vector3 velocityLine = testVelocity;
     velocityLine.Normalize();
     DebugPushTestLine(m_car.q.position + (m_car.testTerrainNormal * 2.0), velocityLine, 4.0, 0.0, DirectX::Colors::Red);
