@@ -1497,15 +1497,15 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     double testC2 = 60.0 * tmp * tmp * powerCurve * v;
     double testC3 = (tmp * torque);
     //DebugPushUILineDecimalNumber("testC2 = ", testC2, "");
-    DebugPushUILineDecimalNumber("testC3 = ", testC3, "");
-    DebugPushUILineDecimalNumber("c3 = ", c3, "");
+    //DebugPushUILineDecimalNumber("testC3 = ", testC3, "");
+    //DebugPushUILineDecimalNumber("c3 = ", c3, "");
     double testTorque = tmp * torque;
 
     double xTestTorque = powerCurve * aCar->omegaE + torque;
-    DebugPushUILineDecimalNumber("xTestTorque = ", xTestTorque, "");
+    //DebugPushUILineDecimalNumber("xTestTorque = ", xTestTorque, "");
 
     double horsePower = (xTestTorque * aCar->omegaE) / 5252.0;
-    DebugPushUILineDecimalNumber("horsePower = ", horsePower, "");
+    //DebugPushUILineDecimalNumber("horsePower = ", horsePower, "");
 
     DirectX::SimpleMath::Vector3 velocityUpdate = (aTimeDelta * (c1 + c2 + c3 + c4)) * headingVec;
 
@@ -1537,7 +1537,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     testEngineForce = (aTimeDelta * (c2 + ((tmp * torque))));
     testEngineForce = (aTimeDelta * (((tmp * torque))));
     //testEngineForce = (aTimeDelta * (c2 + ((tmp * torque)))) * wheelRadius;
-    DebugPushUILineDecimalNumber("testEngineForce = ", testEngineForce, "");
+    //DebugPushUILineDecimalNumber("testEngineForce = ", testEngineForce, "");
 
 
 
@@ -1545,7 +1545,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     {
         m_testEnginePower = testEngineForce;
     }
-    DebugPushUILineDecimalNumber("m_testEnginePower = ", m_testEnginePower, "");
+    //DebugPushUILineDecimalNumber("m_testEnginePower = ", m_testEnginePower, "");
 
     if (aCar->isClutchPressed == true)
     {
@@ -2506,6 +2506,64 @@ void Vehicle::UpdateTerrainNorm()
     
 }
 
+void Vehicle::UpdateTransmission(const double aTimeDelta)
+{
+    /////////
+    // Test RPM velocity 
+
+
+    // End Test
+    ///////////////////////
+
+    // update shift delay cooldown
+    m_car.shiftCooldown -= aTimeDelta;
+    if (m_car.shiftCooldown < 0.0)
+    {
+        m_car.shiftCooldown = 0.0;
+    }
+
+    double velocity = m_car.q.velocity.Length();
+    //double downShiftLimit = 900.0;
+    //  Compute the new engine rpm value
+    // test rpm with clutch depressed
+    if (m_car.isClutchPressed == true)
+    {
+        m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * (m_car.wheelRadius * 0.1));
+    }
+    else
+    {
+        m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
+    }
+
+
+    if (m_car.omegaE < 800.0)
+    {
+        //m_car.omegaE = 800.0;
+    }
+    //  If the engine is at the redline rpm value,
+    //  shift gears upward.
+    if (m_car.isTransmissionManual == false)
+    {
+        if (m_car.omegaE > m_car.redline)
+        {
+            double oldGearRatio = m_car.gearRatio[m_car.gearNumber];
+            //++m_car.gearNumber;
+            GearUp();
+            double newGearRatio = m_car.gearRatio[m_car.gearNumber];
+            m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
+        }
+        /*
+        if (m_car.omegaE < downShiftLimit && m_car.gearNumber > 1)
+        {
+            double oldGearRatio = m_car.gearRatio[m_car.gearNumber];
+            --m_car.gearNumber;
+            double newGearRatio = m_car.gearRatio[m_car.gearNumber];
+            m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
+        }
+        */
+    }
+}
+
 void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 {
     m_testTimerTotal += aTimeDelta;
@@ -2609,67 +2667,9 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     DirectX::SimpleMath::Vector3 deltaPos = prevPos - postPos;
     float deltaLength = deltaPos.Length();
     m_testVelocity = deltaLength / aTimeDelta;
-    DebugPushUILineDecimalNumber("m_testVelocity = ", m_testVelocity, " m/s");
+    //DebugPushUILineDecimalNumber("m_testVelocity = ", m_testVelocity, " m/s");
     //DebugPushUILineWholeNumber("Clutch ", m_car.isClutchPressed, "");
-    DebugPushUILineDecimalNumber("m_car.q.engineForce ", m_car.q.engineForce.Length(), "");
-}
-
-void Vehicle::UpdateTransmission(const double aTimeDelta)
-{
-    /////////
-    // Test RPM velocity 
-     
-
-    // End Test
-    ///////////////////////
-
-    // update shift delay cooldown
-    m_car.shiftCooldown -= aTimeDelta;
-    if (m_car.shiftCooldown < 0.0)
-    {
-        m_car.shiftCooldown = 0.0;
-    }
-
-    double velocity = m_car.q.velocity.Length();
-    //double downShiftLimit = 900.0;
-    //  Compute the new engine rpm value
-    // test rpm with clutch depressed
-    if (m_car.isClutchPressed == true)
-    {
-        m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * (m_car.wheelRadius * 0.1));
-    }
-    else
-    {
-        m_car.omegaE = velocity * 60.0 * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0 * Utility::GetPi() * m_car.wheelRadius);
-    }
-
-
-    if (m_car.omegaE < 800.0)
-    {
-        //m_car.omegaE = 800.0;
-    }
-    //  If the engine is at the redline rpm value,
-    //  shift gears upward.
-    if (m_car.isTransmissionManual == false)
-    {
-        if (m_car.omegaE > m_car.redline)
-        {
-            double oldGearRatio = m_car.gearRatio[m_car.gearNumber];
-            //++m_car.gearNumber;
-            GearUp();
-            double newGearRatio = m_car.gearRatio[m_car.gearNumber];
-            m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
-        }
-        /*
-        if (m_car.omegaE < downShiftLimit && m_car.gearNumber > 1)
-        {
-            double oldGearRatio = m_car.gearRatio[m_car.gearNumber];
-            --m_car.gearNumber;
-            double newGearRatio = m_car.gearRatio[m_car.gearNumber];
-            m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
-        }
-        */
-    }
+    //DebugPushUILineDecimalNumber("m_car.q.engineForce ", m_car.q.engineForce.Length(), "");
 }
 
 void Vehicle::UpdateVelocity(double aTimeDelta)
