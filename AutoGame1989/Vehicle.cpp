@@ -67,7 +67,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     }
 
 
-    m_carModel.normAntenna->Draw(m_carModel.normAntennaMatrix, view, proj, testColor);
+    //m_carModel.normAntenna->Draw(m_carModel.normAntennaMatrix, view, proj, testColor);
 
 
 
@@ -1743,7 +1743,7 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     //q.totalVelocity = q.engineForce;
     DirectX::SimpleMath::Vector3 testVel = q.totalVelocity;
     testVel.Normalize();
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.1), testVel, 4.0, 0.0, DirectX::Colors::Green);
+    //DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.1), testVel, 4.0, 0.0, DirectX::Colors::Green);
     //velocityUpdate = engineForce + brakeForce + slopeForce + airResistance;
     //aCar->q = q;
     //q.velocity = q.totalVelocity;
@@ -1906,10 +1906,12 @@ void Vehicle::UpdateCarAlignment()
     m_car.right.Normalize();
     m_car.forward = m_car.up.Cross(m_car.right);
     
+    /*
     DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), m_car.up, 4.0, 0.0, DirectX::Colors::Blue);
     DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), m_car.forward, 4.0, 0.0, DirectX::Colors::Orange);
     DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), -m_car.forward, 4.0, 0.0, DirectX::Colors::Orange);
     DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), m_car.right, 4.0, 0.0, DirectX::Colors::Red);
+    */
 }
 
 void Vehicle::UpdateHeadingVec()
@@ -2501,8 +2503,10 @@ void Vehicle::UpdateTerrainNorm()
     // test switch smoothing to m_car.up
     m_car.terrainNormal = m_environment->GetTerrainNormal(m_car.q.position);
 
+    /*
     DebugPushTestLine(m_car.q.position + (m_car.terrainNormal * 2.0), updateTerrainNorm, 4.0, 0.0, DirectX::Colors::White);
     DebugPushTestLine(m_car.q.position + (m_car.terrainNormal * 2.0), m_environment->GetTerrainNormal(m_car.q.position), 4.0, 0.0, DirectX::Colors::White);
+    */
     
 }
 
