@@ -3225,7 +3225,7 @@ void Game::Render()
 
     m_batch3->Begin();
 
-    DrawTerrainNormals();
+    //DrawTerrainNormals();
     DrawDebugNormalLines(m_vehicle->GetModelTestPos(), DirectX::Colors::Blue);
     DrawDebugLinesVector();
 

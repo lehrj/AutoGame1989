@@ -2643,7 +2643,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
 
     DirectX::SimpleMath::Vector3 testVelocity = m_car.q.velocity;
     testVelocity.Normalize();
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.9), testVelocity, 4.0, 0.0, DirectX::Colors::Blue);
+    //DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.9), testVelocity, 4.0, 0.0, DirectX::Colors::Blue);
 
     UpdateHeadingVec();
 
@@ -2689,7 +2689,7 @@ void Vehicle::UpdateVelocity(double aTimeDelta)
 
     DirectX::SimpleMath::Vector3 velocityLine = testVelocity;
     velocityLine.Normalize();
-    DebugPushTestLine(m_car.q.position + (m_car.testTerrainNormal * 2.0), velocityLine, 4.0, 0.0, DirectX::Colors::Red);
+    //DebugPushTestLine(m_car.q.position + (m_car.testTerrainNormal * 2.0), velocityLine, 4.0, 0.0, DirectX::Colors::Red);
     //////////////////////////
 
     float lerpSize = 0.5;
@@ -2817,15 +2817,15 @@ DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide(DirectX::SimpleMath::Vect
     DirectX::SimpleMath::Vector3 testNorm = terrainAcceleration;
     testNorm.y = 0.0;
     testNorm.Normalize();
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), testNorm, 4.0, 0.0, DirectX::Colors::Orange);
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), terrainAcceleration, 4.0, 0.0, DirectX::Colors::White);
+    //DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), testNorm, 4.0, 0.0, DirectX::Colors::Orange);
+    //DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), terrainAcceleration, 4.0, 0.0, DirectX::Colors::White);
 
 
     DirectX::SimpleMath::Vector3 testSlope = m_car.terrainNormal;
     testSlope.y = 0.0;
     terrainAcceleration = testSlope;
     testSlope.Normalize();
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), testSlope, 4.0, 0.0, DirectX::Colors::Yellow);
+    //DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), testSlope, 4.0, 0.0, DirectX::Colors::Yellow);
 
 
     DirectX::SimpleMath::Vector3 newTerrainNorm = m_environment->GetTerrainNormal(m_car.q.position);
