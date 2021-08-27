@@ -187,7 +187,7 @@ private:
     Vehicle const * m_vehicleFocus;
 
     DirectX::SimpleMath::Quaternion m_testRotQuat = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Quaternion m_chaseCameQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Identity;
     const double m_chaseCamLerpFactor = 0.1;
 
     /////// Spring Camera Variables
