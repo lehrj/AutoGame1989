@@ -9,3 +9,8 @@ Teaser trailer at : https://youtu.be/yfxJeCJw8X8
 <p align="center">
   <img width="600" src="https://github.com/lehrj/AutoGame1989/blob/master/Images/V00.png">
 </p>
+
+
+WIP : Jumping and elevation changes 
+
+Up Next : Suspension and tire mechanics
