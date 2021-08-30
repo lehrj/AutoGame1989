@@ -3226,8 +3226,8 @@ void Game::Render()
     m_batch3->Begin();
 
     //DrawTerrainNormals();
-    DrawDebugNormalLines(m_vehicle->GetModelTestPos(), DirectX::Colors::Blue);
-    DrawDebugLinesVector();
+    //DrawDebugNormalLines(m_vehicle->GetModelTestPos(), DirectX::Colors::Blue);
+    //DrawDebugLinesVector();
 
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
