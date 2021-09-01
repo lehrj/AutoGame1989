@@ -2662,9 +2662,10 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     m_car.testAcceleration = m_car.testAcceleration / m_car.q.velocity;
     
     UpdateResistance();
-    //DebugPushUILine("m_car.airResistance", m_car.airResistance);
+
     DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
-    DebugPushUILineWholeNumber("Gear ", m_car.gearNumber - 1 , "");
+    //DebugPushUILineWholeNumber("Gear ", m_car.gearNumber - 1, "");
+ 
 
 
     DirectX::SimpleMath::Vector3 postPos = m_car.q.position;

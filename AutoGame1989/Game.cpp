@@ -822,6 +822,26 @@ void Game::DrawDebugVehicleData()
         m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
         textLinePos.y += 30;
     }
+    
+    // Draw gear with formatting
+    const int selectedGear = m_vehicle->GetGear();
+    std::string gearLine;
+    if (selectedGear == 0)
+    {
+        gearLine = "Gear  R";
+    }
+    else if (selectedGear == 1)
+    {
+        gearLine = "Gear  N";
+    }
+    else
+    {
+        gearLine = "Gear  " + std::to_string(static_cast<int>(selectedGear - 1));
+    }
+    DirectX::SimpleMath::Vector2 gearLineOrigin = m_bitwiseFont->MeasureString(gearLine.c_str()) / 2.f;
+    textLinePos.x = gearLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), gearLine.c_str(), textLinePos, Colors::White, 0.f, gearLineOrigin);
+    textLinePos.y += 30;
 
     // Draw RPM with color based off redline value
     double rpm = m_vehicle->GetRPM();
