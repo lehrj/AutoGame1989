@@ -823,6 +823,16 @@ void Game::DrawDebugVehicleData()
         textLinePos.y += 30;
     }
     
+    // Draw speed with formatting
+    float speed = m_vehicle->GetSpeed() * 2.23694;
+    std::string speedLine = "Speed " + std::to_string(static_cast<int>(speed)) + " MPH";
+    //std::string speedLine = "Speed " + std::to_string(speed) + " MPH";
+    DirectX::SimpleMath::Vector2 speedLineOrigin = m_bitwiseFont->MeasureString(speedLine.c_str()) / 2.f;
+    textLinePos.x = speedLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), speedLine.c_str(), textLinePos, Colors::White, 0.f, speedLineOrigin);
+    textLinePos.y += 30;
+
+
     // Draw gear with formatting
     const int selectedGear = m_vehicle->GetGear();
     std::string gearLine;

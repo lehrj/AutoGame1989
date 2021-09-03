@@ -2542,7 +2542,7 @@ void Vehicle::UpdateTransmission(const double aTimeDelta)
 
     if (m_car.omegaE < 800.0)
     {
-        //m_car.omegaE = 800.0;
+        m_car.omegaE = 800.0;
     }
     //  If the engine is at the redline rpm value,
     //  shift gears upward.
@@ -2663,7 +2663,7 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     
     UpdateResistance();
 
-    DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
+    //DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
     //DebugPushUILineWholeNumber("Gear ", m_car.gearNumber - 1, "");
  
 
