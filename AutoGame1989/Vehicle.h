@@ -438,6 +438,7 @@ private:
     double GetWheelRotationRadiansRear(const double aTimeDelta);
 
     void LandVehicle();
+    void LandVehicle2();
 
     void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
     void RungeKutta4(struct Car* aCar, double aTimeDelta);

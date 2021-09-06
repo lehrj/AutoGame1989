@@ -1294,6 +1294,49 @@ void Vehicle::LandVehicle()
     //landingVelocityNorm = DirectX::SimpleMath::Vector3::UnitX;
 
     float impact = landingVelocityNorm.Dot(m_car.terrainNormal);
+
+    float testVel = m_testVelocity;
+
+    DirectX::SimpleMath::Vector3 updateVelocity;
+    updateVelocity.x = m_car.q.velocity.x * abs(impact);
+    updateVelocity.y = m_car.q.velocity.y * abs(impact);
+    updateVelocity.z = m_car.q.velocity.z * abs(impact);
+
+    updateVelocity = m_car.q.velocity * -impact;
+    updateVelocity = m_car.q.velocity;
+    updateVelocity.y = 0.0;
+
+
+    ///////////////////////////////
+    // Testing new landing equation
+    //  ::: Vnew = b * (-2 * (V dot N) * N + V)
+    // const float b = .3f;
+    // DirectX::SimpleMath::Vector3 terrainNorm = pBallEnvironment->GetTerrainNormal(GetBallPosInEnviron(m_ball.q.position));
+    // m_ball.q.velocity = b * (-2 * (preVelocity.Dot(terrainNorm)) * terrainNorm + preVelocity);
+    DirectX::SimpleMath::Vector3 v = m_car.q.velocity;
+    DirectX::SimpleMath::Vector3 n = m_car.terrainNormal;
+    const float b = .9f;
+
+    DirectX::SimpleMath::Vector3 testUpdateVel = b * (-2 * (v.Dot(n)) * n + v);
+    testUpdateVel.y = 0.0;
+    ///////////////////////////////
+
+    //m_car.q.velocity = updateVelocity;
+    m_car.q.velocity = testUpdateVel;
+}
+
+void Vehicle::LandVehicle2()
+{
+    double elapsedTime = m_testTimerTotal - m_testTimer;
+    float impactVelocity = m_car.q.velocity.Length();
+    DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
+    DirectX::SimpleMath::Vector3 landingVelocity = m_car.q.velocity;
+    DirectX::SimpleMath::Vector3 landingVelocityNorm = landingVelocity;
+    landingVelocityNorm.Normalize();
+
+    //landingVelocityNorm = DirectX::SimpleMath::Vector3::UnitX;
+
+    float impact = landingVelocityNorm.Dot(m_car.terrainNormal);
     //float impact = landingVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
     float testFloat = DirectX::SimpleMath::Vector3::UnitX.Dot(DirectX::SimpleMath::Vector3::UnitX);
 
@@ -1308,7 +1351,7 @@ void Vehicle::LandVehicle()
     updateVelocity = m_car.q.velocity;
     updateVelocity.y = 0.0;
 
-    testFloat = 69.0;
+
     /*
     updateVelocity.y = 0.0;
 
@@ -1323,6 +1366,7 @@ void Vehicle::LandVehicle()
 
     m_car.q.velocity = updateVelocity;
     //m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
+
 }
 
 void Vehicle::PressBrake(const double aBrakeInput)
@@ -1634,7 +1678,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     if (m_car.isCarLanding == true)
     {
-        velocityUpdate.y = -m_car.q.velocity.y;
+        //velocityUpdate.y = -m_car.q.velocity.y;
         //velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     }
 
