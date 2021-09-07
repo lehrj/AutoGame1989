@@ -113,6 +113,7 @@ private:
 
     void UpdateChaseCamera();
     void UpdateChaseCamera2();
+    void UpdateChaseCamera3();
 
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
