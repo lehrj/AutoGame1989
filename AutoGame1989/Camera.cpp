@@ -703,12 +703,12 @@ void Camera::UpdateChaseCamera()
 	// Testing new jump camera position
 	double terrainHeight2 = m_environment->GetTerrainHeightAtPos(cameraPos);
 	DirectX::SimpleMath::Vector3 jumpCamPos;
-	if (testAccelPos.y < terrainHeight2)
+	if (testAccelPos.y > terrainHeight2)
 	{
 		jumpCamPos = testAccelPos;
-		jumpCamPos.y = terrainHeight2 + 0.1;
+		jumpCamPos.y = terrainHeight2 + 0.0;
 		jumpCamPos = DirectX::SimpleMath::Vector3::Transform(jumpCamPos, m_chaseCamQuat);
-		jumpCamPos += m_vehicleFocus->GetPos();
+		jumpCamPos += m_vehicleFocus->GetPos();	
 	}
 	else
 	{
@@ -716,6 +716,7 @@ void Camera::UpdateChaseCamera()
 		jumpCamPos = DirectX::SimpleMath::Vector3::Transform(jumpCamPos, m_chaseCamQuat);
 		jumpCamPos += m_vehicleFocus->GetPos();
 	}
+	
 	DirectX::SimpleMath::Vector3 newCamPosition3 = DirectX::SimpleMath::Vector3::Lerp(preCamPosition, jumpCamPos, 0.1);
 	SetPos(newCamPosition3);
 }
