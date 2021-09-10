@@ -718,6 +718,14 @@ void Camera::UpdateChaseCamera()
 	}
 	
 	DirectX::SimpleMath::Vector3 newCamPosition3 = DirectX::SimpleMath::Vector3::Lerp(preCamPosition, jumpCamPos, 0.1);
+
+	if (newCamPosition3.y < terrainHeight2)
+	{
+		int testBreak = 0;
+
+	}
+
+
 	SetPos(newCamPosition3);
 }
 
