@@ -376,16 +376,19 @@ public:
     void GearDown();
     void GearUp();
 
+    double GetAccel() const { return m_car.testAccel; };
     double GetDebugValue() { return m_car.carRotation; };
     DirectX::SimpleMath::Vector3 GetDebugPoint() { return  m_debugPoint; };
     int GetGear() { return m_car.gearNumber; };
     DirectX::SimpleMath::Vector3 GetHeading() const { return m_car.headingVec; };
-    DirectX::SimpleMath::Vector3 GetPos() const { return m_car.q.position; };
+    
     DirectX::SimpleMath::Vector3 GetModelTestPos() const { return m_car.testModelPos; };
-
+    DirectX::SimpleMath::Vector3 GetPos() const { return m_car.q.position; };
     double GetCarRotation() const { return m_car.carRotation; };
-    DirectX::SimpleMath::Vector3 GetVelocity() const { return m_car.q.velocity; };
-    double GetAccel() const { return m_car.testAccel; };
+    
+    double GetInputBrake() const { return m_car.brakeInput; };
+    double GetInputThrottle() const { return m_car.throttleInput; };
+    
     double GetRedLine() const { return m_car.redline; };
     double GetRPM() const { return m_car.omegaE; };
     double GetRotation() const { return m_car.carRotation; };
@@ -394,6 +397,7 @@ public:
     double GetTime() { return m_car.time; };
     DirectX::SimpleMath::Vector3 GetVehicleUp() const { return m_car.up; };
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
+    DirectX::SimpleMath::Vector3 GetVelocity() const { return m_car.q.velocity; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 

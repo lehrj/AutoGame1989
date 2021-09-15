@@ -832,7 +832,6 @@ void Game::DrawDebugVehicleData()
     m_bitwiseFont->DrawString(m_spriteBatch.get(), speedLine.c_str(), textLinePos, Colors::White, 0.f, speedLineOrigin);
     textLinePos.y += 30;
 
-
     // Draw gear with formatting
     const int selectedGear = m_vehicle->GetGear();
     std::string gearLine;
@@ -867,6 +866,23 @@ void Game::DrawDebugVehicleData()
     {
         m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Red, 0.f, textLineOrigin);
     }
+    textLinePos.y += 30;
+
+
+    // Draw Throttle with formatting
+    double throttleInput = m_vehicle->GetInputThrottle();
+    std::string throttleLine = "Throttle  " + std::to_string(static_cast<int>(throttleInput * 100)) + " %";
+    DirectX::SimpleMath::Vector2 throttleLineOrigin = m_bitwiseFont->MeasureString(throttleLine.c_str()) / 2.f;
+    textLinePos.x = throttleLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), throttleLine.c_str(), textLinePos, Colors::White, 0.f, throttleLineOrigin);
+    textLinePos.y += 30;
+
+    // Draw Brake with formatting
+    double brakeInput = m_vehicle->GetInputBrake();
+    std::string brakeLine = "Brake % " + std::to_string(static_cast<int>(brakeInput * 100)) + " ";
+    DirectX::SimpleMath::Vector2 brakeLineOrigin = m_bitwiseFont->MeasureString(brakeLine.c_str()) / 2.f;
+    textLinePos.x = brakeLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), brakeLine.c_str(), textLinePos, Colors::White, 0.f, brakeLineOrigin);
     textLinePos.y += 30;
 
     // Draw Timer

@@ -730,14 +730,15 @@ void Camera::UpdateChaseCamera()
 	
 	////////////////////////////////////////
 	DirectX::SimpleMath::Vector3 newCamPosition4 = newCamPosition3;
-	const float camHeightOffset = 1.5;
+	const float camHeightOffset = 3.5;
 	newCamPosition4.y = targetPos.y + camHeightOffset;
-	const float groundOffset = 0.5;
+	const float groundOffset = 1.5;
 	double terrainHeight3 = m_environment->GetTerrainHeightAtPos(newCamPosition4);
 	if (newCamPosition4.y < terrainHeight3 + groundOffset)
 	{
 		newCamPosition4.y = terrainHeight3 + groundOffset;
 	}
+
 	SetPos(newCamPosition4);
 }
 
