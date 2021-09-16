@@ -879,7 +879,7 @@ void Game::DrawDebugVehicleData()
 
     // Draw Brake with formatting
     double brakeInput = m_vehicle->GetInputBrake();
-    std::string brakeLine = "Brake % " + std::to_string(static_cast<int>(brakeInput * 100)) + " ";
+    std::string brakeLine = "Brake % A" + std::to_string(static_cast<int>(brakeInput * 100)) + " ";
     DirectX::SimpleMath::Vector2 brakeLineOrigin = m_bitwiseFont->MeasureString(brakeLine.c_str()) / 2.f;
     textLinePos.x = brakeLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), brakeLine.c_str(), textLinePos, Colors::White, 0.f, brakeLineOrigin);
