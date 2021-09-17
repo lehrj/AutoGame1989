@@ -825,7 +825,7 @@ void Game::DrawDebugVehicleData()
     
     // Draw speed with formatting
     float speed = m_vehicle->GetSpeed() * 2.23694;
-    std::string speedLine = "Speed " + std::to_string(static_cast<int>(speed)) + " MPH";
+    std::string speedLine = "Speed   " + std::to_string(static_cast<int>(speed)) + " MPH";
     //std::string speedLine = "Speed " + std::to_string(speed) + " MPH";
     DirectX::SimpleMath::Vector2 speedLineOrigin = m_bitwiseFont->MeasureString(speedLine.c_str()) / 2.f;
     textLinePos.x = speedLineOrigin.x + 20;
@@ -837,15 +837,15 @@ void Game::DrawDebugVehicleData()
     std::string gearLine;
     if (selectedGear == 0)
     {
-        gearLine = "Gear  R";
+        gearLine = "Gear    R";
     }
     else if (selectedGear == 1)
     {
-        gearLine = "Gear  N";
+        gearLine = "Gear    N";
     }
     else
     {
-        gearLine = "Gear  " + std::to_string(static_cast<int>(selectedGear - 1));
+        gearLine = "Gear    " + std::to_string(static_cast<int>(selectedGear - 1));
     }
     DirectX::SimpleMath::Vector2 gearLineOrigin = m_bitwiseFont->MeasureString(gearLine.c_str()) / 2.f;
     textLinePos.x = gearLineOrigin.x + 20;
@@ -855,7 +855,7 @@ void Game::DrawDebugVehicleData()
     // Draw RPM with color based off redline value
     double rpm = m_vehicle->GetRPM();
     double redline = m_vehicle->GetRedLine();
-    std::string textLine = "RPM  " + std::to_string(static_cast<int>(rpm));
+    std::string textLine = "RPM    " + std::to_string(static_cast<int>(rpm));
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     if (rpm < redline)
@@ -871,7 +871,7 @@ void Game::DrawDebugVehicleData()
 
     // Draw Throttle with formatting
     double throttleInput = m_vehicle->GetInputThrottle();
-    std::string throttleLine = "Throttle  " + std::to_string(static_cast<int>(throttleInput * 100)) + " %";
+    std::string throttleLine = "Throttle%" + std::to_string(static_cast<int>(throttleInput * 100)) + " ";
     DirectX::SimpleMath::Vector2 throttleLineOrigin = m_bitwiseFont->MeasureString(throttleLine.c_str()) / 2.f;
     textLinePos.x = throttleLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), throttleLine.c_str(), textLinePos, Colors::White, 0.f, throttleLineOrigin);
@@ -879,7 +879,7 @@ void Game::DrawDebugVehicleData()
 
     // Draw Brake with formatting
     double brakeInput = m_vehicle->GetInputBrake();
-    std::string brakeLine = "Brake % A" + std::to_string(static_cast<int>(brakeInput * 100)) + " ";
+    std::string brakeLine = "Brake % " + std::to_string(static_cast<int>(brakeInput * 100)) + " ";
     DirectX::SimpleMath::Vector2 brakeLineOrigin = m_bitwiseFont->MeasureString(brakeLine.c_str()) / 2.f;
     textLinePos.x = brakeLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), brakeLine.c_str(), textLinePos, Colors::White, 0.f, brakeLineOrigin);
