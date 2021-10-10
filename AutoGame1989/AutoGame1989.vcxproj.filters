@@ -20,6 +20,7 @@
     <ClInclude Include="Vehicle.h" />
     <ClInclude Include="ScrollingBackground.h" />
     <ClInclude Include="Lighting.h" />
+    <ClInclude Include="Wheel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -31,6 +32,7 @@
     <ClCompile Include="Auto.cpp" />
     <ClCompile Include="Vehicle.cpp" />
     <ClCompile Include="Lighting.cpp" />
+    <ClCompile Include="Wheel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
