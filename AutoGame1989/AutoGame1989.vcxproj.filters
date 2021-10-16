@@ -21,6 +21,7 @@
     <ClInclude Include="ScrollingBackground.h" />
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="Wheel.h" />
+    <ClInclude Include="Suspension.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -33,6 +34,7 @@
     <ClCompile Include="Vehicle.cpp" />
     <ClCompile Include="Lighting.cpp" />
     <ClCompile Include="Wheel.cpp" />
+    <ClCompile Include="Suspension.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

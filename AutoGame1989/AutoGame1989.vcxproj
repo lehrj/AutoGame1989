@@ -170,6 +170,7 @@
     <ClInclude Include="sounds.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="StepTimer.h" />
+    <ClInclude Include="Suspension.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="Vehicle.h" />
     <ClInclude Include="Wheel.h" />
@@ -187,6 +188,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Suspension.cpp" />
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="Vehicle.cpp" />
     <ClCompile Include="Wheel.cpp" />
