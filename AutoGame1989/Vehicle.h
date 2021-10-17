@@ -4,6 +4,7 @@
 #include "Utility.h"
 #include "Environment.h"
 #include "Wheel.h"
+#include "Suspension.h"
 
 
 struct Motion
@@ -471,6 +472,8 @@ private:
     Car                             m_car;
     CarModel                        m_carModel;
     Environment const*              m_environment;
+    Wheel                           m_wheel;
+    Suspension                      m_suspension;
 
     DirectX::SimpleMath::Vector3    m_heading;   // direction the vehicle is facing
     double                          m_speed;        // speed vehicle is traveling
