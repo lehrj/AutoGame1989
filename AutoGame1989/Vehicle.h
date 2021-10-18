@@ -428,7 +428,7 @@ private:
         m_debugUIVector.clear();
         m_debugLinesVec.clear();
     };
-   
+
     void DebugPushUILine(std::string aString, double aVal);
     void DebugPushUILineDecimalNumber(std::string aString1, double aVal, std::string aString2);
     void DebugPushUILineWholeNumber(std::string aString1, int aVal, std::string aString2);

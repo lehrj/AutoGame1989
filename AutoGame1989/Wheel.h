@@ -27,20 +27,21 @@ struct WheelData
 
 class Wheel
 {
-    public:
-        void InitializeWheel();
-
-        
+    public:      
         
         void SetAxelPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.axle = aPos; };
         void SetForward(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.forward = aPos; };
-        void SetLocalPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.localPosition = aPos; };      
+        void SetLocalPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.localPosition = aPos; };    
+        void SetRadius(double aRadius) { m_wheelData.radius = aRadius; };
         void SetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.terrainNormal = aPos; };
         void SetUp(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.up = aPos; };
+        void SetWidth(double aWidth) { m_wheelData.radius = aWidth; };
         void SetWorldPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.worldPosition = aPos; };
 
 
     private:
+        
+        void InitializeWheel(DirectX::SimpleMath::Vector3 aLocalPos, bool aIsStearable, double aRadius, double aWidth, double aMass);
         WheelData m_wheelData;
 
 };

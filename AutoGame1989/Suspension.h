@@ -9,6 +9,6 @@ public:
 
 
 private:
-
+    void InitializeSuspesion();
 };
 
