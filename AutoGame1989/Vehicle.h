@@ -37,6 +37,7 @@ struct Car
     double redline;
     double revlimit;
     double finalDriveRatio;
+    double wheelMass;
     double wheelRadius;
     double wheelWidth;
     int gearNumber;     //  gear the car is in
@@ -402,6 +403,7 @@ public:
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_car.q.velocity; };
 
+    
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
     void Jump(double aTimer);
@@ -437,6 +439,8 @@ private:
     void DebugTestMove(const double aTimer, const double aTimeDelta);
 
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+    void InitializeWheels();
+
     double GetCarRotation();
     double GetTurnRadius();
     double GetYawRate(double aTimeDelta);
@@ -472,8 +476,11 @@ private:
     Car                             m_car;
     CarModel                        m_carModel;
     Environment const*              m_environment;
-    Wheel                           m_wheel;
     Suspension                      m_suspension;
+
+    const int                       m_numberOfWheels = 4;
+    std::vector<Wheel>              m_wheels;
+    
 
     DirectX::SimpleMath::Vector3    m_heading;   // direction the vehicle is facing
     double                          m_speed;        // speed vehicle is traveling

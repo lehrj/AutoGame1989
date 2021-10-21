@@ -1201,6 +1201,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.gearRatio[5] = 1.22;
     m_car.gearRatio[6] = 1.02;
     m_car.gearRatio[7] = 0.84;
+    m_car.wheelMass = 22.68;    // Total guess, not confirmed with porsche or volvo stats
 
     m_car.gravity = DirectX::SimpleMath::Vector3(0.0, -9.81, 0.0);
     m_car.numEqns = 6;
@@ -1272,13 +1273,40 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.testHeading2 = DirectX::SimpleMath::Vector3::UnitZ;
     m_car.testHeading2 = - DirectX::SimpleMath::Vector3::UnitX;
     InitializeModel(aContext);
+
+    InitializeWheels();
+}
+
+void Vehicle::InitializeWheels()
+{
+    m_wheels.resize(m_numberOfWheels);
+    
+    // front left wheel 
+    DirectX::SimpleMath::Vector3 wheelLocPos = DirectX::SimpleMath::Vector3::Zero;
+    wheelLocPos = wheelLocPos.Transform(wheelLocPos, m_carModel.wheelFrontLeftTranslation);
+    DirectX::SimpleMath::Vector3 wheelWorldPos = wheelLocPos + m_car.q.position;
+    m_wheels[0].InitializeWheel(wheelLocPos, wheelWorldPos, true, m_car.wheelRadius, m_car.wheelWidth, m_car.wheelMass);
+
+    // front right wheel
+    wheelLocPos = wheelLocPos.Transform(DirectX::SimpleMath::Vector3::Zero, m_carModel.wheelFrontRightTranslation);
+    wheelWorldPos = wheelLocPos + m_car.q.position;
+    m_wheels[1].InitializeWheel(wheelLocPos, wheelWorldPos, true, m_car.wheelRadius, m_car.wheelWidth, m_car.wheelMass);
+
+    // rear right wheel
+    wheelLocPos = wheelLocPos.Transform(DirectX::SimpleMath::Vector3::Zero, m_carModel.wheelRearRightTranslation);
+    wheelWorldPos = wheelLocPos + m_car.q.position;
+    m_wheels[2].InitializeWheel(wheelLocPos, wheelWorldPos, true, m_car.wheelRadius, m_car.wheelWidth, m_car.wheelMass);
+
+    // rear left wheel
+    wheelLocPos = wheelLocPos.Transform(DirectX::SimpleMath::Vector3::Zero, m_carModel.wheelRearLeftTranslation);
+    wheelWorldPos = wheelLocPos + m_car.q.position;
+    m_wheels[3].InitializeWheel(wheelLocPos, wheelWorldPos, true, m_car.wheelRadius, m_car.wheelWidth, m_car.wheelMass);
 }
 
 void Vehicle::Jump(double aTimer)
 {
     m_testTimer = aTimer;
     float jumpHeight = 10.0;
-    //m_car.q.position.y += jumpHeight;
     m_car.q.velocity.y += jumpHeight;
 }
 
