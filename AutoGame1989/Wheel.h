@@ -14,13 +14,13 @@ struct WheelData
 
     DirectX::SimpleMath::Vector3 axle;
     DirectX::SimpleMath::Vector3 terrainNormal;
-    double radius;
-    double friction;
-    double sidewallHeight;
-    double width;
-    double tireDampening;
-    double mass;
-    double rpm;
+    float radius;
+    float friction;
+    float sidewallHeight;
+    float width;
+    float tireDampening;
+    float mass;
+    float rpm;
 
 };
 
@@ -30,15 +30,15 @@ class Wheel
     public:      
 
 
-        void InitializeWheel(DirectX::SimpleMath::Vector3 aLocalPos, DirectX::SimpleMath::Vector3 aWorldPos, bool aIsStearable, double aRadius, double aWidth, double aMass);
+        void InitializeWheel(DirectX::SimpleMath::Vector3 aLocalPos, DirectX::SimpleMath::Vector3 aWorldPos, bool aIsStearable, float aRadius, float aWidth, float aMass);
 
         void SetAxelPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.axle = aPos; };
         void SetForward(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.forward = aPos; };
         void SetLocalPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.localPosition = aPos; };    
-        void SetRadius(double aRadius) { m_wheelData.radius = aRadius; };
+        void SetRadius(float aRadius) { m_wheelData.radius = aRadius; };
         void SetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.terrainNormal = aPos; };
         void SetUp(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.up = aPos; };
-        void SetWidth(double aWidth) { m_wheelData.radius = aWidth; };
+        void SetWidth(float aWidth) { m_wheelData.radius = aWidth; };
         void SetWorldPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.worldPosition = aPos; };
 
 

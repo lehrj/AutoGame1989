@@ -7,31 +7,31 @@ class Utility
 public:
     Utility();
     static inline int GetNumericalPrecisionForUI() { return 2; }; // For setting the numerical precison displayed by UI
-    static inline double GetPi() { return 3.1415926535897931; };
-    static inline double ToDegrees(double r) { return r * 180.0 / GetPi(); };
-    static inline double ToRadians(double d) { return d / 180.0 * GetPi(); };
+    static inline float GetPi() { return 3.1415926535897931; };
+    static inline float ToDegrees(float r) { return r * 180.0 / GetPi(); };
+    static inline float ToRadians(float d) { return d / 180.0 * GetPi(); };
 
     struct ImpactData
     {   
-        double angleX;
-        double angleY;
-        double angleZ;
-        double directionDegrees = 0.0; // shot aim direction
-        double directionRads = 0.0; // shot aim direction
-        double mass;
-        double cor; // Coefficient of restitution
-        double impactMissOffSet;
+        float angleX;
+        float angleY;
+        float angleZ;
+        float directionDegrees = 0.0; // shot aim direction
+        float directionRads = 0.0; // shot aim direction
+        float mass;
+        float cor; // Coefficient of restitution
+        float impactMissOffSet;
         DirectX::SimpleMath::Vector3 launchPosition;
-        double power;
-        double velocity;
+        float power;
+        float velocity;
         DirectX::SimpleMath::Vector3 vHead; 
         DirectX::SimpleMath::Vector3 vHeadNormal;
         DirectX::SimpleMath::Vector3 vHeadParallel;
         DirectX::SimpleMath::Vector3 vFaceNormal;
 
         // test variables for gameplay
-        double swingPlaneAngle;
-        double ballAxisTilt;
+        float swingPlaneAngle;
+        float ballAxisTilt;
     };
 
     static inline void ZeroImpactData(ImpactData& aImpact) 

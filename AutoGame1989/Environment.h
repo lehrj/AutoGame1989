@@ -29,14 +29,14 @@ typedef struct tagBITMAPFILEHEADER {
 struct Environ
 {
     std::string                         name;
-    double                              airDensity;        // in kg/m^3
+    float                              airDensity;        // in kg/m^3
     std::string                         airDensityStr;
     DirectX::SimpleMath::Vector3        holePosition;
-    double                              gravity;           // in m/s^2
+    float                              gravity;           // in m/s^2
     std::string                         gravityStr;
-    double                              landingFrictionScale;
+    float                              landingFrictionScale;
     std::string                         landingFrictionScaleStr;
-    double                              landingHardnessScale;
+    float                              landingHardnessScale;
     std::string                         landingHardnessScaleStr;
     int                                 par;
     float                               scale;
@@ -89,22 +89,22 @@ public:
 
     bool CheckTerrainTriangleHeight(DirectX::XMFLOAT3& aPos, DirectX::XMFLOAT3 v0, DirectX::XMFLOAT3 v1, DirectX::XMFLOAT3 v2) const;
 
-    double GetAirDensity() const { return m_currentEnviron.airDensity; };
+    float GetAirDensity() const { return m_currentEnviron.airDensity; };
     std::string GetAirDensityString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].airDensityStr; };
-    double GetAirDensity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].airDensity; };
+    float GetAirDensity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].airDensity; };
     DirectX::XMVECTORF32 GetEnvironColor() const { return m_currentEnviron.terrainColor; };
     std::string GetEnvironName(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].name; };
     std::vector<Fixture> GetFixtureBucket() { return m_fixtureBucket; };
 
-    double GetGravity() const { return m_currentEnviron.gravity; };
+    float GetGravity() const { return m_currentEnviron.gravity; };
     std::string GetGravityString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravityStr; };
-    double GetGravity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravity; };
+    float GetGravity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravity; };
     std::vector<DirectX::VertexPositionColor> GetFlagVertex() const { return m_flagVertex; };
     DirectX::SimpleMath::Vector3 GetHolePosition() const { return m_currentEnviron.holePosition; };
-    double GetHoleRadius() const { return m_holeRadius * m_currentEnviron.scale; };
+    float GetHoleRadius() const { return m_holeRadius * m_currentEnviron.scale; };
     std::vector<DirectX::VertexPositionColor> GetHoleVertex() const { return m_holeVertex; };
-    double GetLandingHeight() const { return m_landingHeight; };
-    double GetLauchHeight() const { return m_launchHeight; };
+    float GetLandingHeight() const { return m_landingHeight; };
+    float GetLauchHeight() const { return m_launchHeight; };
     int GetNumerOfEnvirons() const { return m_environsAvailable; };
     int GetNumberOfEnvironSelectDisplayVariables() const { return m_environSelectDisplayDataPoints; };
     int GetPar() const { return m_currentEnviron.par; };
@@ -119,13 +119,13 @@ public:
     std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
     std::vector<DirectX::VertexPositionNormalColor> GetTerrainPositionNormalColorVertex();
 
-    double GetWindDirection() const;
+    float GetWindDirection() const;
     DirectX::SimpleMath::Vector3 GetWindVector() const { return m_currentEnviron.wind; };
-    double GetWindX() const { return m_currentEnviron.wind.x; };
+    float GetWindX() const { return m_currentEnviron.wind.x; };
     std::string GetWindXString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].windXStr; };
-    double GetWindY() const { return m_currentEnviron.wind.y; };
+    float GetWindY() const { return m_currentEnviron.wind.y; };
     std::string GetWindYString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].windYStr; };
-    double GetWindZ() const { return m_currentEnviron.wind.z; };
+    float GetWindZ() const { return m_currentEnviron.wind.z; };
     std::string GetWindZString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].windZStr; };    
 
     bool InitializeTerrain(EnvironmentType aEnviron);
@@ -150,8 +150,8 @@ private:
 
     bool LoadHeightMap(EnvironmentType aEnviron);
 
-    void SetLandingHeight(double aLandingHeight);
-    void SetLauchHeight(double aLaunchHeight);
+    void SetLandingHeight(float aLandingHeight);
+    void SetLauchHeight(float aLaunchHeight);
 
     void ScaleTerrain(EnvironmentType aEnviron);
     
@@ -165,25 +165,25 @@ private:
     std::vector<DirectX::VertexPositionColor> m_flagVertex;
     std::vector<DirectX::VertexPositionColor> m_holeVertex;
     const int                           m_holeResolution = 30;          // number of vertices used to draw hole circle
-    //const double                        m_holeRadius = 0.10795;              // Radius of the hole, future updates could include addition of "big cup" or "tiny cup" hole sizes
-    const double                        m_holeRadius = .50795;
+    //const float                        m_holeRadius = 0.10795;              // Radius of the hole, future updates could include addition of "big cup" or "tiny cup" hole sizes
+    const float                        m_holeRadius = .50795;
 
-    double                              m_landingHeight = 0.0;     // in meters
-    double                              m_launchHeight = 0.0;      // in meters
+    float                              m_landingHeight = 0.0;     // in meters
+    float                              m_launchHeight = 0.0;      // in meters
 
     // variables for bounce and roll functionality not yet implemented
-    double                              m_landingFriction;
-    double                              m_landingHardness;
-    double                              m_landingXslope;
-    double                              m_landingZslope;
+    float                              m_landingFriction;
+    float                              m_landingHardness;
+    float                              m_landingXslope;
+    float                              m_landingZslope;
 
     // min max consts
-    const double                        m_minAirDensity = 0.0;
-    const double                        m_maxAirDensity = 68.0; // just above the air density of Venus
-    const double                        m_minGravity = 0.1;
-    const double                        m_maxGravity = 28.0;    // approximate value for the mass of the sun
-    const double                        m_minMaxHeight = 450.0; // Launch & Landing min/max heights is just above the largest elevation change (>400 meters) of any real golf course which is the Extreme 19 in Limpopo Province South Africa
-    const double                        m_minMaxWind = 667.0;   // highest know wind speed on Neptune
+    const float                        m_minAirDensity = 0.0;
+    const float                        m_maxAirDensity = 68.0; // just above the air density of Venus
+    const float                        m_minGravity = 0.1;
+    const float                        m_maxGravity = 28.0;    // approximate value for the mass of the sun
+    const float                        m_minMaxHeight = 450.0; // Launch & Landing min/max heights is just above the largest elevation change (>400 meters) of any real golf course which is the Extreme 19 in Limpopo Province South Africa
+    const float                        m_minMaxWind = 667.0;   // highest know wind speed on Neptune
 
     std::vector<DirectX::VertexPositionNormal> m_heightMap;
     
@@ -195,20 +195,20 @@ private:
     // scaling variables for different types of heightmaps
     //const float                         m_heightScale = 0.007;
     const float                         m_heightScale = 0.009;
-    const double                        m_heightScaleStartScreen = 0.007;
+    const float                        m_heightScaleStartScreen = 0.007;
 
-    const double                        m_elevationScaleStartScreen = 0.007;
-    const double                        m_mapScaleStartScreen = 0.2;
-    const double                        m_mapXtransformStartScreen = -2.101;
-    const double                        m_mapYtransformStartScreen = -0.02;
-    const double                        m_mapZtransformStartScreen = -0.02;
+    const float                        m_elevationScaleStartScreen = 0.007;
+    const float                        m_mapScaleStartScreen = 0.2;
+    const float                        m_mapXtransformStartScreen = -2.101;
+    const float                        m_mapYtransformStartScreen = -0.02;
+    const float                        m_mapZtransformStartScreen = -0.02;
 
     
-    const double                        m_elevationScaleGamePlay = 0.007;
-    const double                        m_mapScaleGamePlay = 60.0;
-    const double                        m_mapXtransformGamePlay = -16.0 * m_mapScaleGamePlay;
-    const double                        m_mapYtransformGamePlay = 0.0;
-    const double                        m_mapZtransformGamePlay = -16.0 * m_mapScaleGamePlay;
+    const float                        m_elevationScaleGamePlay = 0.007;
+    const float                        m_mapScaleGamePlay = 60.0;
+    const float                        m_mapXtransformGamePlay = -16.0 * m_mapScaleGamePlay;
+    const float                        m_mapYtransformGamePlay = 0.0;
+    const float                        m_mapZtransformGamePlay = -16.0 * m_mapScaleGamePlay;
 
 
 };

@@ -25,53 +25,53 @@ struct Car
     int numEqns;
     double time;
     Motion q;
-    double mass;
-    double area;
-    double density;
-    double Cd;
-    double muR;  // rolling friction
-    double airResistance;
-    //double airDensity;
-    double totalResistance;
-    double omegaE;
-    double redline;
-    double revlimit;
-    double finalDriveRatio;
-    double wheelMass;
-    double wheelRadius;
-    double wheelWidth;
+    float mass;
+    float area;
+    float density;
+    float Cd;
+    float muR;  // rolling friction
+    float airResistance;
+    //float airDensity;
+    float totalResistance;
+    float omegaE;
+    float redline;
+    float revlimit;
+    float finalDriveRatio;
+    float wheelMass;
+    float wheelRadius;
+    float wheelWidth;
     int gearNumber;     //  gear the car is in
     int numberOfGears;  //  total number of gears
-    double gearRatio[8];  //  gear ratios
+    float gearRatio[8];  //  gear ratios
     DirectX::SimpleMath::Vector3 gravity;
 
     //////////////////////
-    double inputDeadZone;  // small deadzone to ignore gas and brake peddle input
-    double brakeInput;
-    double throttleInput;    
-    double brakeDecayRate;
-    double throttleDecayRate;
-    double maxThrottleInput; /////////////////////////////
-    double maxBrakeInput; /////////////////////////////////
-    double maxThrottleRate;
-    double maxBrakeRate;
+    float inputDeadZone;  // small deadzone to ignore gas and brake peddle input
+    float brakeInput;
+    float throttleInput;    
+    float brakeDecayRate;
+    float throttleDecayRate;
+    float maxThrottleInput; /////////////////////////////
+    float maxBrakeInput; /////////////////////////////////
+    float maxThrottleRate;
+    float maxBrakeRate;
     bool isClutchPressed;
     bool isThrottlePressed;
     bool isBrakePressed;
     bool isTurningPressed;
 
-    double steeringAngle;
-    double steeringAngleDecay;
-    double steeringAngleMax;
-    double steeringSpeed; 
+    float steeringAngle;
+    float steeringAngleDecay;
+    float steeringAngleMax;
+    float steeringSpeed; 
 
     DirectX::SimpleMath::Quaternion headingQuat;
-    double carRotation;
+    float carRotation;
     DirectX::SimpleMath::Vector3 headingVec;          // direction the vehicle is facing
-    double shiftCooldown;           // cooldown timer after gear is changed, before engine power is direct to driver train
-    double shiftDelay;              // time it takes to change gears in which the clutch is pressed and engine does not deliver power
-    double speed;                   // speed vehicle is traveling
-    double wheelBase;
+    float shiftCooldown;           // cooldown timer after gear is changed, before engine power is direct to driver train
+    float shiftDelay;              // time it takes to change gears in which the clutch is pressed and engine does not deliver power
+    float speed;                   // speed vehicle is traveling
+    float wheelBase;
     bool isAccelerating;
     bool isBraking;
     bool isRevlimitHit;
@@ -84,9 +84,9 @@ struct Car
     DirectX::SimpleMath::Vector3 up;
     DirectX::SimpleMath::Vector3 right;
 
-    double terrainHightAtPos;
+    float terrainHightAtPos;
     DirectX::SimpleMath::Vector3 testModelPos;
-    double testModelRotation;
+    float testModelRotation;
     DirectX::SimpleMath::Vector3 testTerrainNormal;
     DirectX::SimpleMath::Vector3 testHeadingVec;
     DirectX::SimpleMath::Vector3 testHeading1;
@@ -94,12 +94,12 @@ struct Car
     DirectX::SimpleMath::Vector3 testHeading3;
 
     DirectX::SimpleMath::Vector3 testAcceleration = DirectX::SimpleMath::Vector3::Zero;
-    double testAccel = 0.0;
+    float testAccel = 0.0;
     // test values for wheel slip
-    double testRearCylinderMass;
-    double testTorque;
-    double testRearAnglularVelocity;
-    double testRearAngularVelocityAngle;
+    float testRearCylinderMass;
+    float testTorque;
+    float testRearAnglularVelocity;
+    float testRearAngularVelocityAngle;
 };
 
 struct CarModel
@@ -371,7 +371,7 @@ public:
     Vehicle();
 
     void DebugEBrake();
-    std::vector<std::pair<std::string, double>> DebugGetUI() { return m_debugUI; };
+    std::vector<std::pair<std::string, float>> DebugGetUI() { return m_debugUI; };
     std::vector<std::string> DebugGetUIVector() { return m_debugUIVector; };
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32>> DebugGetTestLines() const { return m_debugLinesVec; };
 
@@ -380,24 +380,24 @@ public:
     void GearDown();
     void GearUp();
 
-    double GetAccel() const { return m_car.testAccel; };
-    double GetDebugValue() { return m_car.carRotation; };
+    float GetAccel() const { return m_car.testAccel; };
+    float GetDebugValue() { return m_car.carRotation; };
     DirectX::SimpleMath::Vector3 GetDebugPoint() { return  m_debugPoint; };
     int GetGear() { return m_car.gearNumber; };
     DirectX::SimpleMath::Vector3 GetHeading() const { return m_car.headingVec; };
     
     DirectX::SimpleMath::Vector3 GetModelTestPos() const { return m_car.testModelPos; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_car.q.position; };
-    double GetCarRotation() const { return m_car.carRotation; };
+    float GetCarRotation() const { return m_car.carRotation; };
     
-    double GetInputBrake() const { return m_car.brakeInput; };
-    double GetInputThrottle() const { return m_car.throttleInput; };
+    float GetInputBrake() const { return m_car.brakeInput; };
+    float GetInputThrottle() const { return m_car.throttleInput; };
     
-    double GetRedLine() const { return m_car.redline; };
-    double GetRPM() const { return m_car.omegaE; };
-    double GetRotation() const { return m_car.carRotation; };
+    float GetRedLine() const { return m_car.redline; };
+    float GetRPM() const { return m_car.omegaE; };
+    float GetRotation() const { return m_car.carRotation; };
     float GetSpeed() { return m_car.speed; };
-    double GetSteering() const { return m_car.steeringAngle; };
+    float GetSteering() const { return m_car.steeringAngle; };
     double GetTime() { return m_car.time; };
     DirectX::SimpleMath::Vector3 GetVehicleUp() const { return m_car.up; };
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
@@ -408,9 +408,9 @@ public:
 
     void Jump(double aTimer);
 
-    void PressBrake(const double aBrakeInput);
+    void PressBrake(const float aBrakeInput);
     void PressClutch(const bool aClutchInput);
-    void PressThrottle(const double aThrottleInput);
+    void PressThrottle(const float aThrottleInput);
     void ThrottleBrakeDecay(const double aTimeDelta);
     void SetEnvironment(Environment* aEnviron);
     void SteeringInputDecay(const double aTimeDelta);
@@ -421,7 +421,7 @@ public:
     void ToggleFuel();
     void ToggleGas();
 
-    void TurnInput(double aTurnInput);
+    void TurnInput(float aTurnInput);
     void UpdateVehicle(const double aTimer, const double aTimeDelta);
 
 private:
@@ -431,8 +431,8 @@ private:
         m_debugLinesVec.clear();
     };
 
-    void DebugPushUILine(std::string aString, double aVal);
-    void DebugPushUILineDecimalNumber(std::string aString1, double aVal, std::string aString2);
+    void DebugPushUILine(std::string aString, float aVal);
+    void DebugPushUILineDecimalNumber(std::string aString1, float aVal, std::string aString2);
     void DebugPushUILineWholeNumber(std::string aString1, int aVal, std::string aString2);
     void DebugPushTestLine(DirectX::SimpleMath::Vector3 aLineBase, DirectX::SimpleMath::Vector3 aLineEnd, float aLength, float aYOffset, DirectX::XMVECTORF32 aColor);
 
@@ -441,17 +441,16 @@ private:
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     void InitializeWheels();
 
-    double GetCarRotation();
-    double GetTurnRadius();
-    double GetYawRate(double aTimeDelta);
+    float GetCarRotation();
+    float GetTurnRadius();
+    float GetYawRate(double aTimeDelta);
     DirectX::SimpleMath::Vector3 GetVehicleDirection();
-    double GetWheelRotationRadians(const double aTimeDelta);
-    double GetWheelRotationRadiansRear(const double aTimeDelta);
+    float GetWheelRotationRadians(const double aTimeDelta);
+    float GetWheelRotationRadiansRear(const double aTimeDelta);
 
     void LandVehicle();
-    void LandVehicle2();
 
-    void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, double aQScale, Motion* aDQ);
+    void RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
     
     void TestGetForceLateral();
@@ -483,16 +482,16 @@ private:
     
 
     DirectX::SimpleMath::Vector3    m_heading;   // direction the vehicle is facing
-    double                          m_speed;        // speed vehicle is traveling
+    float                          m_speed;        // speed vehicle is traveling
 
     DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector4    m_defaultRight = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0.0);
     DirectX::SimpleMath::Vector4    m_right = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0.0);
 
-    double                          m_moveBackForward = 0.0;
-    double                          m_moveLeftRight = 0.0;
-    double                          m_moveUpDown = 0.0;
+    float                          m_moveBackForward = 0.0;
+    float                          m_moveLeftRight = 0.0;
+    float                          m_moveUpDown = 0.0;
 
     DirectX::SimpleMath::Matrix     m_testBody;
     DirectX::SimpleMath::Matrix     m_testBodyTop;
@@ -501,27 +500,27 @@ private:
 
     DirectX::SimpleMath::Vector3 m_debugPoint = DirectX::SimpleMath::Vector3::Zero;
 
-    double m_testRotation = 0.0;
-    double m_testRotationRear = 0.0;
+    float m_testRotation = 0.0;
+    float m_testRotationRear = 0.0;
 
-    double m_testMax = 0.0;
-    double m_testMin = 1.0;
+    float m_testMax = 0.0;
+    float m_testMin = 1.0;
 
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32>> m_debugLinesVec;
-    std::vector<std::pair<std::string, double>> m_debugUI;
+    std::vector<std::pair<std::string, float>> m_debugUI;
     std::vector<std::string> m_debugUIVector;
 
-    double m_debugWheelDistance = 0.0;
-    double m_debugVehicleDistanceTraveled = 0.0;
+    float m_debugWheelDistance = 0.0;
+    float m_debugVehicleDistanceTraveled = 0.0;
 
     bool m_testIsBreakLightOn = false;
 
     bool m_isFuelOn = true;
 
     float m_testVelocity = 0.0;
-    double m_testTimer = 0.0;
+    float m_testTimer = 0.0;
     double m_testTimerTotal = 0.0;
 
-    double m_testEnginePower = 0.0;
+    float m_testEnginePower = 0.0;
 };
 

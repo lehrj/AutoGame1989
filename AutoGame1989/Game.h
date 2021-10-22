@@ -324,8 +324,8 @@ private:
     float                               m_debugValue4 = 0.0;
     float                               m_debugValue5 = 0.0;
 
-    double                              m_testTimer = 0.0;
-    double                              m_testTimerOffset = 0.0;
+    float                              m_testTimer = 0.0;
+    float                              m_testTimerOffset = 0.0;
 
     // start scene control variables
     const float                         m_fadeDuration = 5.0f;

@@ -22,11 +22,8 @@ void Lighting::SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, c
     const float fogStartStopGap = 1.0;
     float distanceToTarget = DirectX::SimpleMath::Vector3::Distance(aCamPos, aTargetPos);
 
-    float distanceToTarget2 = DirectX::SimpleMath::Vector3::Distance(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX);
-
     float fogStart = distanceToTarget - aDimmerVal;
     float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
-    float testVal = fogEnd - distanceToTarget;
 
     aEffect->SetFogEnabled(true);
     aEffect->SetFogStart(fogEnd);
@@ -35,7 +32,7 @@ void Lighting::SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, c
 
 void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer)
 {
-    const float timeStamp = static_cast<float>(aTimer);
+    const double timeStamp = static_cast<double>(aTimer);
 
     aEffect->EnableDefaultLighting();
     if (m_currentLightingState == LightingState::LIGHTINGSTATE_JI)

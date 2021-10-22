@@ -2,10 +2,10 @@
 
 struct SuspensionData
 {
-    double dampening;
-    double elasticity;
-    double springStiffness;
-    double springDampening;
+    float dampening;
+    float elasticity;
+    float springStiffness;
+    float springDampening;
 };
 
 class Suspension

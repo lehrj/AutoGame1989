@@ -853,8 +853,8 @@ void Game::DrawDebugVehicleData()
     textLinePos.y += 30;
 
     // Draw RPM with color based off redline value
-    double rpm = m_vehicle->GetRPM();
-    double redline = m_vehicle->GetRedLine();
+    float rpm = m_vehicle->GetRPM();
+    float redline = m_vehicle->GetRedLine();
     std::string textLine = "RPM     " + std::to_string(static_cast<int>(rpm));
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
@@ -870,7 +870,7 @@ void Game::DrawDebugVehicleData()
 
 
     // Draw Throttle with formatting
-    double throttleInput = m_vehicle->GetInputThrottle();
+    float throttleInput = m_vehicle->GetInputThrottle();
     std::string throttleLine = "Throttle% " + std::to_string(static_cast<int>(throttleInput * 100)) + " ";
     DirectX::SimpleMath::Vector2 throttleLineOrigin = m_bitwiseFont->MeasureString(throttleLine.c_str()) / 2.f;
     textLinePos.x = throttleLineOrigin.x + 20;
@@ -878,7 +878,7 @@ void Game::DrawDebugVehicleData()
     textLinePos.y += 30;
 
     // Draw Brake with formatting
-    double brakeInput = m_vehicle->GetInputBrake();
+    float brakeInput = m_vehicle->GetInputBrake();
     std::string brakeLine = "Brake %  " + std::to_string(static_cast<int>(brakeInput * 100)) + " ";
     DirectX::SimpleMath::Vector2 brakeLineOrigin = m_bitwiseFont->MeasureString(brakeLine.c_str()) / 2.f;
     textLinePos.x = brakeLineOrigin.x + 20;
@@ -898,7 +898,7 @@ void Game::DrawDebugVehicleData()
 
 void Game::DrawDebugValue()
 {
-    std::vector<std::pair<std::string, double>> uiVector = m_vehicle->DebugGetUI();
+    std::vector<std::pair<std::string, float>> uiVector = m_vehicle->DebugGetUI();
     int vecSize = uiVector.size();
     DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2; 
     textLinePos.x = 200;
@@ -1012,8 +1012,6 @@ void Game::DrawIntroScene()
     DirectX::SimpleMath::Vector3 testFogTarget3(0.5, 0.0, 0.0);
     DirectX::SimpleMath::Vector3 testFogTarget4(3.1, 0.0, 0.0);
 
-    float testVal1, testVal2, testVal3, testVal4;
-
     const float fadeDuration = m_fadeDuration;
     const float logoDisplayDuration = m_logoDisplayDuration;
     const float logoDisplayGap = m_logoDisplayGap;
@@ -1044,21 +1042,6 @@ void Game::DrawIntroScene()
     const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
     const float fadeOutEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
     const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-
-    /*
-    float fadeInStartX1 = fadeInStart2 - fadeInStart1;
-    float fadeInStartX2 = fadeInStart3 - fadeInStart2;
-    float fadeInStartX3 = fadeInStart4 - fadeInStart3;
-    float fadeInEndX1 = fadeInEnd2 - fadeInEnd1;
-    float fadeInEndX2 = fadeInEnd3 - fadeInEnd2;
-    float fadeInEndX3 = fadeInEnd4 - fadeInEnd3;
-    float fadeOutStartX1 = fadeOutStart2 - fadeOutStart1;
-    float fadeOutStartX2 = fadeOutStart3- fadeOutStart2;
-    float fadeOutStartX3 = fadeOutStart4 - fadeOutStart3;
-    float fadeOutEndX1 = fadeOutEnd2 - fadeOutEnd1;
-    float fadeOutEndX2 = fadeOutEnd3 - fadeOutEnd2;
-    float fadeOutEndX3 = fadeOutEnd4 - fadeOutEnd3;
-    */
 
     if (timeStamp < fadeInStart1)
     {
@@ -1284,7 +1267,6 @@ void Game::DrawIntroScene()
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
-            testVal1 = colorIntensity;
         }
         else if (timeStamp > fadeOutStart4) // fade out
         {
@@ -2946,8 +2928,6 @@ void Game::SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float
     const float fogStartStopGap = 1.0;
     float distanceToTarget = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), aTargetPos);
 
-    float distanceToTarget2 = DirectX::SimpleMath::Vector3::Distance(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX);
-
     float fogStart = distanceToTarget - aDimmerVal;
     float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
     float testVal = fogEnd - distanceToTarget;
@@ -2966,8 +2946,6 @@ void Game::SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const floa
     const float fogStartStopGap = 1.0;
     float distanceToTarget = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), aTargetPos);
 
-    float distanceToTarget2 = DirectX::SimpleMath::Vector3::Distance(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX);
-
     float fogStart = distanceToTarget - aDimmerVal;
     float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
     float testVal = fogEnd - distanceToTarget;
@@ -2982,11 +2960,8 @@ void Game::SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const floa
     const float fogStartStopGap = 1.0;
     float distanceToTarget = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), aTargetPos);
 
-    float distanceToTarget2 = DirectX::SimpleMath::Vector3::Distance(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitX);
-
     float fogStart = distanceToTarget - aDimmerVal;
     float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
-    float testVal = fogEnd - distanceToTarget;
 
     m_effect3->SetFogEnabled(true);
     m_effect3->SetFogStart(fogEnd);
@@ -3764,7 +3739,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //DirectX::SimpleMath::Vector3 targetEndPos(0.0, 0.0, 0.0);
             DirectX::SimpleMath::Vector3 centerPointPos = m_vehicle->GetPos();
             //DirectX::SimpleMath::Vector3 centerPointPos(0.0, 00.0, 0.0);
-            double rotation = Utility::ToRadians(90.0);
+            float rotation = Utility::ToRadians(90.0);
             m_camera->SetCameraStartPos(m_camera->GetPos());
             //m_camera->SetCameraEndPos(m_camera->GetSwingCamPos(pGolf->GetShotStartPos(), pGolf->GetDirectionToHoleInRads()));
             m_camera->SetCameraEndPos(endPos);

@@ -40,7 +40,7 @@ public:
     float GetAimTurnRate() const { return m_aimTurnRate; };
 
     DirectX::SimpleMath::Vector3 GetHomePos() const { return m_homePosition; };
-    double GetPitch() const { return m_pitch; };
+    float GetPitch() const { return m_pitch; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_position; };
     DirectX::SimpleMath::Vector3 GetPreSwingCamPos(DirectX::SimpleMath::Vector3 aPosition, float aDirection);
     DirectX::SimpleMath::Vector3 GetPreSwingTargPos(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
@@ -52,7 +52,7 @@ public:
     DirectX::SimpleMath::Vector3 GetUp() const { return m_up; };
     float GetViewPlaneNear() const { return m_nearPlane; };
     float GetViewPlaneFar() const { return m_farPlane; };
-    double GetYaw() const { return m_yaw; };
+    float GetYaw() const { return m_yaw; };
     void InintializePreSwingCamera(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
     bool IsCameraAtDestination();
     void OnResize(uint32_t aWidth, uint32_t aHeight);
@@ -87,8 +87,8 @@ public:
     void SetTransitionSpeed(const float aSpeed);
     
     void SetVehicleFocus(const Vehicle* aVehicle);
-    void SpinClockwise(double aRotation);
-    void SpinCounterClockwise(double aRotation);
+    void SpinClockwise(float aRotation);
+    void SpinCounterClockwise(float aRotation);
     void TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation); //Chili
 
     
@@ -183,14 +183,14 @@ private:
     DirectX::SimpleMath::Vector3 m_followCamUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 m_followCamPosOffset = DirectX::SimpleMath::Vector3(-1.0, 1.0, 0.0);
     DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 0.0, 0.0);
-    double                       m_followCamDistance = 1.0;
+    float                       m_followCamDistance = 1.0;
 
     Environment const* m_environment;
     Vehicle const * m_vehicleFocus;
 
     DirectX::SimpleMath::Quaternion m_testRotQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Identity;
-    const double m_chaseCamLerpFactor = 0.1;
+    const float m_chaseCamLerpFactor = 0.1;
 
     /////// Spring Camera Variables
     float m_hDistance;
@@ -209,14 +209,14 @@ private:
 
 
     // SpinCamera
-    double m_carmeraSpin = 0.0;
-    double m_carmeraSpinPitch = 0.0;
-    const double m_camSpinTime = 4.0;
-    //double m_carmeraSpinRotationAmount = Utility::ToRadians(270.0);
-    double m_carmeraSpinRotationAmount = Utility::ToRadians(270.0);
-    double m_carmeraSpinPitchAmount = Utility::ToRadians(10.0);
-    double m_carmeraSpinSpeed = m_carmeraSpinRotationAmount / m_camSpinTime;
-    double m_carmeraSpinPitchSpeed = m_carmeraSpinPitchAmount / m_camSpinTime;
+    float m_carmeraSpin = 0.0;
+    float m_carmeraSpinPitch = 0.0;
+    const float m_camSpinTime = 4.0;
+    //float m_carmeraSpinRotationAmount = Utility::ToRadians(270.0);
+    float m_carmeraSpinRotationAmount = Utility::ToRadians(270.0);
+    float m_carmeraSpinPitchAmount = Utility::ToRadians(10.0);
+    float m_carmeraSpinSpeed = m_carmeraSpinRotationAmount / m_camSpinTime;
+    float m_carmeraSpinPitchSpeed = m_carmeraSpinPitchAmount / m_camSpinTime;
     //const DirectX::SimpleMath::Vector3 m_spinCamOffset = m_followCamPos - m_followCamTarget;
     DirectX::SimpleMath::Vector3 m_spinCamOffset = m_followCamPos - m_followCamTarget;
 

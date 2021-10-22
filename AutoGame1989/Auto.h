@@ -17,7 +17,7 @@ public:
     std::vector<Fixture> GetEnvironFixtureBucket() { return pEnvironment->GetFixtureBucket(); };
     DirectX::XMVECTORF32 GetTerrainColor() const { return pEnvironment->GetEnvironColor(); };
     std::vector<std::string> GetUIStrings() const { return m_uiStrings; };
-    double GetWindDirectionRad() const { return pEnvironment->GetWindDirection(); };
+    float GetWindDirectionRad() const { return pEnvironment->GetWindDirection(); };
 
     void LoadEnvironment(const int aIndex);
     void SetCharacter(const int aCharacterIndex);
@@ -30,9 +30,9 @@ private:
 
     void LoadCharacterTraits();
     Environment*                                pEnvironment;
-    double                                      m_xWindow;
-    double                                      m_yWindow;
-    double                                      m_zWindow;
+    float                                      m_xWindow;
+    float                                      m_yWindow;
+    float                                      m_zWindow;
 
     int                                         m_selectedCharacter;
     int                                         m_selectedEnvironment;
