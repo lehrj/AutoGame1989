@@ -193,22 +193,22 @@ private:
     std::vector<DirectX::VertexPositionNormal> m_terrainModel;
 
     // scaling variables for different types of heightmaps
-    //const float                         m_heightScale = 0.007;
-    const float                         m_heightScale = 0.009;
-    const float                        m_heightScaleStartScreen = 0.007;
+    //const float                         m_heightScale = 0.007f;
+    const float                         m_heightScale = 0.009f;
+    const float                        m_heightScaleStartScreen = 0.007f;
 
-    const float                        m_elevationScaleStartScreen = 0.007;
-    const float                        m_mapScaleStartScreen = 0.2;
-    const float                        m_mapXtransformStartScreen = -2.101;
-    const float                        m_mapYtransformStartScreen = -0.02;
-    const float                        m_mapZtransformStartScreen = -0.02;
+    const float                        m_elevationScaleStartScreen = 0.007f;
+    const float                        m_mapScaleStartScreen = 0.2f;
+    const float                        m_mapXtransformStartScreen = -2.101f;
+    const float                        m_mapYtransformStartScreen = -0.02f;
+    const float                        m_mapZtransformStartScreen = -0.02f;
 
     
-    const float                        m_elevationScaleGamePlay = 0.007;
-    const float                        m_mapScaleGamePlay = 60.0;
-    const float                        m_mapXtransformGamePlay = -16.0 * m_mapScaleGamePlay;
-    const float                        m_mapYtransformGamePlay = 0.0;
-    const float                        m_mapZtransformGamePlay = -16.0 * m_mapScaleGamePlay;
+    const float                        m_elevationScaleGamePlay = 0.007f;
+    const float                        m_mapScaleGamePlay = 60.0f;
+    const float                        m_mapXtransformGamePlay = -16.0f * m_mapScaleGamePlay;
+    const float                        m_mapYtransformGamePlay = 0.0f;
+    const float                        m_mapZtransformGamePlay = -16.0f * m_mapScaleGamePlay;
 
 
 };

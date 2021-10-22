@@ -11,7 +11,7 @@ void Vehicle::DebugEBrake()
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 }
 
-void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
+void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj)
 {
     DirectX::SimpleMath::Matrix world = aWorld;
     world.Up(m_environment->GetTerrainNormal(m_car.q.position));
@@ -263,13 +263,8 @@ float Vehicle::GetCarRotation()
     {
         m_testMin = testAngle;
     }
-    if (m_car.time > 15.0)
-    {
-        int testBreak;
 
-    }
-
-    float carRotation = testAngle + 0.1; 
+    float carRotation = testAngle + 0.1f; 
 
     return carRotation;
 }
@@ -278,13 +273,12 @@ float Vehicle::GetTurnRadius()
 {
     float wheelBase = m_car.wheelBase;
     float sinDelta = sin(m_car.steeringAngle);
-    float sinDelta2 = sin((10.0 * Utility::GetPi()) / 180.0);
-    float testVal = (10.0 * Utility::GetPi()) / 180.0;
-    float turnRadius = 1.0;
-    float turnRadius2 = 1.0;
-    if (sinDelta == 0.0)
+    float sinDelta2 = sin((10.0f * Utility::GetPi()) / 180.0f);
+    float turnRadius = 1.0f;
+    float turnRadius2 = 1.0f;
+    if (sinDelta == 0.0f)
     {
-        turnRadius = 0.0;
+        turnRadius = 0.0f;
     }
     else
     {
@@ -297,7 +291,6 @@ float Vehicle::GetTurnRadius()
 
 float Vehicle::GetYawRate(double aTimeDelta)
 {
-    float turnRadius = GetTurnRadius();
     float wheelBase = m_car.wheelBase;
     float velocity = m_car.q.velocity.Length();
     float steeringAngle = m_car.steeringAngle;
@@ -305,57 +298,8 @@ float Vehicle::GetYawRate(double aTimeDelta)
     float sinDelta = sin(steeringAngle);
 
     float omega = (velocity * sinDelta) / wheelBase;
-    float omegaT = omega * aTimeDelta;
+    float omegaT = omega * static_cast<float>(aTimeDelta);
 
-    float omegaDeg = Utility::ToDegrees(omega);
-    float omegaTdeg = Utility::ToDegrees(omegaT);
-
-    
-    /// ///////////////////
-    // testing wheel slip eqations and variables
-    /*
-    DirectX::SimpleMath::Vector3 testMuK = m_car.mass * ((m_car.q.velocity * m_car.q.velocity) / turnRadius);
-    DirectX::SimpleMath::Vector3 testMuK2 = testMuK;
-    testMuK = testMuK / (m_car.mass * m_car.gravity);
-
-    float Fn = m_car.mass * -m_car.gravity.y * cos(0.0);
-    DirectX::SimpleMath::Vector3 FnVec = m_car.mass * -m_car.gravity * m_car.terrainNormal;
-
-    if (steeringAngle > 0.1 || steeringAngle < -0.1)
-    {
-        float aaTestTorque = m_car.testTorque;
-        float aaTestAngularVelocity = m_car.testRearAnglularVelocity;
-        int testBreak = 0;
-        testBreak++;
-    }
-    */
-    /////////////////////
-    /*
-    //float tractionForce = m_car.muR * m_car.mass * m_car.gravity;
-    float tractionForce = 0.7 * m_car.mass * m_car.gravity;
-    DirectX::SimpleMath::Vector3 tractionForce2 = m_car.muR * m_car.mass * DirectX::SimpleMath::Vector3(0.0, m_car.gravity, 0.0);
-
-    //float forceLateral = (((m_car.mass * (velocity * velocity)) / turnRadius) - (tractionForce * m_car.mass * -m_car.gravity)) * aTimeDelta;
-    float forceLateral = (((m_car.mass * (velocity * velocity)) / turnRadius) - (0.7 * m_car.mass * -m_car.gravity)) *aTimeDelta;
-    DebugPushUILineDecimalNumber("tractionForce ", tractionForce, "");
-    DebugPushUILineDecimalNumber("forceLateral ", forceLateral, "");
-
-    float tractionDeficit = tractionForce - forceLateral;
-    DebugPushUILineDecimalNumber("tractionDeficit - ", tractionDeficit, "");
-    tractionDeficit = forceLateral / tractionForce;
-    DebugPushUILineDecimalNumber("tractionDeficit / ", tractionDeficit, "");
-    DebugPushUILineDecimalNumber("pre omegaT ", omegaT, "");
-    float overSteer = tractionDeficit;
-    if (turnRadius < -0.001)
-    {
-        omegaT += overSteer;
-    }
-    else if (turnRadius > 0.01)
-    {
-        omegaT += overSteer;
-    }
-    DebugPushUILineDecimalNumber("postomegaT ", omegaT, "");
-    */
     return omegaT;
 }
 
@@ -425,20 +369,20 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 {
     // porche boxter base dimensions - 4.3942m L x 1.8034m W x 1.27m H, wheel diameter 0.3186m
     const float wheelRadius = m_car.wheelRadius;
-    const float wheelDiameter = wheelRadius * 2.0;
-    const float axelRadius = wheelRadius * 0.275;
-    const float axelDiameter = axelRadius * 2.0;
-    const float length = 4.3942;
-    const float width = 1.8034;
-    const float heightTotal = 1.27;
-    const float height = heightTotal * 0.6;
-    const float windowPlaneOffset = 0.03;
-    const float axelLength = width + 0.56;
-    const float tireLength = width + 0.5;
+    const float wheelDiameter = wheelRadius * 2.0f;
+    const float axelRadius = wheelRadius * 0.275f;
+    const float axelDiameter = axelRadius * 2.0f;
+    const float length = 4.3942f;
+    const float width = 1.8034f;
+    const float heightTotal = 1.27f;
+    const float height = heightTotal * 0.6f;
+    const float windowPlaneOffset = 0.03f;
+    const float axelLength = width + 0.56f;
+    const float tireLength = width + 0.5f;
     const float wheelBase = m_car.wheelBase;
-    const float frontAxelOffset = wheelBase * .55;
-    const float rearAxelOffset = wheelBase * .45;
-    const float zFightOffSet = 0.001;
+    const float frontAxelOffset = wheelBase * .55f;
+    const float rearAxelOffset = wheelBase * .45f;
+    const float zFightOffSet = 0.001f;
     DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
@@ -447,8 +391,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     m_carModel.frontTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 32);
     m_carModel.rearTire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 32);
-    //const float rimWidth = m_car.wheelWidth * 1.1;
-    const float rimWidth = m_car.wheelWidth * 1.25;
+    const float rimWidth = m_car.wheelWidth * 1.25f;
     m_carModel.hubCap = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), rimWidth, axelDiameter, 32);
 
     m_carModel.bodyMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -457,43 +400,43 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.frontTireMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.rearTireMatrix = DirectX::SimpleMath::Matrix::Identity;
 
-    DirectX::SimpleMath::Vector3 bodyTranslation(0.0, height + wheelRadius, 0.0);
+    DirectX::SimpleMath::Vector3 bodyTranslation(0.0f, height + wheelRadius, 0.0f);
     m_carModel.bodyMatrix += DirectX::SimpleMath::Matrix::CreateTranslation(bodyTranslation);
 
     // Axels
-    DirectX::SimpleMath::Vector3 frontAxelTranslation(DirectX::SimpleMath::Vector3(wheelBase * .55, wheelRadius, 0.0));
-    DirectX::SimpleMath::Matrix frontAxelTransMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .55, wheelRadius, 0.0));
+    DirectX::SimpleMath::Vector3 frontAxelTranslation(DirectX::SimpleMath::Vector3(wheelBase * .55f, wheelRadius, 0.0f));
+    DirectX::SimpleMath::Matrix frontAxelTransMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .55f, wheelRadius, 0.0f));
 
-    DirectX::SimpleMath::Matrix axelRotation = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+    DirectX::SimpleMath::Matrix axelRotation = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     m_carModel.frontAxelMatrix *= axelRotation;
     m_carModel.frontAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(frontAxelTranslation);
     m_carModel.rearAxelMatrix *= axelRotation;
-    m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .45, wheelRadius, 0.0));
+    m_carModel.rearAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .45f, wheelRadius, 0.0f));
     
     m_carModel.frontTireMatrix *= axelRotation;
-    m_carModel.frontTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5, wheelRadius, 0.0));
+    m_carModel.frontTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wheelBase * .5f, wheelRadius, 0.0f));
     m_carModel.rearTireMatrix *= axelRotation;
-    m_carModel.rearTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+    m_carModel.rearTireMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5f, wheelRadius, 0.0f));
 
     m_carModel.frontAxelRotation *= axelRotation;
     m_carModel.frontAxelTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(frontAxelTranslation);
 
     m_carModel.rearAxelRotation = axelRotation;
-    m_carModel.rearAxelTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+    m_carModel.rearAxelTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5f, wheelRadius, 0.0f));
 
     m_carModel.frontTireRotation *= axelRotation;
     m_carModel.frontTireTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(frontAxelTranslation);
 
     m_carModel.rearTireRotation = axelRotation;
-    m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5, wheelRadius, 0.0));
+    m_carModel.rearTireTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-wheelBase * .5f, wheelRadius, 0.0f));
     /// Axels End ////////////////////////////////////////////////////////////
     /// 
     /// Independent Wheels Start /////////////////////////////////////////////
-    m_carModel.tire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), m_car.wheelWidth, m_car.wheelRadius * 2.0, 32);
+    m_carModel.tire = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), m_car.wheelWidth, m_car.wheelRadius * 2.0f, 32);
     /// Front Left Wheel Start
     m_carModel.wheelFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.wheelFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
-    m_carModel.wheelFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(frontAxelOffset, m_car.wheelRadius, -(carBodySize.z * 0.5)));
+    m_carModel.wheelFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(frontAxelOffset, m_car.wheelRadius, -(carBodySize.z * 0.5f)));
     m_carModel.wheelFrontLeftTranslation = m_carModel.wheelFrontLeftMatrix;
     /// Front Right Wheel Start
     m_carModel.wheelFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -566,31 +509,31 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     /// Wheel Rim End ///////////////////////////////////////////////////////
     /// Hub Back Left Start /////////////////////////////////////////////////////
     m_carModel.hubBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubBackLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -m_car.wheelWidth * 0.5, 0.0));
+    m_carModel.hubBackLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -m_car.wheelWidth * 0.5f, 0.0f));
     m_carModel.localHubBackLeftMatrix = m_carModel.hubBackLeftMatrix;
     m_carModel.hubBackLeftMatrix *= m_carModel.wheelRearLeftTranslation;
     /// Hub Back Left End ///////////////////////////////////////////////////////
     /// Hub Back InteriorLeft Start /////////////////////////////////////////////////////
     m_carModel.hubInteriorBackLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubInteriorBackLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, m_car.wheelWidth * 0.5, 0.0));
+    m_carModel.hubInteriorBackLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, m_car.wheelWidth * 0.5f, 0.0f));
     m_carModel.localHubInteriorBackLeftMatrix = m_carModel.hubInteriorBackLeftMatrix;
     m_carModel.hubInteriorBackLeftMatrix *= m_carModel.wheelRearLeftTranslation;
     /// Hub Back Interior Left End ///////////////////////////////////////////////////////
     /// Hub Back Right Start /////////////////////////////////////////////////////
     m_carModel.hubBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubBackRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, m_car.wheelWidth * 0.5, 0.0));
+    m_carModel.hubBackRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, m_car.wheelWidth * 0.5f, 0.0f));
     m_carModel.localHubBackRightMatrix = m_carModel.hubBackRightMatrix;
     m_carModel.hubBackRightMatrix *= m_carModel.wheelRearRightTranslation;
     /// Hub Back Right End ///////////////////////////////////////////////////////
     /// Hub Back InteriorRight Start /////////////////////////////////////////////////////
     m_carModel.hubInteriorBackRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubInteriorBackRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -m_car.wheelWidth * 0.5, 0.0));
+    m_carModel.hubInteriorBackRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -m_car.wheelWidth * 0.5f, 0.0f));
     m_carModel.localHubInteriorBackRightMatrix = m_carModel.hubInteriorBackRightMatrix;
     m_carModel.hubInteriorBackRightMatrix *= m_carModel.wheelRearRightTranslation;
     /// Hub Back InteriorRight End ///////////////////////////////////////////////////////
     /// Hub Front Left Start /////////////////////////////////////////////////////
     m_carModel.hubFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.hubFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -m_car.wheelWidth * 0.5, 0.0));
+    m_carModel.hubFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -m_car.wheelWidth * 0.5f, 0.0f));
     m_carModel.localHubFrontLeftMatrix = m_carModel.hubFrontLeftMatrix;
     m_carModel.hubFrontLeftMatrix *= m_carModel.wheelFrontLeftTranslation;
     /// Hub Front Left End /////////////////////////////////////////////////////// 
@@ -681,14 +624,14 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
      
     /////// Rocker Skirt Panels Start ////////////////////////////////////////
     DirectX::SimpleMath::Vector3 rockerSkirtSize = carBodySize;
-    rockerSkirtSize.x *= 0.77;
-    rockerSkirtSize.y *= 0.2;
-    rockerSkirtSize.z += 0.05;
+    rockerSkirtSize.x *= 0.77f;
+    rockerSkirtSize.y *= 0.2f;
+    rockerSkirtSize.z += 0.05f;
     m_carModel.rockerSkirt = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rockerSkirtSize);
     DirectX::SimpleMath::Vector3 rockerSkirtTranslation;
-    rockerSkirtTranslation.x = -(carBodySize.x * 0.5) + (rockerSkirtSize.x * 0.5) - zFightOffSet;
-    rockerSkirtTranslation.y = height - carBodySize.y + (rockerSkirtSize.y * 0.5) - zFightOffSet;
-    rockerSkirtTranslation.z = 0.0;
+    rockerSkirtTranslation.x = -(carBodySize.x * 0.5f) + (rockerSkirtSize.x * 0.5f) - zFightOffSet;
+    rockerSkirtTranslation.y = height - carBodySize.y + (rockerSkirtSize.y * 0.5f) - zFightOffSet;
+    rockerSkirtTranslation.z = 0.0f;
     m_carModel.rockerSkirtMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.rockerSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rockerSkirtTranslation);
     m_carModel.localRockerSkirtMatrix = m_carModel.rockerSkirtMatrix;
@@ -696,9 +639,9 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     
     /// rear spoiler start /////////////////////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 rearSpoilerSize = carBodyTopSize;
-    rearSpoilerSize.x = 0.1;
-    rearSpoilerSize.y = 0.07;   
-    rearSpoilerSize.z *= 0.8;
+    rearSpoilerSize.x = 0.1f;
+    rearSpoilerSize.y = 0.07f;   
+    rearSpoilerSize.z *= 0.8f;
     m_carModel.rearSpoiler = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rearSpoilerSize);
 
     m_carModel.rearSpoilerMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -712,7 +655,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     /// rear spoiler end //////////////////////////////////////////////////////////////////////////////////
 
     /// windshield start /////////////////////////////////////////////////////////////////////////////////  
-    DirectX::SimpleMath::Vector3 windShieldSize(1.0, 0.5, carBodyTopSize.z - 0.0001);
+    DirectX::SimpleMath::Vector3 windShieldSize(1.0, 0.5, carBodyTopSize.z - 0.0001f);
     const float windShieldLengthAlignment = (topLength * 2.0) - roofLengthAlignment;
     m_carModel.windShield = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), windShieldSize);
     m_carModel.windShieldMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -854,28 +797,28 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     /// Grill Slat Start /////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 grillSlatSize = grillSize;
-    grillSlatSize.y *= 0.04;
-    grillSlatSize.z *= 0.52;
+    grillSlatSize.y *= 0.04f;
+    grillSlatSize.z *= 0.52f;
     m_carModel.grillSlat = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), grillSlatSize);
     m_carModel.grillSlatMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.grillSlatMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(28.0));
+    m_carModel.grillSlatMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(28.0f));
     m_carModel.grillSlatMatrix *= m_carModel.grillLogoMatrix;
-    m_carModel.grillSlatMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-zFightOffSet, 0.0, 0.0));
+    m_carModel.grillSlatMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-zFightOffSet, 0.0f, 0.0f));
     m_carModel.localGrillSlatMatrix = m_carModel.grillSlatMatrix;
     /// Grill Slat End ///////////////////////////////////////////////////////////////
     
     /// Head Light Left Start  ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 headLightSize;
-    headLightSize.x = bumperFrontSize.x * 0.5;
-    headLightSize.y = (carBodySize.y - bumperFrontSize.y) * 0.85;
-    headLightSize.z = (carBodySize.z - hoodSize.z) * 0.5;
+    headLightSize.x = bumperFrontSize.x * 0.5f;
+    headLightSize.y = (carBodySize.y - bumperFrontSize.y) * 0.85f;
+    headLightSize.z = (carBodySize.z - hoodSize.z) * 0.5f;
 
     m_carModel.headLight = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), headLightSize);
 
     m_carModel.headLightLeftMatrix = m_carModel.hoodMatrix;
     DirectX::SimpleMath::Vector3 headLightLeftTranslation;
-    headLightLeftTranslation.x = (carBodySize.x * 0.5) - (headLightSize.x * 0.9);
-    headLightLeftTranslation.y = (carBodySize.y * 0.5) + (-headLightSize.y * 0.7);
+    headLightLeftTranslation.x = (carBodySize.x * 0.5f) - (headLightSize.x * 0.9f);
+    headLightLeftTranslation.y = (carBodySize.y * 0.5f) + (-headLightSize.y * 0.7f);
     headLightLeftTranslation.z = (- carBodySize.z * 0.5) + (headLightSize.z * 0.45);
     m_carModel.headLightLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(headLightLeftTranslation);
     m_carModel.localHeadLightLeftMatrix = m_carModel.headLightLeftMatrix;
@@ -884,9 +827,9 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     /// Head Light Right Start  ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 headLightRightTranslation = headLightLeftTranslation;
     headLightRightTranslation.x -= headLightLeftTranslation.x;
-    headLightRightTranslation.x = 0.0;
-    headLightRightTranslation.y = 0.0;
-    headLightRightTranslation.z *= -2.0;
+    headLightRightTranslation.x = 0.0f;
+    headLightRightTranslation.y = 0.0f;
+    headLightRightTranslation.z *= -2.0f;
 
     m_carModel.headLightRightMatrix = m_carModel.headLightLeftMatrix;
     m_carModel.headLightRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(headLightRightTranslation);
@@ -895,14 +838,13 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     /// Blinker Light Lower Left Start ///////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 blinkerLightSize = headLightSize;
-    blinkerLightSize.y *= 0.5;
-    blinkerLightSize.z *= 0.2;
+    blinkerLightSize.y *= 0.5f;
+    blinkerLightSize.z *= 0.2f;
     m_carModel.blinkerLight = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), blinkerLightSize);
     DirectX::SimpleMath::Vector3 blinkerLeftTranslation;
-    blinkerLeftTranslation.x = 0.001;
-    //blinkerLeftTranslation.y = -blinkerLightSize.y * 0.4;
-    blinkerLeftTranslation.y = -blinkerLightSize.y * 0.5;
-    blinkerLeftTranslation.z = (-headLightSize.z * 0.5) + (blinkerLightSize.z * 0.5) - 0.001;
+    blinkerLeftTranslation.x = 0.001f;
+    blinkerLeftTranslation.y = -blinkerLightSize.y * 0.5f;
+    blinkerLeftTranslation.z = (-headLightSize.z * 0.5f) + (blinkerLightSize.z * 0.5f) - 0.001f;
     m_carModel.blinkerLightLowerLeftMatrix = m_carModel.headLightLeftMatrix;
     m_carModel.blinkerLightLowerLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(blinkerLeftTranslation);
     m_carModel.localBlinkerLightLowerLeftMatrix = m_carModel.blinkerLightLowerLeftMatrix;
@@ -910,9 +852,9 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     /// Blinker Light Upper Left Start ///////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 blinkerUpperLeftTranslation;
-    blinkerUpperLeftTranslation.x = 0.001;
-    blinkerUpperLeftTranslation.y = +blinkerLightSize.y * 0.5;
-    blinkerUpperLeftTranslation.z = (-headLightSize.z * 0.5) + (blinkerLightSize.z * 0.5) - 0.001;
+    blinkerUpperLeftTranslation.x = 0.001f;
+    blinkerUpperLeftTranslation.y = +blinkerLightSize.y * 0.5f;
+    blinkerUpperLeftTranslation.z = (-headLightSize.z * 0.5f) + (blinkerLightSize.z * 0.5f) - 0.001f;
     m_carModel.blinkerLightUpperLeftMatrix = m_carModel.headLightLeftMatrix;
     m_carModel.blinkerLightUpperLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(blinkerUpperLeftTranslation);
     m_carModel.localBlinkerLightUpperLeftMatrix = m_carModel.blinkerLightUpperLeftMatrix;
@@ -920,7 +862,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     
     /// Blinker Light Lower Right Start ///////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 blinkerRightTranslation = blinkerLeftTranslation;
-    blinkerRightTranslation.z *= -1.0;
+    blinkerRightTranslation.z *= -1.0f;
     m_carModel.blinkerLightLowerRightMatrix = m_carModel.headLightRightMatrix;
     m_carModel.blinkerLightLowerRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(blinkerRightTranslation);
     m_carModel.localBlinkerLightLowerRightMatrix = m_carModel.blinkerLightLowerRightMatrix;
@@ -928,7 +870,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     /// Blinker Light Upper Right Start ///////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 blinkerUpperRightTranslation = blinkerUpperLeftTranslation;
-    blinkerUpperRightTranslation.z *= -1.0;
+    blinkerUpperRightTranslation.z *= -1.0f;
     m_carModel.blinkerLightUpperRightMatrix = m_carModel.headLightRightMatrix;
     m_carModel.blinkerLightUpperRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(blinkerUpperRightTranslation);
     m_carModel.localBlinkerLightUpperRightMatrix = m_carModel.blinkerLightUpperRightMatrix;
@@ -936,14 +878,14 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     
     /// Tail Light Right Start  ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 tailLightSize = headLightSize;
-    tailLightSize.x *= 0.7;
+    tailLightSize.x *= 0.7f;
     tailLightSize.z = tailLightSize.x;
     m_carModel.tailLight = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), tailLightSize);
     m_carModel.tailLightRightMatrix = m_carModel.headLightRightMatrix;
     DirectX::SimpleMath::Vector3 tailLightRightTranslation;
-    tailLightRightTranslation.x = -carBodySize.x + (tailLightSize.x * 0.999);
-    tailLightRightTranslation.y = 0.0;
-    tailLightRightTranslation.z = tailLightSize.z * 0.7;
+    tailLightRightTranslation.x = -carBodySize.x + (tailLightSize.x * 0.999f);
+    tailLightRightTranslation.y = 0.0f;
+    tailLightRightTranslation.z = tailLightSize.z * 0.7f;
     m_carModel.tailLightRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(tailLightRightTranslation);
     m_carModel.localTailLightRightMatrix = m_carModel.tailLightRightMatrix;
     /// Tail Light Right End    ////////////////////////////////////////////////////////////////
@@ -951,24 +893,24 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     /// Tail Light Left Start  ////////////////////////////////////////////////////////////////
     m_carModel.tailLightLeftMatrix = m_carModel.headLightLeftMatrix;
     DirectX::SimpleMath::Vector3 tailLightLeftTranslation;
-    tailLightLeftTranslation.x = -carBodySize.x + (tailLightSize.x * 0.999);
-    tailLightLeftTranslation.y = 0.0;
-    tailLightLeftTranslation.z = - tailLightSize.z * 0.7;
+    tailLightLeftTranslation.x = -carBodySize.x + (tailLightSize.x * 0.999f);
+    tailLightLeftTranslation.y = 0.0f;
+    tailLightLeftTranslation.z = - tailLightSize.z * 0.7f;
     m_carModel.tailLightLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(tailLightLeftTranslation);
     m_carModel.localTailLightLeftMatrix = m_carModel.tailLightLeftMatrix;
     /// Tail Light Left End    ////////////////////////////////////////////////////////////////
 
     /// Reverse Light Right Start  ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 reverseLightSize = tailLightSize;
-    reverseLightSize.x *= 1.005;
-    reverseLightSize.y *= 0.2;
-    reverseLightSize.z *= 1.005;
+    reverseLightSize.x *= 1.005f;
+    reverseLightSize.y *= 0.2f;
+    reverseLightSize.z *= 1.005f;
     m_carModel.reverseLight = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), reverseLightSize);
     m_carModel.reverseLightRightMatrix = m_carModel.tailLightRightMatrix;
     DirectX::SimpleMath::Vector3 reverseLightTranslation;
-    reverseLightTranslation.x = 0.0;
-    reverseLightTranslation.y = (reverseLightSize.y * 0.5);
-    reverseLightTranslation.z = 0.0;
+    reverseLightTranslation.x = 0.0f;
+    reverseLightTranslation.y = (reverseLightSize.y * 0.5f);
+    reverseLightTranslation.z = 0.0f;
     m_carModel.reverseLightRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(reverseLightTranslation);
     m_carModel.localReverseLightRightMatrix = m_carModel.reverseLightRightMatrix;
     /// Reverse Light Right End    ////////////////////////////////////////////////////////////////
@@ -982,9 +924,9 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     /// Tail Blinker Light Right Start  ////////////////////////////////////////////////////////////////
     m_carModel.tailBlinkerLightRightMatrix = m_carModel.tailLightRightMatrix;
     DirectX::SimpleMath::Vector3 tailBlinkerLightTranslation;
-    tailBlinkerLightTranslation.x = 0.0;
-    tailBlinkerLightTranslation.y = - (reverseLightSize.y * 0.5);
-    tailBlinkerLightTranslation.z = 0.0;
+    tailBlinkerLightTranslation.x = 0.0f;
+    tailBlinkerLightTranslation.y = - (reverseLightSize.y * 0.5f);
+    tailBlinkerLightTranslation.z = 0.0f;
     m_carModel.tailBlinkerLightRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(tailBlinkerLightTranslation);
     m_carModel.localTailBlinkerLightRightMatrix = m_carModel.tailBlinkerLightRightMatrix;
     /// Tail Blinker Light Right End    ////////////////////////////////////////////////////////////////
@@ -997,13 +939,13 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     /// Third Brake Light Start   ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 thirdBrakeLightSize;
-    thirdBrakeLightSize.x = 0.10;
-    thirdBrakeLightSize.y = 0.09;
-    thirdBrakeLightSize.z = .15;
+    thirdBrakeLightSize.x = 0.10f;
+    thirdBrakeLightSize.y = 0.09f;
+    thirdBrakeLightSize.z = .15f;
     DirectX::SimpleMath::Vector3 thirdBrakeLightTranslation;
-    thirdBrakeLightTranslation.x = - (carBodySize.x * 0.5) + thirdBrakeLightSize.x;
-    thirdBrakeLightTranslation.y = height + (thirdBrakeLightSize.y * 0.5);
-    thirdBrakeLightTranslation.z = 0.0;
+    thirdBrakeLightTranslation.x = - (carBodySize.x * 0.5f) + thirdBrakeLightSize.x;
+    thirdBrakeLightTranslation.y = height + (thirdBrakeLightSize.y * 0.5f);
+    thirdBrakeLightTranslation.z = 0.0f;
     m_carModel.thirdBrakeLight = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), thirdBrakeLightSize);
     m_carModel.thirdBrakeLightMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.thirdBrakeLightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(thirdBrakeLightTranslation);
@@ -1012,14 +954,14 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     /// License Plate Rear Start ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 licensePlateRearSize = carBodySize;
-    licensePlateRearSize.x = 0.02;
-    licensePlateRearSize.y *= 0.2;
-    licensePlateRearSize.z *= 0.25;
+    licensePlateRearSize.x = 0.02f;
+    licensePlateRearSize.y *= 0.2f;
+    licensePlateRearSize.z *= 0.25f;
     m_carModel.licensePlateRear = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), licensePlateRearSize);
     DirectX::SimpleMath::Vector3 licensePlateRearTranslation;
-    licensePlateRearTranslation.x = -(carBodySize.x * 0.5);
-    licensePlateRearTranslation.y = (bodyTranslation.y * 0.5) + (bumperBackSize.y * 0.5) + (licensePlateRearSize.y * 0.5);
-    licensePlateRearTranslation.z = 0.0;
+    licensePlateRearTranslation.x = -(carBodySize.x * 0.5f);
+    licensePlateRearTranslation.y = (bodyTranslation.y * 0.5f) + (bumperBackSize.y * 0.5f) + (licensePlateRearSize.y * 0.5f);
+    licensePlateRearTranslation.z = 0.0f;
     m_carModel.licensePlateRearMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.licensePlateRearMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(licensePlateRearTranslation);
     m_carModel.localLicensePlateRearMatrix = m_carModel.licensePlateRearMatrix;
@@ -1027,25 +969,25 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 
     /// License Plate Rear Outline Start ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 licensePlateRearOutlineSize = licensePlateRearSize;
-    licensePlateRearOutlineSize.x *= 1.03;
-    licensePlateRearOutlineSize.y *= 1.3;
-    licensePlateRearOutlineSize.z *= 1.05;
+    licensePlateRearOutlineSize.x *= 1.03f;
+    licensePlateRearOutlineSize.y *= 1.3f;
+    licensePlateRearOutlineSize.z *= 1.05f;
     m_carModel.licensePlateRearOutline = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), licensePlateRearOutlineSize);
     /// License Plate Rear Outline End  ////////////////////////////////////////////////////////////////
 
     /// Side Mirror Left Start ///////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 sideMirrorSize;
-    sideMirrorSize.x = 0.13;
-    sideMirrorSize.y = 0.144;
-    sideMirrorSize.z = 0.25;
+    sideMirrorSize.x = 0.13f;
+    sideMirrorSize.y = 0.144f;
+    sideMirrorSize.z = 0.25f;
     m_carModel.sideMirror = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), sideMirrorSize);
     m_carModel.sideMirrorLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     const double sideMirrorAngle = Utility::ToRadians(20.0);
     m_carModel.sideMirrorLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(sideMirrorAngle);
     DirectX::SimpleMath::Vector3 sideMirrorLeftTranslation;
-    sideMirrorLeftTranslation.x = (windShieldAllignment.x * 0.5) + triangleWindowSize.x * 0.051;
-    sideMirrorLeftTranslation.y = windShieldAllignment.y * 0.5;
-    sideMirrorLeftTranslation.z = (- carBodySize.z * 0.5) - (sideMirrorSize.z * 0.5) + (topIndent * 0.2);
+    sideMirrorLeftTranslation.x = (windShieldAllignment.x * 0.5f) + triangleWindowSize.x * 0.051f;
+    sideMirrorLeftTranslation.y = windShieldAllignment.y * 0.5f;
+    sideMirrorLeftTranslation.z = (- carBodySize.z * 0.5f) - (sideMirrorSize.z * 0.5f) + (topIndent * 0.2f);
     m_carModel.sideMirrorLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(sideMirrorLeftTranslation);
     m_carModel.localSideMirrorLeftMatrix = m_carModel.sideMirrorLeftMatrix;
     /// Side Mirror Left End ////////////////////////////////////////////////////////////////
@@ -1054,42 +996,41 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.sideMirrorRightMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.sideMirrorRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(-sideMirrorAngle);
     DirectX::SimpleMath::Vector3 sideMirrorRightTranslation;
-    sideMirrorRightTranslation.x = (windShieldAllignment.x * 0.5) + triangleWindowSize.x * 0.051;
-    sideMirrorRightTranslation.y = windShieldAllignment.y * 0.5;
-    sideMirrorRightTranslation.z = (carBodySize.z * 0.5) + (sideMirrorSize.z * 0.5) - (topIndent * 0.2);
+    sideMirrorRightTranslation.x = (windShieldAllignment.x * 0.5f) + triangleWindowSize.x * 0.051f;
+    sideMirrorRightTranslation.y = windShieldAllignment.y * 0.5f;
+    sideMirrorRightTranslation.z = (carBodySize.z * 0.5f) + (sideMirrorSize.z * 0.5f) - (topIndent * 0.2f);
     m_carModel.sideMirrorRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(sideMirrorRightTranslation);
     m_carModel.localSideMirrorRightMatrix = m_carModel.sideMirrorRightMatrix;
     /// Side Mirror Right End ////////////////////////////////////////////////////////////////
 
     /// Pinstripe Start ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 pinstripeSize = carBodySize;
-    pinstripeSize.x *= 0.88;
-    pinstripeSize.y *= 0.035;
-    pinstripeSize.z *= 1.01;
+    pinstripeSize.x *= 0.88f;
+    pinstripeSize.y *= 0.035f;
+    pinstripeSize.z *= 1.01f;
     m_carModel.pinstripe = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), pinstripeSize);
     DirectX::SimpleMath::Vector3 pinStripeTranslation;
-    pinStripeTranslation.x = -(carBodySize.x * 0.0145);
-    pinStripeTranslation.y = (carBodySize.y * 0.4);
-    pinStripeTranslation.z = 0.0;
-    //m_carModel.pinstripeMatrix = DirectX::SimpleMath::Matrix::Identity;
+    pinStripeTranslation.x = -(carBodySize.x * 0.0145f);
+    pinStripeTranslation.y = (carBodySize.y * 0.4f);
+    pinStripeTranslation.z = 0.0f;
     m_carModel.pinstripeMatrix = m_carModel.bodyMatrix;
     m_carModel.pinstripeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(pinStripeTranslation);
     m_carModel.localPinstripeMatrix = m_carModel.pinstripeMatrix;
     /// Pinstripe End  ////////////////////////////////////////////////////////////////
 
     /// Fender Flare Front Left Start ////////////////////////////////////////////////////////////////
-    float fenderFlareHeight = m_car.wheelRadius * 2.005;
-    float fenderFlareWidth = m_car.wheelWidth * 0.3;
+    float fenderFlareHeight = m_car.wheelRadius * 2.005f;
+    float fenderFlareWidth = m_car.wheelWidth * 0.3f;
 
     m_carModel.fenderFlare = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), fenderFlareWidth, fenderFlareHeight, 32);
     DirectX::SimpleMath::Vector3 fenderFlareFrontLeftTranslation;
-    fenderFlareFrontLeftTranslation.x = 0.0;
-    fenderFlareFrontLeftTranslation.y = (fenderFlareHeight * 0.07);
-    fenderFlareFrontLeftTranslation.z = -fenderFlareWidth * 0.4;
-    fenderFlareFrontLeftTranslation.z = fenderFlareWidth * 0.31;
+    fenderFlareFrontLeftTranslation.x = 0.0f;
+    fenderFlareFrontLeftTranslation.y = (fenderFlareHeight * 0.07f);
+    fenderFlareFrontLeftTranslation.z = -fenderFlareWidth * 0.4f;
+    fenderFlareFrontLeftTranslation.z = fenderFlareWidth * 0.31f;
 
     m_carModel.fenderFlareFrontLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.fenderFlareFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-9.0));
+    m_carModel.fenderFlareFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-9.0f));
     m_carModel.fenderFlareFrontLeftMatrix *= m_carModel.wheelFrontLeftMatrix;
     m_carModel.fenderFlareFrontLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(fenderFlareFrontLeftTranslation);
     m_carModel.localfenderFlareFrontLeftMatrix = m_carModel.fenderFlareFrontLeftMatrix;
@@ -1097,15 +1038,15 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.fenderFlareInterior = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), fenderFlareWidth, fenderFlareHeight, 32);
 
     m_carModel.fenderFlareFrontLeftInteriorMatrix = m_carModel.fenderFlareFrontLeftMatrix;
-    m_carModel.fenderFlareFrontLeftInteriorMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -zFightOffSet * 10.0, -zFightOffSet));
+    m_carModel.fenderFlareFrontLeftInteriorMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -zFightOffSet * 10.0f, -zFightOffSet));
     m_carModel.localfenderFlareFrontLeftInteriorMatrix = m_carModel.fenderFlareFrontLeftInteriorMatrix;
     /// Fender Flare Front Left End  ////////////////////////////////////////////////////////////////
 
     /// Fender Flare Front Right Start ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 fenderFlareFrontRightTranslation;
-    fenderFlareFrontRightTranslation.x = 0.0;
-    fenderFlareFrontRightTranslation.y = (fenderFlareHeight * 0.07);
-    fenderFlareFrontRightTranslation.z = -fenderFlareWidth * 0.31;
+    fenderFlareFrontRightTranslation.x = 0.0f;
+    fenderFlareFrontRightTranslation.y = (fenderFlareHeight * 0.07f);
+    fenderFlareFrontRightTranslation.z = -fenderFlareWidth * 0.31f;
 
     m_carModel.fenderFlareFrontRightMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_carModel.fenderFlareFrontRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(9.0));
@@ -1114,54 +1055,54 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.localfenderFlareFrontRightMatrix = m_carModel.fenderFlareFrontRightMatrix;
 
     m_carModel.fenderFlareFrontRightInteriorMatrix = m_carModel.fenderFlareFrontRightMatrix;
-    m_carModel.fenderFlareFrontRightInteriorMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -zFightOffSet * 10.0, zFightOffSet));
+    m_carModel.fenderFlareFrontRightInteriorMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -zFightOffSet * 10.0f, zFightOffSet));
     m_carModel.localfenderFlareFrontRightInteriorMatrix = m_carModel.fenderFlareFrontRightInteriorMatrix;
     /// Fender Flare Front Right End  ////////////////////////////////////////////////////////////////
 
     /// Fender Flare Rear Left Start ////////////////////////////////////////////////////////////////
-    float fenderRearFlareHeight = m_car.wheelRadius * 2.005;
-    float fenderRearFlareWidth = m_car.wheelWidth * 0.55;
+    float fenderRearFlareHeight = m_car.wheelRadius * 2.005f;
+    float fenderRearFlareWidth = m_car.wheelWidth * 0.55f;
 
     m_carModel.fenderRearFlare = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), fenderRearFlareWidth, fenderRearFlareHeight, 32);
     m_carModel.fenderRearFlareInterior = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), fenderRearFlareWidth, fenderRearFlareHeight, 32);
 
     DirectX::SimpleMath::Vector3 fenderFlareRearLeftTranslation;
-    fenderFlareRearLeftTranslation.x = 0.0;
-    fenderFlareRearLeftTranslation.y = (fenderFlareHeight * 0.07);
-    fenderFlareRearLeftTranslation.z = fenderFlareWidth * 0.00;
+    fenderFlareRearLeftTranslation.x = 0.0f;
+    fenderFlareRearLeftTranslation.y = (fenderFlareHeight * 0.07f);
+    fenderFlareRearLeftTranslation.z = fenderFlareWidth * 0.00f;
 
     m_carModel.fenderFlareRearLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.fenderFlareRearLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-14.0));
+    m_carModel.fenderFlareRearLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-14.0f));
     m_carModel.fenderFlareRearLeftMatrix *= m_carModel.wheelRearLeftMatrix;
     m_carModel.fenderFlareRearLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(fenderFlareRearLeftTranslation);
     m_carModel.localfenderFlareRearLeftMatrix = m_carModel.fenderFlareRearLeftMatrix;
 
     m_carModel.fenderFlareRearLeftInteriorMatrix = m_carModel.fenderFlareRearLeftMatrix;
-    m_carModel.fenderFlareRearLeftInteriorMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -zFightOffSet * 10.0, -zFightOffSet));
+    m_carModel.fenderFlareRearLeftInteriorMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -zFightOffSet * 10.0f, -zFightOffSet));
     m_carModel.localfenderFlareRearLeftInteriorMatrix = m_carModel.fenderFlareRearLeftInteriorMatrix;
     /// Fender Flare Rear Left End  ////////////////////////////////////////////////////////////////
 
     /// Fender Flare Rear Right Start ////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 fenderFlareRearRightTranslation;
-    fenderFlareRearRightTranslation.x = 0.0;
-    fenderFlareRearRightTranslation.y = (fenderFlareHeight * 0.07);
-    fenderFlareRearRightTranslation.z = -fenderFlareWidth * 0.00;
+    fenderFlareRearRightTranslation.x = 0.0f;
+    fenderFlareRearRightTranslation.y = (fenderFlareHeight * 0.07f);
+    fenderFlareRearRightTranslation.z = -fenderFlareWidth * 0.00f;
 
     m_carModel.fenderFlareRearRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.fenderFlareRearRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(14.0));
+    m_carModel.fenderFlareRearRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(14.0f));
     m_carModel.fenderFlareRearRightMatrix *= m_carModel.wheelRearRightMatrix;
     m_carModel.fenderFlareRearRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(fenderFlareRearRightTranslation);
     m_carModel.localfenderFlareRearRightMatrix = m_carModel.fenderFlareRearRightMatrix;
 
     m_carModel.fenderFlareRearRightInteriorMatrix = m_carModel.fenderFlareRearRightMatrix;
-    m_carModel.fenderFlareRearRightInteriorMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, -zFightOffSet * 10.0, zFightOffSet));
+    m_carModel.fenderFlareRearRightInteriorMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -zFightOffSet * 10.0f, zFightOffSet));
     m_carModel.localfenderFlareRearRightInteriorMatrix = m_carModel.fenderFlareRearRightInteriorMatrix;
     /// Fender Flare Rear Right End  ////////////////////////////////////////////////////////////////
 
     // Normal Antenna start ///////////////////////////////////////////////////////////////////////////////
-    m_carModel.normAntenna = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), 2.0, 0.3, 32);
+    m_carModel.normAntenna = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), 2.0f, 0.3f, 32);
     m_carModel.normAntennaMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.normAntennaMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 1.0, 0.0));
+    m_carModel.normAntennaMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f));
     m_carModel.localnormAntennaMatrix = m_carModel.normAntennaMatrix;
     // Normal Antenna end /////////////////////////////////////////////////////////////////////////////////
 }
@@ -1169,31 +1110,31 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
     // roughly based on porsche boxster
-    m_car.mass = 1393.0;
-    m_car.area = 1.94;
-    m_car.density = 1.2;
-    m_car.Cd = 0.31;
-    m_car.redline = 7200;
-    m_car.revlimit = 7800;
-    m_car.finalDriveRatio = 3.44;
-    m_car.wheelRadius = 0.3186;
-    m_car.wheelWidth = 0.235;
+    m_car.mass = 1393.0f;
+    m_car.area = 1.94f;
+    m_car.density = 1.2f;
+    m_car.Cd = 0.31f;
+    m_car.redline = 7200.f;
+    m_car.revlimit = 7800.f;
+    m_car.finalDriveRatio = 3.44f;
+    m_car.wheelRadius = 0.3186f;
+    m_car.wheelWidth = 0.235f;
     m_car.numberOfGears = 7;
-    m_car.muR = 0.015;             //  coefficient of rolling friction
-    m_car.airResistance = 0.0;
+    m_car.muR = 0.015f;             //  coefficient of rolling friction
+    m_car.airResistance = 0.0f;
     //m_car.airDensity = 1.225; // ToDo : pull air density from environment data
     m_car.totalResistance = m_car.muR + m_car.airResistance;
     m_car.omegaE = 1000.0;         //  engine rpm
     m_car.gearNumber = 2;          //  gear the car is in
-    m_car.gearRatio[0] = -3.82;
-    m_car.gearRatio[1] = 0.0;
-    m_car.gearRatio[2] = 3.82;
-    m_car.gearRatio[3] = 2.20;
-    m_car.gearRatio[4] = 1.52;
-    m_car.gearRatio[5] = 1.22;
-    m_car.gearRatio[6] = 1.02;
-    m_car.gearRatio[7] = 0.84;
-    m_car.wheelMass = 22.68;    // Total guess, not confirmed with porsche or volvo stats
+    m_car.gearRatio[0] = -3.82f;
+    m_car.gearRatio[1] = 0.0f;
+    m_car.gearRatio[2] = 3.82f;
+    m_car.gearRatio[3] = 2.20f;
+    m_car.gearRatio[4] = 1.52f;
+    m_car.gearRatio[5] = 1.22f;
+    m_car.gearRatio[6] = 1.02f;
+    m_car.gearRatio[7] = 0.84f;
+    m_car.wheelMass = 22.68f;    // Total guess, not confirmed with porsche or volvo stats
 
     m_car.gravity = DirectX::SimpleMath::Vector3(0.0, -9.81, 0.0);
     m_car.numEqns = 6;
@@ -1304,18 +1245,12 @@ void Vehicle::Jump(double aTimer)
 
 void Vehicle::LandVehicle()
 {
-    double elapsedTime = m_testTimerTotal - m_testTimer;
-    float impactVelocity = m_car.q.velocity.Length();
     DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
     DirectX::SimpleMath::Vector3 landingVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 landingVelocityNorm = landingVelocity;
     landingVelocityNorm.Normalize();
 
-    //landingVelocityNorm = DirectX::SimpleMath::Vector3::UnitX;
-
     float impact = landingVelocityNorm.Dot(m_car.terrainNormal);
-
-    float testVel = m_testVelocity;
 
     DirectX::SimpleMath::Vector3 updateVelocity;
     updateVelocity.x = m_car.q.velocity.x * abs(impact);
@@ -1495,9 +1430,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     float gearRatio = aCar->gearRatio[gearNumber];
     float finalDriveRatio = aCar->finalDriveRatio;
     float wheelRadius = aCar->wheelRadius;
-    float pi = acos(-1.0);
-    float carHeading = m_car.carRotation;
-
+    float pi = acos(-1.0f);
 
     DirectX::SimpleMath::Vector3 headingVec = m_car.forward;
 
@@ -1516,10 +1449,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     float testC2 = 60.0 * tmp * tmp * powerCurve * v;
     float testC3 = (tmp * torque);
-    //DebugPushUILineDecimalNumber("testC2 = ", testC2, "");
-    //DebugPushUILineDecimalNumber("testC3 = ", testC3, "");
-    //DebugPushUILineDecimalNumber("c3 = ", c3, "");
-    float testTorque = tmp * torque;
 
     float xTestTorque = powerCurve * aCar->omegaE + torque;
     //DebugPushUILineDecimalNumber("xTestTorque = ", xTestTorque, "");
@@ -1938,7 +1867,7 @@ void Vehicle::UpdateHeadingVec()
     m_car.headingVec = m_car.forward;
 }
 
-void Vehicle::UpdateHeadingQuat(const double aTimer)
+void Vehicle::UpdateHeadingQuat()
 {  
     //DirectX::SimpleMath::Vector3 terrainNorm = m_environment->GetTerrainNormal(m_car.q.position);
     DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
@@ -2531,13 +2460,6 @@ void Vehicle::UpdateTerrainNorm()
 
 void Vehicle::UpdateTransmission(const double aTimeDelta)
 {
-    /////////
-    // Test RPM velocity 
-
-
-    // End Test
-    ///////////////////////
-
     // update shift delay cooldown
     m_car.shiftCooldown -= aTimeDelta;
     if (m_car.shiftCooldown < 0.0)
@@ -2587,7 +2509,7 @@ void Vehicle::UpdateTransmission(const double aTimeDelta)
     }
 }
 
-void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
+void Vehicle::UpdateVehicle(const double aTimeDelta)
 {
     m_testTimerTotal += aTimeDelta;
     DebugClearUI();
@@ -2637,7 +2559,6 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
         m_car.q.position.y = m_car.terrainHightAtPos;
     }
     
-
     //RevLimiter();
     ThrottleBrakeDecay(aTimeDelta);
     SteeringInputDecay(aTimeDelta);
@@ -2655,9 +2576,8 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     {
         m_car.isVelocityBackwards = false;
     }
-    //DebugPushUILineDecimalNumber("m_car.isVelocityBackwards ",  m_car.isVelocityBackwards, "");
-    
 
+    
     UpdateVelocity(aTimeDelta);
 
     DirectX::SimpleMath::Vector3 testVelocity = m_car.q.velocity;
@@ -2685,8 +2605,6 @@ void Vehicle::UpdateVehicle(const double aTimer, const double aTimeDelta)
     //DebugPushUILineDecimalNumber("Speed", m_car.speed * 2.23694, "MPH");
     //DebugPushUILineWholeNumber("Gear ", m_car.gearNumber - 1, "");
  
-
-
     DirectX::SimpleMath::Vector3 postPos = m_car.q.position;
     DirectX::SimpleMath::Vector3 deltaPos = prevPos - postPos;
     float deltaLength = deltaPos.Length();
@@ -2735,12 +2653,6 @@ void Vehicle::UpdateVelocity(double aTimeDelta)
     //m_car.q.velocity = testVelocity;
 }
 
-void Vehicle::DebugTestMove(const double aTimer, const double aTimeDelta)
-{
-    float move = 3.3;
-    m_car.q.position.x += move;
-}
-
 void Vehicle::DebugPushTestLine(DirectX::SimpleMath::Vector3 aLineBase, DirectX::SimpleMath::Vector3 aLineEnd, float aLength, float aYOffset, DirectX::XMVECTORF32 aColor)
 {
     DirectX::SimpleMath::Vector3 scaledLineBase = aLineBase;
@@ -2777,16 +2689,16 @@ void Vehicle::TestGetForceLateral()
     float mass = m_car.mass;
     float velocity = m_car.q.velocity.Length();
     velocity *= velocity;
-    float muK = 0.7; // guess at this point
+    float muK = 0.7f; // guess at this point
 
     float forceLat;
-    forceLat = ((mass * velocity) / radius) - (muK * mass * m_car.gravity.y * cos(0.0));  
+    forceLat = ((mass * velocity) / radius) - (muK * mass * m_car.gravity.y * cos(0.0f));  
     DebugPushUILine("Force Lateral", forceLat);
 
     DirectX::SimpleMath::Vector3 testForceLat;
-    DirectX::SimpleMath::Vector3 gravVec(0.0, -9.8, 0.0);
+    DirectX::SimpleMath::Vector3 gravVec(0.0f, -9.8f, 0.0f);
 
-    testForceLat = ((mass * (m_car.q.velocity * m_car.q.velocity)) / radius) - (muK * mass * gravVec * cos(0.0));
+    testForceLat = ((mass * (m_car.q.velocity * m_car.q.velocity)) / radius) - (muK * mass * gravVec * cos(0.0f));
 
     DebugPushUILine("Force Lateral X ", testForceLat.x);
     DebugPushUILine("Force Lateral Y ", testForceLat.y);
@@ -2799,9 +2711,9 @@ void Vehicle::TestGetForceLateral()
 
     float slipAngle;
     slipAngle = -atan(testHeading.x / abs(testHeading.z));
-    DebugPushUILine("slipAngle", Utility::ToDegrees(slipAngle)  + 90.0);
+    DebugPushUILine("slipAngle", Utility::ToDegrees(slipAngle)  + 90.0f);
     DebugPushUILine("slipAngle 2", Utility::ToDegrees(slipAngle) - Utility::ToDegrees(m_car.carRotation));
-    DebugPushUILine("slipAngle 3", Utility::ToDegrees(slipAngle) + 90.0 - Utility::ToDegrees(m_car.carRotation));
+    DebugPushUILine("slipAngle 3", Utility::ToDegrees(slipAngle) + 90.0f - Utility::ToDegrees(m_car.carRotation));
     DebugPushUILine("m_car.carRotation ", Utility::ToDegrees(m_car.carRotation));
 }
 
@@ -2810,55 +2722,26 @@ DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide(DirectX::SimpleMath::Vect
 {
     DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
     DirectX::SimpleMath::Vector3 terrainAcceleration = terrainNorm;
-    float dotProd3 = terrainAcceleration.Dot(-aHeading);
-    //terrainAcceleration *= (-m_car.gravity * aTimeStep);
-    //terrainAcceleration *= (-m_car.gravity);
-    /*
-    terrainAcceleration.x *= (-m_car.gravity.y * aTimeStep);
-    terrainAcceleration.y *= (-m_car.gravity.y * aTimeStep);
-    terrainAcceleration.z *= (-m_car.gravity.y * aTimeStep);
-    */
+
     terrainAcceleration.x *= (-m_car.gravity.y);
     terrainAcceleration.y *= (-m_car.gravity.y);
     terrainAcceleration.z *= (-m_car.gravity.y);
 
-    float dotProd1 = terrainAcceleration.Dot(aHeading);
-    float dotProd2 = terrainAcceleration.Dot(-aHeading);
-
-    //DebugPushUILineDecimalNumber("dotProd1 ", dotProd1, "");
-    //DebugPushUILineDecimalNumber("dotProd2 ", dotProd2, "");
-
     DirectX::SimpleMath::Vector3 headingNorm = aHeading;
-    headingNorm.y = 0.0;
+    headingNorm.y = 0.0f;
     headingNorm.Normalize();
 
-    DirectX::SimpleMath::Vector3 newAccel = headingNorm * dotProd1;
-
     DirectX::SimpleMath::Vector3 testNorm = terrainAcceleration;
-    testNorm.y = 0.0;
+    testNorm.y = 0.0f;
     testNorm.Normalize();
-    //DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), testNorm, 4.0, 0.0, DirectX::Colors::Orange);
-    //DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), terrainAcceleration, 4.0, 0.0, DirectX::Colors::White);
-
 
     DirectX::SimpleMath::Vector3 testSlope = m_car.terrainNormal;
-    testSlope.y = 0.0;
+    testSlope.y = 0.0f;
     terrainAcceleration = testSlope;
     testSlope.Normalize();
-    //DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), testSlope, 4.0, 0.0, DirectX::Colors::Yellow);
-
 
     DirectX::SimpleMath::Vector3 newTerrainNorm = m_environment->GetTerrainNormal(m_car.q.position);
     DirectX::SimpleMath::Vector3 newTerrainNorm2 = newTerrainNorm;
-    //newTerrainNorm2.Normalize();
-    float length = newTerrainNorm2.Length();
-    float angle = Utility::ToDegrees(acos(DirectX::SimpleMath::Vector3::UnitX.Dot(m_car.terrainNormal)));
-    float angle2 = Utility::ToDegrees(acos(DirectX::SimpleMath::Vector3::UnitY.Dot(DirectX::SimpleMath::Vector3::UnitZ)));
-
-
-    
-
-
 
     return terrainAcceleration;
     //return newAccel;

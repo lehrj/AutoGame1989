@@ -9,8 +9,11 @@
 
 Environment::Environment()
 {
-    //bool result = InitializeTerrain(EnvironmentType::ENIVRONMENTTYPE_STARTUP);
     bool result = InitializeTerrain(EnvironmentType::ENVIRONMENTTYPE_CLEANTEST);
+    if (result == false)
+    {
+        // ToDo: add error handling
+    }
     LoadEnvironmentData();
     CreateDataStrings();
     const int startEnviron = 0;  // ToDo: add error checking 
@@ -302,7 +305,7 @@ void Environment::CreateDataStrings()
     std::stringstream inVal;
     inVal.precision(Utility::GetNumericalPrecisionForUI());
 
-    for (int i = 0; i < m_environs.size(); ++i)
+    for (unsigned int i = 0; i < m_environs.size(); ++i)
     {
         inVal.str(std::string());
         inVal << std::fixed << m_environs[i].airDensity;
@@ -341,7 +344,7 @@ std::vector<DirectX::VertexPositionColor> Environment::GetTerrainColorVertex()
     vertPosColor.resize(m_terrainModel.size());
     DirectX::XMFLOAT4 terrainColor(1.0, 1.0, 1.0, 1.0); // ToDo: for testing, implement color control
 
-    for (int i = 0; i < vertPosColor.size(); ++i)
+    for (unsigned int i = 0; i < vertPosColor.size(); ++i)
     {
         vertPosColor[i].position = m_terrainModel[i].position;
         vertPosColor[i].color = terrainColor;
@@ -356,7 +359,7 @@ float Environment::GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const
     bool foundHeightBarry = false;
     bool foundHeight = false;
 
-    int i = 0;
+    unsigned int i = 0;
 
     for (i; i < m_terrainModel.size(); ++i)
     {
@@ -365,57 +368,6 @@ float Environment::GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const
         DirectX::XMFLOAT3 vertex2 = m_terrainModel[i].position;
         ++i;
         DirectX::XMFLOAT3 vertex3 = m_terrainModel[i].position;
-
-        /*
-        if (abs(aPos.x - vertex1.x) < .3 && abs(aPos.z - vertex1.z) < .3)
-        {
-            int brakeTest = 0;
-
-            foundHeight = CheckTerrainTriangleHeight(aPos, vertex1, vertex2, vertex3);
-
-            if (foundHeight == true)
-            {
-                int testBreak = 0;
-            }
-            else
-            {
-                int testBreak = 0;
-            }
-        }
-        if (abs(aPos.x - vertex3.x) < .3 && abs(aPos.z - vertex3.z) < .3)
-        {
-            int brakeTest = 0;
-
-            foundHeight = CheckTerrainTriangleHeight(aPos, vertex1, vertex2, vertex3);
-
-            if (foundHeight == true)
-            {
-                int testBreak = 0;
-            }
-            else
-            {
-                int testBreak = 0;
-            }
-        }
-        */
-
-        /*
-        if (abs(aPos.x - vertex2.x) < .3 && abs(aPos.z - vertex2.z) < .3)
-        {
-            int brakeTest = 0;
-
-            foundHeight = CheckTerrainTriangleHeight(aPos, vertex1, vertex2, vertex3);
-
-            if (foundHeight == true)
-            {
-                int testBreak = 0;
-            }
-            else
-            {
-                int testBreak = 0;
-            }
-        }
-        */
 
         foundHeight = CheckTerrainTriangleHeight(aPos, vertex1, vertex2, vertex3);
         if (foundHeight == true)
@@ -436,34 +388,12 @@ float Environment::GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const
             foundHeightBarry = false;
         }
 
-
-        if (foundHeight == true && foundHeightBarry == false)
-        {
-            int testBreak2 = 0;
-            testBreak2++;
-        }
-
-        if (foundHeight == false && foundHeightBarry == true)
-        {
-            int testBreak2 = 0;
-            testBreak2++;
-        }
-
-        if (foundHeight != foundHeightBarry)
-        {
-            int testBreak2 = 0;
-            testBreak2++;
-        }
-
-        int testBreak = 0;
-
         if (foundHeight)
         {
             f = prePos.x;
             g = prePos.z;
             baryPos = DirectX::SimpleMath::Vector3::Barycentric(vertex1, vertex2, vertex3, f, g);
 
-            testBreak = 0;
             return aPos.y;
         }
     }
@@ -477,7 +407,7 @@ float Environment::GetTerrainHeightAtPos2(DirectX::XMFLOAT3 aPos) const
     bool foundHeightBarry = false;
     bool foundHeight = false;
 
-    int i = 0;
+    unsigned int i = 0;
 
     for (i; i < m_terrainModel.size(); ++i)
     {
@@ -542,7 +472,7 @@ float Environment::GetTerrainHeightAtPos2(DirectX::XMFLOAT3 aPos) const
 DirectX::SimpleMath::Vector3 Environment::GetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) const
 {
     bool foundHeight = false;
-    int i = 0;
+    unsigned int i = 0;
 
     for (i; i < m_terrainModel.size(); ++i)
     {
@@ -588,7 +518,7 @@ std::vector<DirectX::VertexPositionNormalColor> Environment::GetTerrainPositionN
     vertPosNormColor.resize(m_terrainModel.size());
     DirectX::XMFLOAT4 terrainColor(1.0, 1.0, 1.0, 1.0); // ToDo: for testing, implement color control
 
-    for (int i = 0; i < vertPosNormColor.size(); ++i)
+    for (unsigned int i = 0; i < vertPosNormColor.size(); ++i)
     {
         vertPosNormColor[i].position = m_terrainModel[i].position;
         vertPosNormColor[i].color = terrainColor;
@@ -690,7 +620,6 @@ void Environment::LoadFixtureBucket()
 {
     m_fixtureBucket.clear();
     
-
     // add FlagStick   
     Fixture flagStick;
     flagStick.idNumber = 0;
@@ -726,9 +655,9 @@ void Environment::LoadFixtureBucket()
     int leftOrRightFairwayPlacement = 1;
     for (int i = 2; i < fixtureCount; ++i)  // start at 2 due to 0 being flag/hole and 1 being the tee box
     {
-        float x = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (xPosMax))) - 1.0;
+        float x = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (xPosMax))) - 1.0f;
         float y = yPos;
-        float z = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (zPosMax - zPosMin)) - 2.0;
+        float z = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (zPosMax - zPosMin)) - 2.0f;
         z *= leftOrRightFairwayPlacement; // to alternate tree placement or right or left side of fairway
         leftOrRightFairwayPlacement *= -1;
         float aVar = static_cast <float> (rand()) / static_cast <float> (RAND_MAX/ varMax);
@@ -959,9 +888,9 @@ void Environment::LoadFixtureBucket12th()
     int leftOrRightFairwayPlacement = 1;
     for (int i = 2; i < fixtureCount; ++i)  // start at 2 due to 0 being flag/hole and 1 being the tee box
     {
-        float x = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (xPosMax))) - 1.0;
+        float x = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (xPosMax))) - 1.0f;
         float y = yPos;
-        float z = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (zPosMax - zPosMin)) - 2.0;
+        float z = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (zPosMax - zPosMin)) - 2.0f;
         z *= leftOrRightFairwayPlacement; // to alternate tree placement or right or left side of fairway
         leftOrRightFairwayPlacement *= -1;
         float aVar = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / varMax);
@@ -1183,7 +1112,7 @@ bool Environment::LoadHeightMap(EnvironmentType aEnviron)
     m_terrainHeight = bitmapInfoHeader.biHeight;
 
     // Calculate the size of the bitmap image data.
-    int imageSize = m_terrainWidth * m_terrainHeight * 3 + m_terrainWidth;
+    unsigned int imageSize = m_terrainWidth * m_terrainHeight * 3 + m_terrainWidth;
 
     // Allocate memory for the bitmap image data.
     unsigned char* bitmapImage = new unsigned char[imageSize];
@@ -1212,7 +1141,7 @@ bool Environment::LoadHeightMap(EnvironmentType aEnviron)
 
     std::vector<char> testMap;
     testMap.clear();
-    for (int i = 0; i < imageSize; ++i)
+    for (unsigned int i = 0; i < imageSize; ++i)
     {
         testMap.push_back(bitmapImage[i]);
     }
@@ -1280,7 +1209,7 @@ void Environment::ScaleTerrain(EnvironmentType aEnviron)
         zTransform = m_mapZtransformGamePlay;
     }
 
-    for (int i = 0; i < m_heightMap.size(); ++i)
+    for (unsigned int i = 0; i < m_heightMap.size(); ++i)
     {
         m_heightMap[i].position.x *= scale;
         m_heightMap[i].position.y *= scale;
@@ -1291,7 +1220,7 @@ void Environment::ScaleTerrain(EnvironmentType aEnviron)
         m_heightMap[i].position.z += zTransform;
     }
 
-    for (int i = 0; i < m_terrainModel.size(); ++i)
+    for (unsigned int i = 0; i < m_terrainModel.size(); ++i)
     {
         m_terrainModel[i].position.x *= scale;
         m_terrainModel[i].position.y *= scale;
@@ -1336,7 +1265,7 @@ void Environment::UpdateFixtures(const DirectX::SimpleMath::Vector3 &aPos)
 
 void Environment::UpdateFixtureDistanceToCamera(const DirectX::SimpleMath::Vector3 &aCameraPos)
 {
-    for (int i = 0; i < m_fixtureBucket.size(); ++i)
+    for (unsigned int i = 0; i < m_fixtureBucket.size(); ++i)
     {
         m_fixtureBucket[i].distanceToCamera = DirectX::SimpleMath::Vector3::Distance(m_fixtureBucket[i].position, aCameraPos);
     }

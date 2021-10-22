@@ -376,7 +376,7 @@ public:
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32>> DebugGetTestLines() const { return m_debugLinesVec; };
 
 
-    void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer);
+    void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj);
     void GearDown();
     void GearUp();
 
@@ -422,7 +422,7 @@ public:
     void ToggleGas();
 
     void TurnInput(float aTurnInput);
-    void UpdateVehicle(const double aTimer, const double aTimeDelta);
+    void UpdateVehicle(const double aTimeDelta);
 
 private:
     void DebugClearUI() { 
@@ -435,8 +435,6 @@ private:
     void DebugPushUILineDecimalNumber(std::string aString1, float aVal, std::string aString2);
     void DebugPushUILineWholeNumber(std::string aString1, int aVal, std::string aString2);
     void DebugPushTestLine(DirectX::SimpleMath::Vector3 aLineBase, DirectX::SimpleMath::Vector3 aLineEnd, float aLength, float aYOffset, DirectX::XMVECTORF32 aColor);
-
-    void DebugTestMove(const double aTimer, const double aTimeDelta);
 
     void InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     void InitializeWheels();
@@ -460,7 +458,7 @@ private:
     void TurnVehicle(double aTimeDelta);
     void UpdateCarAlignment();
 
-    void UpdateHeadingQuat(const double aTimer);
+    void UpdateHeadingQuat();
     void UpdateHeadingQuat2();
     void UpdateHeadingQuat3();
     void UpdateHeadingVec();

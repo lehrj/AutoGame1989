@@ -799,7 +799,7 @@ void Game::DrawDebugNormalLines(const  DirectX::SimpleMath::Vector3 aPos, const 
 void Game::DrawDebugLinesVector()
 {
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32>> lineTup = m_vehicle->DebugGetTestLines();
-    for (int i = 0; i < lineTup.size(); ++i)
+    for (unsigned int i = 0; i < lineTup.size(); ++i)
     {
         DirectX::XMVECTORF32 lineColor = std::get<2>(lineTup[i]);
         VertexPositionColor lineStart(std::get<0>(lineTup[i]), lineColor);
@@ -1977,14 +1977,10 @@ void Game::DrawTerrainNormals()
     DirectX::XMVECTORF32 lineColor = DirectX::Colors::Red;
     DirectX::SimpleMath::Vector3 origin;
     DirectX::SimpleMath::Vector3 normEnd;
-    // m_terrainVector2 m_terrainVertexArrayBase2    m_terrainVertexArray2
-    for (int i = 0; i < m_terrainVector2.size(); ++i)
+    for (unsigned int i = 0; i < m_terrainVector2.size(); ++i)
     {
         origin = m_terrainVector2[i].position;
-        //normEnd = m_terrainVector2[i].normal + origin;
         normEnd = m_terrainVertexArray2[i].normal + origin;
-
-
         VertexPositionColor originVert(origin, lineColor);
         VertexPositionColor normEndVert(normEnd, lineColor);
         m_batch3->DrawLine(originVert, normEndVert);
@@ -2204,7 +2200,7 @@ void Game::DrawUIIntroScreen()
 
 void Game::DrawWorld()
 {
-    for (int i = 0; i < m_worldGrid.size(); ++i)
+    for (unsigned int i = 0; i < m_worldGrid.size(); ++i)
     {
         m_batch2->DrawLine(m_worldGrid[i].first, m_worldGrid[i].second);
     }
@@ -3147,7 +3143,7 @@ void Game::Render()
         //DrawStartScreen();
         //DrawShape();
         //DrawCarTest();
-        m_vehicle->DrawModel(m_world, m_camera->GetViewMatrix(), m_proj, static_cast<float>(m_timer.GetTotalSeconds()));
+        m_vehicle->DrawModel(m_world, m_camera->GetViewMatrix(), m_proj);
 
         //DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj, const double aTimer)
         //DrawWorldCubeTextured();
@@ -3379,7 +3375,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect3->SetView(viewMatrix);
 
     
-    m_vehicle->UpdateVehicle(aTimer.GetTotalSeconds(), aTimer.GetElapsedSeconds());
+    m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
     UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
 }
