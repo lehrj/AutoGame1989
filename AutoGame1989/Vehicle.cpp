@@ -1563,8 +1563,8 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
 {
     //  Define a convenience variable to make the
     //  code more readable
-    int numEqns = aCar->numEqns;
-
+    // int numEqns = aCar->numEqns;
+    const float numEqns = static_cast<float>(aCar->numEqns);
     //  Retrieve the current values of the dependent
     //  and independent variables.
     Motion q = aCar->q;
@@ -1663,28 +1663,29 @@ void Vehicle::SteeringInputDecay(const double aTimeDelta)
 {
     if (m_car.isTurningPressed == false)
     {
+        const float timeDelta = static_cast<float>(aTimeDelta);
         if (m_car.steeringAngle != 0.0)
         {
             if (m_car.steeringAngle > 0.0)
             {
-                if (m_car.steeringAngle + (m_car.steeringAngleDecay * aTimeDelta) < 0.0)
+                if (m_car.steeringAngle + (m_car.steeringAngleDecay * timeDelta) < 0.0)
                 {
                     m_car.steeringAngle = 0.0;
                 }
                 else
                 {
-                    m_car.steeringAngle += m_car.steeringAngleDecay * aTimeDelta;
+                    m_car.steeringAngle += m_car.steeringAngleDecay * timeDelta;
                 }
             }
             else
             {
-                if (m_car.steeringAngle - (m_car.steeringAngleDecay * aTimeDelta) > 0.0)
+                if (m_car.steeringAngle - (m_car.steeringAngleDecay * timeDelta) > 0.0)
                 {
                     m_car.steeringAngle = 0.0;
                 }
                 else
                 {
-                    m_car.steeringAngle -= m_car.steeringAngleDecay * aTimeDelta;
+                    m_car.steeringAngle -= m_car.steeringAngleDecay * timeDelta;
                 }
             }
         }
@@ -1758,27 +1759,28 @@ void Vehicle::TurnVehicle(double aTimeDelta)
 
 void Vehicle::ThrottleBrakeDecay(const double aTimeDelta)
 {
+    const float timeDelta = static_cast<float>(aTimeDelta);
     if (m_car.isThrottlePressed == false)
     {
-        if (m_car.throttleInput - (m_car.throttleDecayRate * aTimeDelta) < 0.0)
+        if (m_car.throttleInput - (m_car.throttleDecayRate * timeDelta) < 0.0)
         {
             m_car.throttleInput = 0.0;
         }
         else
         {
-            m_car.throttleInput -= m_car.throttleDecayRate * aTimeDelta;
+            m_car.throttleInput -= m_car.throttleDecayRate * timeDelta;
         }
     }
 
     if (m_car.isBrakePressed == false)
     {
-        if (m_car.brakeInput - (m_car.brakeDecayRate * aTimeDelta) < 0.0)
+        if (m_car.brakeInput - (m_car.brakeDecayRate * timeDelta) < 0.0)
         {
             m_car.brakeInput = 0.0;
         }
         else
         {
-            m_car.brakeInput -= m_car.brakeDecayRate * aTimeDelta;
+            m_car.brakeInput -= m_car.brakeDecayRate * timeDelta;
         }
     }
 }
@@ -2126,36 +2128,19 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.wheelSpokeRearRight5 *= m_carModel.wheelRearRightTranslation;
     m_carModel.wheelSpokeRearRight5 *= updateMat;
 
-
     // wheel spoke test
     DirectX::SimpleMath::Vector3 spokeOffset(0.0, 0.1, 0.0);
     DirectX::SimpleMath::Matrix testUpdateMat2 = DirectX::SimpleMath::Matrix::CreateTranslation(spokeOffset);;
-    m_carModel.wheelSpokeFront1 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
+    m_carModel.wheelSpokeFront1 = m_carModel.frontAxelRotation;
     m_carModel.wheelSpokeFront1 *= testUpdateMat2;
     m_carModel.wheelSpokeFront1 *= wheelSpinMat;
     m_carModel.wheelSpokeFront1 *= stearingTurn;
     DirectX::SimpleMath::Matrix testUpdateMat = updateMatrix;
-    //m_carModel.wheelSpokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(spokeOffset);
     m_carModel.wheelSpokeFront1 *= m_carModel.frontAxelTranslation;
-    //m_carModel.wheelSpokeFront1 *= testTurn;
     m_carModel.wheelSpokeFront1 *= updateMat;
-    //m_carModel.localWheelSPokeFront1 *= DirectX::SimpleMath::Matrix::CreateTranslation(spokeOffset);
 
-    const float spokeAngle = (2.0 * Utility::GetPi()) * 0.2;
+    const float spokeAngle = (2.0f * Utility::GetPi()) * 0.2f;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /*
-    DirectX::SimpleMath::Matrix wheelSpinMatFL1 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle);
-    m_carModel.wheelSpokeFL1 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
-    m_carModel.wheelSpokeFL1 *= testUpdateMat2;
-    m_carModel.wheelSpokeFL1 *= wheelSpinMatFL1;
-    //m_carModel.wheelSpokeFL1 *= wheelSpinMat;
-    m_carModel.wheelSpokeFL1 = wheelSpin * stearingTurn;
-    m_carModel.wheelSpokeFL1 *= wheelSpinMatFL1;
-    //m_carModel.wheelSpokeFL1 *= m_carModel.frontAxelTranslation;
-    m_carModel.wheelSpokeFL1 *= m_carModel.wheelFrontLeftTranslation;;
-    m_carModel.wheelSpokeFL1 *= updateMat;;
-    */
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     DirectX::SimpleMath::Matrix wheelSpinMat2 = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads + spokeAngle);
     m_carModel.wheelSpokeFront2 = m_carModel.frontAxelRotation;// *wheelSpinMat* stearingTurn;
@@ -2406,14 +2391,13 @@ void Vehicle::UpdateTerrainNorm()
 void Vehicle::UpdateTransmission(const double aTimeDelta)
 {
     // update shift delay cooldown
-    m_car.shiftCooldown -= aTimeDelta;
+    m_car.shiftCooldown -= static_cast<float>(aTimeDelta);
     if (m_car.shiftCooldown < 0.0)
     {
         m_car.shiftCooldown = 0.0;
     }
 
     float velocity = m_car.q.velocity.Length();
-    //float downShiftLimit = 900.0;
     //  Compute the new engine rpm value
     // test rpm with clutch depressed
     if (m_car.isClutchPressed == true)
@@ -2424,7 +2408,6 @@ void Vehicle::UpdateTransmission(const double aTimeDelta)
     {
         m_car.omegaE = velocity * 60.0f * m_car.gearRatio[m_car.gearNumber] * m_car.finalDriveRatio / (2.0f * Utility::GetPi() * m_car.wheelRadius);
     }
-
 
     if (m_car.omegaE < 800.0)
     {
@@ -2437,7 +2420,6 @@ void Vehicle::UpdateTransmission(const double aTimeDelta)
         if (m_car.omegaE > m_car.redline)
         {
             float oldGearRatio = m_car.gearRatio[m_car.gearNumber];
-            //++m_car.gearNumber;
             GearUp();
             float newGearRatio = m_car.gearRatio[m_car.gearNumber];
             m_car.omegaE = m_car.omegaE * newGearRatio / oldGearRatio;
@@ -2460,7 +2442,6 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     DebugClearUI();
     DirectX::SimpleMath::Vector3 prevVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 prevPos = m_car.q.position;
-    float preVel = m_car.q.velocity.Length();
 
     m_car.testModelRotation = m_car.carRotation;
     m_car.testTerrainNormal = m_car.terrainNormal;
@@ -2520,8 +2501,8 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_car.isBrakePressed = false;
     m_testIsBreakLightOn = false;
 
-    m_car.testAccel = (m_car.q.velocity.Length() - prevVelocity.Length()) / aTimeDelta;
-    m_car.testAcceleration = (m_car.q.velocity - prevVelocity) / aTimeDelta;
+    m_car.testAccel = (m_car.q.velocity.Length() - prevVelocity.Length()) / static_cast<float>(aTimeDelta);
+    m_car.testAcceleration = (m_car.q.velocity - prevVelocity) / static_cast<float>(aTimeDelta);
     m_car.testAcceleration = m_car.testAcceleration / m_car.q.velocity;
     
     UpdateResistance();
@@ -2529,7 +2510,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 postPos = m_car.q.position;
     DirectX::SimpleMath::Vector3 deltaPos = prevPos - postPos;
     float deltaLength = deltaPos.Length();
-    m_testVelocity = deltaLength / aTimeDelta;
+    m_testVelocity = deltaLength / static_cast<float>(aTimeDelta);
 }
 
 void Vehicle::UpdateVelocity(double aTimeDelta)
@@ -2541,7 +2522,7 @@ void Vehicle::UpdateVelocity(double aTimeDelta)
     lateralVelocity = m_car.right * testVelocity.Dot(m_car.right);
     DirectX::SimpleMath::Vector3 lateralFriction = -lateralVelocity * lateralFrictionFactor;
     DirectX::SimpleMath::Vector3 backwardsFriction = -testVelocity * backwardsFrictionFactor;
-    testVelocity += (backwardsFriction + lateralFriction) * aTimeDelta;
+    testVelocity += (backwardsFriction + lateralFriction) * static_cast<float>(aTimeDelta);
 
     DirectX::SimpleMath::Vector3 velocityLine = testVelocity;
     velocityLine.Normalize();

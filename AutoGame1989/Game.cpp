@@ -1820,7 +1820,7 @@ void Game::DrawStartScreen()
         pitch = time * 0.7f;
         roll = time * 1.1f;
 
-        auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
+        quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
         auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
         auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
 
@@ -1848,7 +1848,6 @@ void Game::DrawStartScreen()
         float val = 0.1;
         DirectX::SimpleMath::Vector4 test(val, val, val, 1.0);
         m_effect->SetAmbientLightColor(test);
-
 
         ilights->SetLightDirection(0, light0);
         ilights->SetLightDirection(1, light1);
@@ -2037,7 +2036,7 @@ void Game::DrawUIIntroScreen()
         if (timeStamp < (fadeInStart1 * .3))  // fade in
         {
             AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_COINSFX);
-            float colorIntensity = (static_cast<float>(timeStamp) - 0.0) / (fadeInStart1 * .3f);
+            float colorIntensity = (static_cast<float>(timeStamp) - 0.0f) / (fadeInStart1 * .3f);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2146,28 +2145,19 @@ void Game::DrawUIIntroScreen()
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
-            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
-            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
             m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, fadeColor, 0.f, authorOrigin);
             m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
         }
         else if (timeStamp > fadeOutStart3) // fade out
         {
-            float colorIntensity = (fadeOutEnd3 - timeStamp) / (fadeDuration);
+            float colorIntensity = (fadeOutEnd3 - static_cast<float>(timeStamp)) / (fadeDuration);
             colorIntensity = 0.0;
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
-
-            // For now toggle off this text with no fade
-            //m_font->DrawString(m_spriteBatch.get(), author.c_str(), authorPos, fadeColor, 0.f, authorOrigin);
-            //m_font->DrawString(m_spriteBatch.get(), startText.c_str(), startTextPos, fadeColor, 0.f, startTextOrigin);
         }
         else // display at full intesity
         {
-            //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
-            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
-
             float colorIntensity = (fadeOutStart3 - static_cast<float>(timeStamp)) / (fadeDuration);
             colorIntensity = 1.0;
             fadeColor.f[0] = colorIntensity;
@@ -2952,13 +2942,12 @@ void Game::SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const floa
 
 void Game::SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
 {
-
     for (int i = 0; i < m_terrainVertexCount; ++i)
     {
-        DirectX::SimpleMath::Vector4 testColor = DirectX::Colors::LawnGreen;
-        //DirectX::SimpleMath::Vector4 testColor = m_terrainVertexArray[i].color;
-        testColor *= aDimmerVal;
-        m_terrainVertexArray[i].color = testColor;
+        DirectX::SimpleMath::Vector4 dimmerColor = DirectX::Colors::LawnGreen;
+        //DirectX::SimpleMath::Vector4 dimmerColor = m_terrainVertexArray[i].color;
+        dimmerColor *= aDimmerVal;
+        m_terrainVertexArray[i].color = dimmerColor;
     }
 }
 
@@ -3500,28 +3489,28 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->PressThrottle(aTimer.GetElapsedSeconds());
+            m_vehicle->PressThrottle(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.Down)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->PressBrake(aTimer.GetElapsedSeconds());
+            m_vehicle->PressBrake(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.Left)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->TurnInput(-aTimer.GetElapsedSeconds());
+            m_vehicle->TurnInput(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.Right)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->TurnInput(aTimer.GetElapsedSeconds());
+            m_vehicle->TurnInput(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.D)
@@ -3728,16 +3717,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->SpinClockwise(aTimer.GetElapsedSeconds());
-            //m_lightPos2.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+            m_camera->SpinClockwise(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.O)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->SpinCounterClockwise(aTimer.GetElapsedSeconds());
-            //m_lightPos2.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
+            m_camera->SpinCounterClockwise(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (m_kbStateTracker.pressed.N)
@@ -3755,8 +3742,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_vehicle->ToggleGas();
-            //m_vehicle->ToggleFuel();
             m_camera->SetCameraState(CameraState::CAMERASTATE_SPINCAMERA);
         }
     }
@@ -3765,7 +3750,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_camera->SetSpinCameraStart();
-            //m_vehicle->ToggleBrake();
         }
     }
     if (m_kbStateTracker.pressed.Z)

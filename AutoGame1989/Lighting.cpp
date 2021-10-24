@@ -32,7 +32,7 @@ void Lighting::SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, c
 
 void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer)
 {
-    const double timeStamp = static_cast<double>(aTimer);
+    const float timeStamp = static_cast<float>(aTimer);
 
     aEffect->EnableDefaultLighting();
     if (m_currentLightingState == LightingState::LIGHTINGSTATE_JI)
@@ -91,15 +91,12 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
 
             auto time = static_cast<float>(aTimer);
 
-            float yaw = time * 0.4f;
-            float pitch = time * 0.7f;
-            float roll = -time * 1.1f;
+            const float pitch = -time * 1.1f;
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, pitch, 0.0);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, pitch + 3.14f, 0.0);
+            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, pitch + 1.25f, 0.0);
 
-            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
-            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 3.14, 0.0);
-            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll + 1.25, 0.0);
-
-            auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -roll, 0.0);
+            auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -pitch, 0.0);
 
             DirectX::SimpleMath::Vector3 axis = -DirectX::SimpleMath::Vector3::UnitZ;
 
@@ -137,7 +134,6 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
         auto ilights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());
         if (ilights)
         {
-            //ilights->EnableDefaultLighting();
             ilights->SetLightEnabled(0, true);
             ilights->SetLightEnabled(1, true);
             ilights->SetLightEnabled(2, true);
@@ -209,16 +205,10 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             aEffect->SetColorAndAlpha(test);
             aEffect->SetEmissiveColor(test);
 
-            auto time = static_cast<float>(aTimer);
-            float yaw = time * 0.4f;
-            float pitch = time * 0.7f;
-            float roll = time * 2.1f;
-            roll = cosf(-timeStamp);
-
-            roll = cosf(timeStamp * 3.) * .7;
-            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
-            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
-            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+            const float yaw = cosf(static_cast<float>(timeStamp) * 3.f) * .7f;
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
+            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
 
             DirectX::SimpleMath::Vector3 axis = DirectX::SimpleMath::Vector3::UnitX;
             DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(axis, quat0);
@@ -387,19 +377,19 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             ilights->SetLightEnabled(0, true);
             ilights->SetLightEnabled(1, true);
             ilights->SetLightEnabled(2, true);
-            auto time = static_cast<float>(aTimer);
-            float yaw = time * 0.4f;
-            float pitch = time * 0.7f;
-            float roll = time * 1.1f;
-            roll = cosf(-timeStamp * 1.2);
-            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-roll, 0.0, 0.0);
-            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+
+            
+            const float yaw = cosf(-timeStamp * 1.2f);
+            const float roll = cosf(-timeStamp * 1.2f);
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-yaw, 0.0, 0.0);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, roll);
             auto light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
             auto light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
             auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
 
-            float roll2 = time * 3.1f;
+            auto time = static_cast<float>(aTimer);
+            const float roll2 = time * 3.1f;
             auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll2, 0.0);
             DirectX::SimpleMath::Vector3 axis = -DirectX::SimpleMath::Vector3::UnitZ;
             DirectX::SimpleMath::Vector3 light = XMVector3Rotate(axis, quat);
