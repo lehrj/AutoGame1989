@@ -324,8 +324,8 @@ private:
     float                               m_debugValue4 = 0.0;
     float                               m_debugValue5 = 0.0;
 
-    float                              m_testTimer = 0.0;
-    float                              m_testTimerOffset = 0.0;
+    double                              m_testTimer = 0.0;
+    double                              m_testTimerOffset = 0.0;
 
     // start scene control variables
     const float                         m_fadeDuration = 5.0f;
@@ -350,14 +350,14 @@ private:
 
     const float                         m_teaserScreenDistance = 90.0;
 
-    DirectX::SimpleMath::Vector3        m_teaserCamPos = DirectX::SimpleMath::Vector3(m_teaserScreenDistance - 1.0, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3        m_teaserCamPos = DirectX::SimpleMath::Vector3(m_teaserScreenDistance - 1.0f, 0.0, 0.0);
     DirectX::SimpleMath::Vector3        m_teaserCamTarg = DirectX::SimpleMath::Vector3(m_teaserScreenDistance, 0.0, 0.0);
 
     DirectX::SimpleMath::Vector3        m_testNorm = DirectX::SimpleMath::Vector3::UnitZ;
 
     float                               m_terrainColorDimmer = 0.0;
   
-    const float                         m_debugStartTime = -5.0;
+    const double                         m_debugStartTime = -5.0;
 
 
 };

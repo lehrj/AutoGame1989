@@ -824,9 +824,8 @@ void Game::DrawDebugVehicleData()
     }
     
     // Draw speed with formatting
-    float speed = m_vehicle->GetSpeed() * 2.23694;
+    float speed = m_vehicle->GetSpeed() * 2.23694f;
     std::string speedLine = "Speed    " + std::to_string(static_cast<int>(speed)) + " MPH";
-    //std::string speedLine = "Speed " + std::to_string(speed) + " MPH";
     DirectX::SimpleMath::Vector2 speedLineOrigin = m_bitwiseFont->MeasureString(speedLine.c_str()) / 2.f;
     textLinePos.x = speedLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), speedLine.c_str(), textLinePos, Colors::White, 0.f, speedLineOrigin);
@@ -948,7 +947,7 @@ void Game::DrawGridForStartScreen()
     }
 
     DirectX::SimpleMath::Vector3 horizontalStart(xBase, yBase, zBase);
-    float horizontalLinePos = fmod(timeStamp, xLength) * .2;
+    float horizontalLinePos = fmod(timeStamp, xLength) * .2f;
     horizontalLinePos += 3.0;
     for (int i = 0; i < horizontalLineCount; ++i)
     {
@@ -1020,8 +1019,7 @@ void Game::DrawIntroScene()
     const float fogGap1 = m_fogGap1;
     const float fogGap2 = m_fogGap2;
 
-    float timeStamp = static_cast<float>(m_testTimer);
-    timeStamp += m_debugStartTime;
+    const float timeStamp = static_cast<float>(m_testTimer + m_debugStartTime);
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
@@ -1282,10 +1280,6 @@ void Game::DrawIntroScene()
         }
         else
         {
-            float colorIntensity = (fadeOutEnd4 - timeStamp) / (fadeDuration);
-            float fogStart = colorIntensity + fogGap1;
-            float fogEnd = colorIntensity + fogGap2;
-
             m_effect2->SetFogEnabled(false);
         }
     }
@@ -1314,18 +1308,18 @@ void Game::DrawLightBar()
     DirectX::XMVECTORF32 color1 = DirectX::Colors::Red;
     DirectX::XMVECTORF32 color2 = DirectX::Colors::Black;
     const float timeStamp = static_cast<float>(m_testTimer);
-    float focusPoint = cosf(timeStamp * 3.) * .7;
+    float focusPoint = cosf(timeStamp * 3.f) * .7f;
 
     DirectX::SimpleMath::Vector3 normal = -DirectX::SimpleMath::Vector3::UnitX;
-    float x = m_teaserScreenDistance - 0.01;
-    float y = -0.1;
-    float z = .7;
+    float x = m_teaserScreenDistance - 0.01f;
+    float y = -0.1f;
+    float z = .7f;
     DirectX::SimpleMath::Vector3 left(x, y, -z);
     DirectX::SimpleMath::Vector3 right(x, y, z);
     DirectX::SimpleMath::Vector3 focus(x, y, focusPoint);
 
     const int lineCount = 10;
-    float spacing = .0035;
+    float spacing = .0035f;
     for (int i = 0; i < lineCount; ++i)
     {
         left.y += spacing;
@@ -1822,11 +1816,9 @@ void Game::DrawStartScreen()
         ilights->SetLightEnabled(1, true);
         ilights->SetLightEnabled(2, true);
 
-        auto time = static_cast<float>(m_timer.GetTotalSeconds());
-
-        float yaw = time * 0.4f;
-        float pitch = time * 0.7f;
-        float roll = time * 1.1f;
+        yaw = time * 0.4f;
+        pitch = time * 0.7f;
+        roll = time * 1.1f;
 
         auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
         auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
@@ -1946,7 +1938,7 @@ void Game::DrawTeaserScreen()
     const DirectX::SimpleMath::Vector3 vertexColor = DirectX::Colors::White;
     const float height = .5f;
     const float width = .888888888f;
-    const float distance = m_teaserScreenDistance + 0.0001;
+    const float distance = m_teaserScreenDistance + 0.0001f;
 
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
@@ -2006,7 +1998,7 @@ void Game::DrawUIIntroScreen()
     float logoDisplayGap = m_logoDisplayGap;
     float startDelay = m_startDelay;
 
-    float timeStamp = static_cast<float>(m_testTimer);
+    double timeStamp = m_testTimer;
     timeStamp += m_debugStartTime;
 
     float fadeInStart1 = startDelay;
@@ -2045,7 +2037,7 @@ void Game::DrawUIIntroScreen()
         if (timeStamp < (fadeInStart1 * .3))  // fade in
         {
             AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_COINSFX);
-            float colorIntensity = (timeStamp - 0.0) / (fadeInStart1 * .3);
+            float colorIntensity = (static_cast<float>(timeStamp) - 0.0) / (fadeInStart1 * .3f);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2054,7 +2046,7 @@ void Game::DrawUIIntroScreen()
         else if (timeStamp > (fadeInStart1 * .8)) // fade out
         {
             AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
-            float colorIntensity = (fadeInStart1 - timeStamp) / (fadeInStart1 * .2);
+            float colorIntensity = (fadeInStart1 - static_cast<float>(timeStamp)) / (fadeInStart1 * .2f);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2075,7 +2067,7 @@ void Game::DrawUIIntroScreen()
 
         if (timeStamp < fadeInEnd1)  // fade in
         {
-            float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
+            float colorIntensity = (static_cast<float>(timeStamp) - fadeInStart1) / fadeDuration;
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2083,7 +2075,7 @@ void Game::DrawUIIntroScreen()
         }
         else if (timeStamp > fadeOutStart1) // fade out
         {
-            float colorIntensity = (fadeOutEnd1 - timeStamp) / (fadeDuration);
+            float colorIntensity = (fadeOutEnd1 - static_cast<float>(timeStamp)) / (fadeDuration);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2107,21 +2099,17 @@ void Game::DrawUIIntroScreen()
         DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
         if (timeStamp < fadeInEnd2)  // fade in
         {
-            float colorIntensity = (timeStamp - fadeInStart2) / (fadeDuration);
+            float colorIntensity = (static_cast<float>(timeStamp) - fadeInStart2) / (fadeDuration);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
-            //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
-            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
         else if (timeStamp > fadeOutStart2) // fade out
         {
-            float colorIntensity = (fadeOutEnd2 - timeStamp) / (fadeDuration);
+            float colorIntensity = (fadeOutEnd2 - static_cast<float>(timeStamp)) / (fadeDuration);
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
-            //m_spriteBatch->Draw(m_bmwLogoTexture.Get(), m_bmwLogoPos, nullptr, fadeColor, 0.f, m_bmwLogoOrigin);
-            //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
         }
         else
         {
@@ -2154,7 +2142,7 @@ void Game::DrawUIIntroScreen()
         DirectX::XMVECTORF32 fadeColor2 = DirectX::Colors::White;
         if (timeStamp < fadeInEnd3)  // fade in
         {
-            float colorIntensity = (timeStamp - fadeInStart3) / fadeDuration;
+            float colorIntensity = (static_cast<float>(timeStamp) - fadeInStart3) / fadeDuration;
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
             fadeColor.f[2] = colorIntensity;
@@ -2180,7 +2168,7 @@ void Game::DrawUIIntroScreen()
             //m_spriteBatch->Draw(m_jiLogoTexture.Get(), m_jiLogoPos, nullptr, fadeColor, 0.f, m_jiLogoOrigin);
             //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, fadeColor, 0.f, textLineOrigin);
 
-            float colorIntensity = (fadeOutStart3 - timeStamp) / (fadeDuration);
+            float colorIntensity = (fadeOutStart3 - static_cast<float>(timeStamp)) / (fadeDuration);
             colorIntensity = 1.0;
             fadeColor.f[0] = colorIntensity;
             fadeColor.f[1] = colorIntensity;
@@ -2758,7 +2746,6 @@ void Game::InitializeWorldGrid()
         p2.x = maxX;
         v1 = DirectX::VertexPositionNormalColor(p1, gridNorm, gridColor0);
         v2 = DirectX::VertexPositionNormalColor(p2, gridNorm, gridColor0);
-        //m_worldGrid.push_back(std::pair(v1, v2));
         i = 0;
         while (p1.y <= maxY)
         {
@@ -2944,7 +2931,6 @@ void Game::SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const floa
 
     float fogStart = distanceToTarget - aDimmerVal;
     float fogEnd = distanceToTarget + (fogStartStopGap - aDimmerVal);
-    float testVal = fogEnd - distanceToTarget;
 
     m_effect2->SetFogEnabled(true);
     m_effect2->SetFogStart(fogEnd);
@@ -2976,13 +2962,6 @@ void Game::SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, c
     }
 }
 
-/*
-void Game::SetLighting(LightingState aLightState)
-{
-    m_currentLightingState = aLightState;
-}
-*/
-
 void Game::TestDraw()
 {
     const float timeStamp = static_cast<float>(m_timer.GetTotalSeconds());
@@ -2991,11 +2970,11 @@ void Game::TestDraw()
     DirectX::SimpleMath::Vector3 fogTarget2(1.1, 0.75, 0.0);
     DirectX::SimpleMath::Vector3 fogTarget3(0.5, 0.0, 0.0);
 
-    float dimmer = ((cosf(timeStamp) + 1.) * 0.5);
+    float dimmer = ((cosf(static_cast<float>(timeStamp)) + 1.f) * 0.5f);
 
-    SetFogVals(fogTarget, dimmer - .5);
-    SetFogVals2(fogTarget2, dimmer - 1.5);
-    SetFogVals3(fogTarget3, dimmer - 1.5);
+    SetFogVals(fogTarget, dimmer - .5f);
+    SetFogVals2(fogTarget2, dimmer - 1.5f);
+    SetFogVals3(fogTarget3, dimmer - 1.5f);
 
     DirectX::SimpleMath::Vector3 testCamPos = m_camera->GetPos();
     if (testCamPos.x < -1.0)
@@ -3085,12 +3064,11 @@ void Game::Render()
         ilights->SetLightEnabled(1, true);
         ilights->SetLightEnabled(2, true);
         auto time = static_cast<float>(aTimer);
-        float yaw = time * 0.4f;
-        float pitch = time * 0.7f;
+        float yaw = time * 1.1f;
         float roll = time * 1.1f;
-        roll = cosf(-timeStamp * 1.2);
-        auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-roll, 0.0, 0.0);
-        auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, 0.0);
+        roll = cosf(-timeStamp * 1.2f);
+        auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-yaw, 0.0, 0.0);
+        auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
         auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, 0.0, roll);
         auto light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
         auto light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
@@ -3319,8 +3297,6 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_testTimer = m_timer.GetTotalSeconds() + m_testTimerOffset;
 
     // TODO: Add your game logic here.
-    m_road->Update(elapsedTime * 500);
-    m_pacSprite->Update(elapsedTime);
 
     if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
     {
