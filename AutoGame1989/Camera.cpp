@@ -26,25 +26,16 @@ Camera::Camera(int aWidth, int aHeight)
 	m_nearPlane = 2.0f;
 	m_farPlane = 2500.0f;
 
-
 	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
-	//m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
-	//if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
-	if (0 == 0)
-	{
-		//(Target aTarget, float aSpringConstant, float ahDist, float aVDist)
-		Target testTarget;
-		testTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
-		testTarget.up = DirectX::SimpleMath::Vector3::UnitY;
-		//testTarget.position = DirectX::SimpleMath::Vector3::Zero;
-		testTarget.position = DirectX::SimpleMath::Vector3(0.0, 2.2, 0.0);;
-		//float springConst = 152.0;
-		float springConst = 100.0;
-		float hDist = - m_followCamPos.x;
-		float vDist = m_followCamPos.y;
+	Target springTarget;
+	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
+	springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
+	springTarget.position = DirectX::SimpleMath::Vector3(0.0, 2.2f, 0.0);;
+	float springConst = 100.0;
+	float hDist = -m_followCamPos.x;
+	float vDist = m_followCamPos.y;
 
-		InitializeSpringCamera(testTarget, springConst, hDist, vDist);
-	}
+	InitializeSpringCamera(springTarget, springConst, hDist, vDist);
 
 	Reset();
 	InitializeViewMatrix();
@@ -550,10 +541,10 @@ void Camera::UpdateSpinCamera(DX::StepTimer const& aTimer)
 {
     //m_spinCamOffset = m_actualPosition - m_springTarget.position;
 	//m_spinCamOffset = m_followCamPos - m_followCamTarget;
-	double aTimeDelta = aTimer.GetElapsedSeconds();
+	const float timeDelta = static_cast<float>(aTimer.GetElapsedSeconds());
 	//m_carmeraSpin += m_carmeraSpinSpeed * (1.0 + aTimeDelta);
-	m_carmeraSpin += m_carmeraSpinSpeed * ( aTimeDelta);
-	m_carmeraSpinPitch -= m_carmeraSpinPitchSpeed * aTimeDelta;
+	m_carmeraSpin += m_carmeraSpinSpeed * timeDelta;
+	m_carmeraSpinPitch -= m_carmeraSpinPitchSpeed * timeDelta;
 	DirectX::SimpleMath::Vector3 newCamPos = m_spinCamOffset;
 	DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_carmeraSpin);
 	//DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_carmeraSpin, -m_carmeraSpinPitch, 0.0);
@@ -653,15 +644,15 @@ void Camera::UpdateSpringCamera(DX::StepTimer const& aTimeDelta)
 	DirectX::SimpleMath::Vector3 idealPosition = m_springTarget.position - m_springTarget.forward * m_hDistance + m_springTarget.up * m_vDistance;
 	DirectX::SimpleMath::Vector3 displacement = m_actualPosition - idealPosition;
 	DirectX::SimpleMath::Vector3 springAccel = (-m_springConstant * displacement) - (m_dampConstant * m_velocity);
-	m_velocity += springAccel * aTimeDelta.GetElapsedSeconds();
+	m_velocity += springAccel * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 	//m_actualPosition = idealPosition;
-	m_actualPosition += m_velocity * aTimeDelta.GetElapsedSeconds();
+	m_actualPosition += m_velocity * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 	ComputeSpringMatrix();
 }
 
 void Camera::UpdateChaseCamera()
 {
-	float accel = m_vehicleFocus->GetAccel() * 0.001;
+	const float accel = m_vehicleFocus->GetAccel() * 0.001f;
 	DirectX::SimpleMath::Vector3 preCamPosition = m_position;
 
 	DirectX::SimpleMath::Vector3 accelCamPos = m_followCamPos;
@@ -683,7 +674,7 @@ void Camera::UpdateChaseCamera()
 	float terrainHeight = m_environment->GetTerrainHeightAtPos(cameraPos);
 	if (terrainHeight > cameraPos.y)
 	{
-		cameraHeightOffset += (terrainHeight - cameraPos.y) * 3.0;
+		cameraHeightOffset += (terrainHeight - cameraPos.y) * 3.0f;
 	}
 	terrainHeight = m_vehicleFocus->GetPos().y + cameraHeightOffset;
 	cameraPos.y = terrainHeight + m_followCamPosOffset.y;
@@ -705,7 +696,7 @@ void Camera::UpdateChaseCamera()
 	if (testAccelPos.y > terrainHeight2)
 	{
 		jumpCamPos = testAccelPos;
-		jumpCamPos.y = terrainHeight2 + 0.0;
+		jumpCamPos.y = terrainHeight2 + 0.0f;
 		jumpCamPos = DirectX::SimpleMath::Vector3::Transform(jumpCamPos, m_chaseCamQuat);
 		jumpCamPos += m_vehicleFocus->GetPos();	
 	}
@@ -732,146 +723,6 @@ void Camera::UpdateChaseCamera()
 	}
 
 	SetPos(newCamPosition4);
-}
-
-void Camera::UpdateChaseCamera4()
-{
-	float accel = m_vehicleFocus->GetAccel() * 0.001;
-	DirectX::SimpleMath::Vector3 preCamPosition = m_position;
-
-	DirectX::SimpleMath::Vector3 accelCamPos = m_followCamPos;
-	accelCamPos.x += accel;
-
-	SetUpPos(m_followCamUp);
-
-	SetTargetPos(m_vehicleFocus->GetPos() + m_followCamTargOffset);
-
-	m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Lerp(m_chaseCamQuat, DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetRotation(), 0.0, accel), m_chaseCamLerpFactor);
-
-	DirectX::SimpleMath::Vector3 testAccelPos = DirectX::SimpleMath::Vector3::SmoothStep(accelCamPos, m_followCamPos, 0.0001);
-	DirectX::SimpleMath::Vector3 cameraPos = testAccelPos;
-	cameraPos = DirectX::SimpleMath::Vector3::Transform(cameraPos, m_chaseCamQuat);
-	cameraPos += m_vehicleFocus->GetPos();
-
-	float cameraHeightOffset = 0.0;
-	float terrainHeight = m_environment->GetTerrainHeightAtPos(cameraPos);
-	if (terrainHeight > cameraPos.y)
-	{
-		cameraHeightOffset += (terrainHeight - cameraPos.y) * 3.0;
-	}
-	terrainHeight = m_vehicleFocus->GetPos().y + cameraHeightOffset;
-	cameraPos.y = terrainHeight + m_followCamPosOffset.y;
-
-	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::Lerp(preCamPosition, cameraPos, 0.1);
-
-	float testCamHeight = m_environment->GetTerrainHeightAtPos(cameraPos);
-	cameraPos.y = testCamHeight + m_followCamPosOffset.y;
-
-	DirectX::SimpleMath::Vector3 newCamPosition2 = DirectX::SimpleMath::Vector3::Lerp(preCamPosition, cameraPos, 0.1);
-
-	SetPos(cameraPos);
-	SetPos(newCamPosition2);  // position with acceleration rubberbanding
-
-	/////////////////
-	// Testing new jump camera position
-	float terrainHeight2 = m_environment->GetTerrainHeightAtPos(cameraPos);
-	DirectX::SimpleMath::Vector3 jumpCamPos;
-	if (testAccelPos.y > terrainHeight2)
-	{
-		jumpCamPos = testAccelPos;
-		jumpCamPos.y = terrainHeight2 + 0.0;
-		jumpCamPos = DirectX::SimpleMath::Vector3::Transform(jumpCamPos, m_chaseCamQuat);
-		jumpCamPos += m_vehicleFocus->GetPos();
-	}
-	else
-	{
-		jumpCamPos = testAccelPos;
-		jumpCamPos = DirectX::SimpleMath::Vector3::Transform(jumpCamPos, m_chaseCamQuat);
-		jumpCamPos += m_vehicleFocus->GetPos();
-	}
-
-	DirectX::SimpleMath::Vector3 newCamPosition3 = DirectX::SimpleMath::Vector3::Lerp(preCamPosition, jumpCamPos, 0.1);
-
-	SetPos(newCamPosition3);
-}
-
-void Camera::UpdateChaseCamera2()
-{
-	float accel = m_vehicleFocus->GetAccel() * 0.001;
-	DirectX::SimpleMath::Vector3 preCamPosition = m_position;
-
-	DirectX::SimpleMath::Vector3 accelCamPos = m_followCamPos;
-	accelCamPos.x += accel;
-
-	SetUpPos(m_followCamUp);
-
-	SetTargetPos(m_vehicleFocus->GetPos() + m_followCamTargOffset);
-
-	m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Lerp(m_chaseCamQuat, DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetRotation(), 0.0, accel), m_chaseCamLerpFactor);
-
-	DirectX::SimpleMath::Vector3 testAccelPos = DirectX::SimpleMath::Vector3::SmoothStep(accelCamPos, m_followCamPos, 0.0001);
-	DirectX::SimpleMath::Vector3 cameraPos = testAccelPos;
-	cameraPos = DirectX::SimpleMath::Vector3::Transform(cameraPos, m_chaseCamQuat);
-	cameraPos += m_vehicleFocus->GetPos();
-
-	float cameraHeightOffset = 0.0;
-	float terrainHeight = m_environment->GetTerrainHeightAtPos(cameraPos);
-	if (terrainHeight > cameraPos.y)
-	{
-		cameraHeightOffset += (terrainHeight - cameraPos.y) * 3.0;
-	}
-	terrainHeight = m_vehicleFocus->GetPos().y + cameraHeightOffset;
-	cameraPos.y = terrainHeight + m_followCamPosOffset.y;
-
-	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::Lerp(preCamPosition, cameraPos, 0.1);
-
-	float testCamHeight = m_environment->GetTerrainHeightAtPos(cameraPos);
-	cameraPos.y = testCamHeight + m_followCamPosOffset.y;
-
-	SetPos(cameraPos);
-}
-
-void Camera::UpdateChaseCamera3()
-{
-
-
-	///////////////////////////////////////////////
-
-	float accel = m_vehicleFocus->GetAccel() * 0.001;
-	DirectX::SimpleMath::Vector3 preCamPosition = m_position;
-
-	DirectX::SimpleMath::Vector3 accelCamPos = m_followCamPos;
-	accelCamPos.x += accel;
-
-	SetUpPos(m_followCamUp);
-
-	SetTargetPos(m_vehicleFocus->GetPos() + m_followCamTargOffset);
-
-	m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Lerp(m_chaseCamQuat, DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetRotation(), 0.0, accel), m_chaseCamLerpFactor);
-
-	DirectX::SimpleMath::Vector3 testAccelPos = DirectX::SimpleMath::Vector3::SmoothStep(accelCamPos, m_followCamPos, 0.0001);
-	DirectX::SimpleMath::Vector3 cameraPos = testAccelPos;
-	cameraPos = DirectX::SimpleMath::Vector3::Transform(cameraPos, m_chaseCamQuat);
-	cameraPos += m_vehicleFocus->GetPos();
-
-	float cameraHeightOffset = 0.0;
-	float terrainHeight = m_environment->GetTerrainHeightAtPos(cameraPos);
-	if (terrainHeight > cameraPos.y)
-	{
-		cameraHeightOffset += (terrainHeight - cameraPos.y) * 3.0;
-	}
-	terrainHeight = m_vehicleFocus->GetPos().y + cameraHeightOffset;
-	cameraPos.y = terrainHeight + m_followCamPosOffset.y;
-
-	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::Lerp(preCamPosition, cameraPos, 0.1);
-
-	float testCamHeight = m_environment->GetTerrainHeightAtPos(cameraPos);
-	cameraPos.y = testCamHeight + m_followCamPosOffset.y;
-
-	DirectX::SimpleMath::Vector3 newCamPosition2 = DirectX::SimpleMath::Vector3::Lerp(preCamPosition, cameraPos, 0.1);
-
-	SetPos(cameraPos);
-	SetPos(newCamPosition2);
 }
 
 void Camera::UpdatePitchYaw(const float aPitch, const float aYaw)

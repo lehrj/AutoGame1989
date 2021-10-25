@@ -18,7 +18,8 @@ Game::Game() noexcept :
     m_outputHeight(600),
     m_featureLevel(D3D_FEATURE_LEVEL_9_1)
 {
-    srand(time(NULL));
+    //srand(time(NULL));
+    srand(0);
     m_auto = new Auto();
     m_environment = new Environment();
 
@@ -2728,7 +2729,8 @@ void Game::InitializeWorldGrid()
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // positve y draws
-    if (1 == 1) // Toggle y draw on and off
+    bool isYdrawOn = true;
+    if (isYdrawOn == true) // Toggle y draw on and off
     {
         p1 = DirectX::SimpleMath::Vector3::Zero;
         p1.x = minX;

@@ -2,10 +2,13 @@
 #include "Vehicle.h"
 
 
+/*
 Vehicle::Vehicle()
 {
     //InitializeVehicle();
 }
+*/
+
 void Vehicle::DebugEBrake()
 {
     m_car.q.velocity = DirectX::SimpleMath::Vector3::Zero;

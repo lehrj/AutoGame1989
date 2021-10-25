@@ -1,11 +1,12 @@
 #include "pch.h"
 #include "Lighting.h"
 
-
+/*
 Lighting::Lighting()
 {
 
 }
+*/
 
 Lighting::LightingState Lighting::GetLightingState()
 {

@@ -17,7 +17,7 @@ public:
         LIGHTINGSTATE_,
     };
 
-    Lighting();
+    //Lighting();
 
     LightingState GetLightingState();
 

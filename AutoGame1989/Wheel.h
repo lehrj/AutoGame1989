@@ -4,9 +4,9 @@
 
 struct WheelData
 {
-    int wheelID = 0;
-    bool isStearable = false;
-    bool isGrounded;
+    int wheelID{};
+    bool isStearable{};
+    bool isGrounded{};
     DirectX::SimpleMath::Vector3 localPosition;
     DirectX::SimpleMath::Vector3 worldPosition;
     DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::UnitX;
@@ -14,22 +14,18 @@ struct WheelData
 
     DirectX::SimpleMath::Vector3 axle;
     DirectX::SimpleMath::Vector3 terrainNormal;
-    float radius;
-    float friction;
-    float sidewallHeight;
-    float width;
-    float tireDampening;
-    float mass;
-    float rpm;
-
+    float radius{};
+    float friction{};
+    float sidewallHeight{};
+    float width{};
+    float tireDampening{};
+    float mass{};
+    float rpm{};
 };
-
 
 class Wheel
 {
     public:      
-
-
         void InitializeWheel(DirectX::SimpleMath::Vector3 aLocalPos, DirectX::SimpleMath::Vector3 aWorldPos, bool aIsStearable, float aRadius, float aWidth, float aMass);
 
         void SetAxelPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.axle = aPos; };

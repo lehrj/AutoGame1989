@@ -368,7 +368,7 @@ struct CarModel
 class Vehicle
 {
 public:
-    Vehicle();
+    //Vehicle();
 
     void DebugEBrake();
     std::vector<std::pair<std::string, float>> DebugGetUI() { return m_debugUI; };
