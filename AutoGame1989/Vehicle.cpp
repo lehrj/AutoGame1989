@@ -2620,7 +2620,7 @@ void Vehicle::TestGetForceLateral()
 }
 
 
-DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep)
+DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading)
 {
     DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
     DirectX::SimpleMath::Vector3 terrainAcceleration = terrainNorm;

@@ -452,9 +452,8 @@ private:
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
     
     void TestGetForceLateral();
-    DirectX::SimpleMath::Vector3 TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
-    DirectX::SimpleMath::Vector3 TestTerrainSlide2(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
-    DirectX::SimpleMath::Vector3 TestTerrainSlide3(DirectX::SimpleMath::Vector3 aHeading, double aTimeStep);
+    DirectX::SimpleMath::Vector3 TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading);
+
     void TurnVehicle(double aTimeDelta);
     void UpdateCarAlignment();
 

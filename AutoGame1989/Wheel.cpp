@@ -7,6 +7,7 @@ void Wheel::InitializeWheel(DirectX::SimpleMath::Vector3 aLocalPos, DirectX::Sim
     SetLocalPos(aLocalPos);
     SetMass(aMass);
     SetRadius(aRadius);
+    SetSteerable(aIsSteerable);
     SetWidth(aWidth);
     SetWorldPos(aWorldPos);
 }
