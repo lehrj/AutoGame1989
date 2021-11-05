@@ -20,7 +20,7 @@ struct WheelData
     float width{};
     float tireDampening{};
     float mass{};
-    float rpm{};
+    float angularVelocity{};  // in radians per second
 };
 
 class Wheel
@@ -31,6 +31,7 @@ class Wheel
 
 
     private:
+        void SetAngularVelocity(const float aAngVel) { m_wheelData.angularVelocity = aAngVel; };
         void SetAxelPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.axle = aPos; };
         void SetForward(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.forward = aPos; };
         void SetLocalPos(DirectX::SimpleMath::Vector3 aPos) { m_wheelData.localPosition = aPos; };

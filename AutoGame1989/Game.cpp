@@ -1153,7 +1153,7 @@ void Game::DrawIntroScene()
         SetFogVals(testFogTarget2, colorIntensity);
         SetFogVals2(testFogTarget2, colorIntensity);
         SetFogVals3(testFogTarget3, colorIntensity);
-        SetTerrainGridDimmer(testFogTarget3, colorIntensity);
+        SetTerrainGridDimmer(colorIntensity);
 
         m_camera->SetCameraStartPos(m_introCamPos);
         m_camera->SetCameraEndPos(m_startScreenCamPos);
@@ -1181,7 +1181,7 @@ void Game::DrawIntroScene()
             SetFogVals(testFogTarget1, colorIntensity);
             SetFogVals2(testFogTarget2, colorIntensity);
             SetFogVals3(testFogTarget3, colorIntensity);
-            SetTerrainGridDimmer(testFogTarget3, colorIntensity);
+            SetTerrainGridDimmer(colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -1196,7 +1196,7 @@ void Game::DrawIntroScene()
             SetFogVals(testFogTarget1, colorIntensity);
             SetFogVals2(testFogTarget2, colorIntensity);
             SetFogVals3(testFogTarget3, colorIntensity);
-            SetTerrainGridDimmer(testFogTarget3, colorIntensity);
+            SetTerrainGridDimmer(colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -2942,7 +2942,7 @@ void Game::SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const floa
     m_effect3->SetFogEnd(fogStart);
 }
 
-void Game::SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal)
+void Game::SetTerrainGridDimmer(const float aDimmerVal)
 {
     for (int i = 0; i < m_terrainVertexCount; ++i)
     {

@@ -96,7 +96,7 @@ private:
     void SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
     void SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
     void SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
-    void SetTerrainGridDimmer(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    void SetTerrainGridDimmer(const float aDimmerVal);
 
     void DrawDebugValue();
     void DrawDebugVehicleData();
