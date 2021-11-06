@@ -18,3 +18,9 @@ void Wheel::InitializeWheel(DirectX::SimpleMath::Vector3 aLocalPos, DirectX::Sim
     SetUp(DirectX::SimpleMath::Vector3::UnitY);
     SetWidth(0.235f);
 }
+
+void Wheel::UpdateMagicFormula()
+{
+    float F;
+    F = m_wheelData.D * sin(m_wheelData.C * atan(m_wheelData.Bx1 - m_wheelData.E * (m_wheelData.Bx1 - atan(m_wheelData.Bx1)))) + m_wheelData.V;
+}
