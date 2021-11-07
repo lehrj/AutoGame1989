@@ -240,7 +240,6 @@ float Vehicle::GetCarRotation()
 {
     float turnRadius = GetTurnRadius();
     float steeringAngle = m_car.steeringAngle;
-    //steeringAngle = 0.0;
 
     DirectX::SimpleMath::Vector3 testRadVec(0.0, 0.0, static_cast<float>(-turnRadius));
     DirectX::SimpleMath::Matrix testTurnMat = DirectX::SimpleMath::Matrix::CreateRotationY(steeringAngle);

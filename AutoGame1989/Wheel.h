@@ -7,6 +7,7 @@ struct WheelData
     int wheelID{};
     bool isSteerable{};
     bool isGrounded{};
+    bool isPowered{};
     DirectX::SimpleMath::Vector3 localPosition;
     DirectX::SimpleMath::Vector3 worldPosition;
     DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::UnitX;
@@ -32,6 +33,12 @@ struct WheelData
     float H; //	Horizontal shift	a8, a9, a10	H = a8·Fz + a9 + a10*γ
     float V; // Vertical shift	a11, a12, a13, a14	V = a11·Fz + a12 + (a13·Fz + a14)·γ*Fz
     float Bx1; // (composite)Bx1 = B *(slip + H)
+
+    // data for building testing prototype
+    float testSpeed = 0.0f;
+    float testTorque = 0.0f;
+    float testTireFriction;
+    float testTireLoad;
 };
 
 class Wheel
