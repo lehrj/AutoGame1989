@@ -363,6 +363,12 @@ struct CarModel
     DirectX::SimpleMath::Matrix localfenderFlareRearRightMatrix;
     DirectX::SimpleMath::Matrix fenderFlareRearRightInteriorMatrix;
     DirectX::SimpleMath::Matrix localfenderFlareRearRightInteriorMatrix;
+
+
+    /// Test model for driven wheel
+    std::unique_ptr<DirectX::GeometricPrimitive> testWheel;
+    DirectX::SimpleMath::Matrix testLocalwheelMatrix;
+    DirectX::SimpleMath::Matrix testWorldWheelMatrix;
 };
 
 class Vehicle

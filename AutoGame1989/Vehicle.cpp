@@ -387,6 +387,15 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     const float zFightOffSet = 0.001f;
     DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
+    // test powered wheel start
+    m_carModel.testWheel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 8);
+    m_carModel.testWorldWheelMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.testWorldWheelMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
+    m_carModel.testWorldWheelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(frontAxelOffset, m_car.wheelRadius, -(carBodySize.z * 0.5f)));
+    m_carModel.testWorldWheelMatrix = m_carModel.wheelFrontLeftMatrix;
+    // test powered wheel end
+
+
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
     m_carModel.frontAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 32);
     m_carModel.rearAxel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), axelLength, axelDiameter, 32);
