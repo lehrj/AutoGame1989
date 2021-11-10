@@ -216,6 +216,8 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.reverseLight->Draw(m_carModel.reverseLightRightMatrix, view, proj, reverseLightColor);
     m_carModel.reverseLight->Draw(m_carModel.reverseLightLeftMatrix, view, proj, reverseLightColor);
 
+    // test powered wheel model draw
+    m_carModel.testWheel->Draw(m_carModel.testWorldWheelMatrix, view, proj, testColor);
 }
 
 void Vehicle::GearDown()
@@ -387,13 +389,7 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     const float zFightOffSet = 0.001f;
     DirectX::SimpleMath::Vector3 carBodySize(length, height - wheelRadius, width);
 
-    // test powered wheel start
-    m_carModel.testWheel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), tireLength, wheelDiameter, 8);
-    m_carModel.testWorldWheelMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_carModel.testWorldWheelMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0));
-    m_carModel.testWorldWheelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(frontAxelOffset, m_car.wheelRadius, -(carBodySize.z * 0.5f)));
-    m_carModel.testWorldWheelMatrix = m_carModel.wheelFrontLeftMatrix;
-    // test powered wheel end
+
 
 
     m_carModel.body = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), carBodySize);
@@ -1099,6 +1095,13 @@ void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCont
     m_carModel.normAntennaMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f));
     m_carModel.localnormAntennaMatrix = m_carModel.normAntennaMatrix;
     // Normal Antenna end /////////////////////////////////////////////////////////////////////////////////
+
+    // test powered wheel start
+    m_carModel.testWheel = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), rimWidth, wheelDiameter, 8);
+    m_carModel.testLocalwheelMatrix = DirectX::SimpleMath::Matrix::Identity;
+    m_carModel.testLocalwheelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -m_car.wheelWidth * 1.5, 0.0f));
+    m_carModel.testWorldWheelMatrix = m_carModel.testLocalwheelMatrix;
+    // test powered wheel end
 }
 
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
@@ -1897,14 +1900,6 @@ void Vehicle::UpdateModel(const double aTimer)
 
 
 
-
-
-
-
-
-
-
-
     // Testing lines for velocity and model alignment;
     DirectX::SimpleMath::Matrix testWorld = DirectX::SimpleMath::Matrix::Identity;
     testWorld *= testTurn;
@@ -2366,6 +2361,15 @@ void Vehicle::UpdateModel(const double aTimer)
     // pinstripe
     m_carModel.pinstripeMatrix = m_carModel.localPinstripeMatrix;
     m_carModel.pinstripeMatrix *= updateMat;
+
+
+
+    // Test powered wheel prototype model start
+    m_carModel.testWorldWheelMatrix = m_carModel.testLocalwheelMatrix;
+    m_carModel.testWorldWheelMatrix *= wheelSpin;
+    m_carModel.testWorldWheelMatrix *= m_carModel.wheelRearLeftTranslation;
+    m_carModel.testWorldWheelMatrix *= updateMat;
+    // Test powered wheel prototype model end
 }
 
 void Vehicle::UpdateResistance()
