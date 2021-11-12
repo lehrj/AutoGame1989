@@ -104,10 +104,6 @@ struct Car
 
 struct CarModel
 {
-    std::unique_ptr<DirectX::GeometricPrimitive>    normAntenna;
-    DirectX::SimpleMath::Matrix normAntennaMatrix;
-    DirectX::SimpleMath::Matrix localnormAntennaMatrix;
-
     std::unique_ptr<DirectX::GeometricPrimitive>    body;
     DirectX::SimpleMath::Matrix bodyMatrix;
     DirectX::SimpleMath::Matrix localBodyMatrix;
@@ -257,21 +253,10 @@ struct CarModel
     DirectX::SimpleMath::Matrix localPinstripeMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive> wheelSpoke;
-    DirectX::SimpleMath::Matrix wheelSpokeFront1;
-    DirectX::SimpleMath::Matrix localWheelSpokeFront1;
+
     DirectX::SimpleMath::Matrix spokeTranslation;
     DirectX::SimpleMath::Matrix spokeRotation;
 
-    DirectX::SimpleMath::Matrix wheelSpokeFront2 = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix wheelSpokeFront3 = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix wheelSpokeFront4 = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix wheelSpokeFront5 = DirectX::SimpleMath::Matrix::Identity;
-
-    DirectX::SimpleMath::Matrix wheelSpokeBack1 = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix wheelSpokeBack2 = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix wheelSpokeBack3 = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix wheelSpokeBack4 = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix wheelSpokeBack5 = DirectX::SimpleMath::Matrix::Identity;
 
     DirectX::SimpleMath::Matrix wheelSpokeFL1 = DirectX::SimpleMath::Matrix::Identity;    
     DirectX::SimpleMath::Matrix wheelSpokeFL2 = DirectX::SimpleMath::Matrix::Identity;
@@ -297,11 +282,13 @@ struct CarModel
     DirectX::SimpleMath::Matrix wheelSpokeRearRight4 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix wheelSpokeRearRight5 = DirectX::SimpleMath::Matrix::Identity;
 
+    
     DirectX::SimpleMath::Matrix localWheelSpoke1 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localWheelSpoke2 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localWheelSpoke3 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localWheelSpoke4 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localWheelSpoke5 = DirectX::SimpleMath::Matrix::Identity;
+    
 
     std::unique_ptr<DirectX::GeometricPrimitive> wheelRim;
     DirectX::SimpleMath::Matrix wheelRimFrontMatrix = DirectX::SimpleMath::Matrix::Identity;
