@@ -28,8 +28,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     float y = 255.0 / 256.0;
     float z = 164.0 / 256.0;
     DirectX::SimpleMath::Vector4 volvoYellow(x, y, z, 1.0);
-    //DirectX::XMFLOAT4 testColor(0.984375, 0.91015625, 0.01171875, 1.0);  
-    //DirectX::SimpleMath::Vector4 testV = testColor;
+
     DirectX::SimpleMath::Vector4 tireColor(0.2, 0.2, 0.2, 1.0);
     DirectX::SimpleMath::Vector4 windowColor(0.09, 0.09, 0.09, 1.0);
     DirectX::SimpleMath::Vector4 windShieldColor(0.09, 0.09, 0.09, 0.7);
@@ -48,8 +47,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     DirectX::SimpleMath::Vector4 testColor2(0.1, 0.1, 0.1, 1.0);
     DirectX::SimpleMath::Vector4 testColor3 = DirectX::Colors::White;
     DirectX::SimpleMath::Vector4 testColor4(0.1, 0.1, 0.1, 0.6);
-    //DirectX::SimpleMath::Vector4 spokeColor = DirectX::Colors::Gray;
-    //DirectX::SimpleMath::Vector4 rimColor(0.501960814f, 0.501960814f, 0.501960814f, 1.0);
+
     DirectX::SimpleMath::Vector4 rimColor(0.4, 0.4, 0.4, 1.0);
     DirectX::SimpleMath::Vector4 spokeColor = rimColor;
     DirectX::SimpleMath::Vector4 sideMirrorColor(0.2, 0.2, 0.2, 1.0);
@@ -88,10 +86,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareFrontLeftInteriorMatrix, view, proj, fenderFlareShadowColor);
     m_carModel.fenderFlare->Draw(m_carModel.fenderFlareFrontRightMatrix, view, proj, volvoYellow);
     m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareFrontRightInteriorMatrix, view, proj, fenderFlareShadowColor);
-    //m_carModel.fenderFlare->Draw(m_carModel.fenderFlareRearLeftMatrix, view, proj, volvoYellow);
-    //m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareRearLeftInteriorMatrix, view, proj, fenderFlareShadowColor);
-    //m_carModel.fenderFlare->Draw(m_carModel.fenderFlareRearRightMatrix, view, proj, volvoYellow);
-    //m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareRearRightInteriorMatrix, view, proj, fenderFlareShadowColor);
+
     m_carModel.fenderRearFlare->Draw(m_carModel.fenderFlareRearLeftMatrix, view, proj, volvoYellow);
     m_carModel.fenderRearFlareInterior->Draw(m_carModel.fenderFlareRearLeftInteriorMatrix, view, proj, fenderFlareShadowColor);
     m_carModel.fenderRearFlare->Draw(m_carModel.fenderFlareRearRightMatrix, view, proj, volvoYellow);
@@ -102,10 +97,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
     m_carModel.pinstripe->Draw(m_carModel.pinstripeMatrix, view, proj, rockerSkirtColor);
     m_carModel.rockerSkirt->Draw(m_carModel.rockerSkirtMatrix, view, proj, rockerSkirtColor);
-    //m_carModel.frontAxel->Draw(m_carModel.frontAxelMatrix, view, proj, spokeColor);
-    //m_carModel.rearAxel->Draw(m_carModel.rearAxelMatrix, view, proj, spokeColor);
-    //m_carModel.frontTire->Draw(m_carModel.frontTireMatrix, view, proj, tireColor);
-    //m_carModel.rearTire->Draw(m_carModel.rearTireMatrix, view, proj, tireColor);
+
     m_carModel.windShield->Draw(m_carModel.windShieldMatrix, view, proj, volvoYellow);
     m_carModel.rearSpoiler->Draw(m_carModel.rearSpoilerMatrix, view, proj, volvoYellow);
     m_carModel.airDam->Draw(m_carModel.airDamMatrix, view, proj, rockerSkirtColor);
@@ -129,19 +121,6 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
 
 
 
-    /*
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront1, view, proj, spokeColor);
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront2, view, proj, spokeColor);
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront3, view, proj, spokeColor);         ======
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront4, view, proj, spokeColor);
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFront5, view, proj, spokeColor);
-    
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack1, view, proj, spokeColor);
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack2, view, proj, spokeColor);
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack3, view, proj, spokeColor);
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack4, view, proj, spokeColor);
-    m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeBack5, view, proj, spokeColor);
-    */
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFL1, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFL2, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFL3, view, proj, spokeColor);
@@ -166,17 +145,11 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeRearRight4, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeRearRight5, view, proj, spokeColor);
 
-    //m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFL3, view, proj, testColor);
 
-    //m_carModel.wheelRim->Draw(m_carModel.wheelRimFrontMatrix, view, proj, rimColor);
-    //m_carModel.wheelRim->Draw(m_carModel.wheelRimBackMatrix, view, proj, rimColor);
 
     m_carModel.sideMirror->Draw(m_carModel.sideMirrorLeftMatrix, view, proj, sideMirrorColor);
     m_carModel.sideMirror->Draw(m_carModel.sideMirrorRightMatrix, view, proj, sideMirrorColor);
 
-    //m_carModel.tireEdge->Draw(m_carModel.tireEdgeMatrix, view, proj, tireColor);
-    //m_carModel.tireEdge->Draw(m_carModel.rimEdgeMatrix, view, proj, tireColor);
-    //m_carModel.rimEdge->Draw(m_carModel.rimEdgeMatrix, view, proj, spokeColor);
     m_carModel.rimEdge->Draw(m_carModel.hubBackRightMatrix, view, proj, spokeColor);
     m_carModel.tireEdge->Draw(m_carModel.hubBackRightMatrix, view, proj, tireColor);
     m_carModel.rimEdge->Draw(m_carModel.hubInteriorBackRightMatrix, view, proj, spokeColor);
@@ -1940,40 +1913,6 @@ void Vehicle::UpdateModel(const double aTimer)
     //DebugPushTestLine(m_car.testModelPos, m_car.terrainNormal, 4.0, 1.0, DirectX::Colors::Red);
     //DebugPushTestLine(m_car.q.position, m_car.terrainNormal, 4.0, 1.0, DirectX::Colors::Yellow);
 
-    /*
-    DirectX::SimpleMath::Matrix quatMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_car.headingQuat);
-    DirectX::SimpleMath::Matrix testTurn = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation);
-    DirectX::SimpleMath::Matrix updateMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_car.q.position);
-    DirectX::SimpleMath::Matrix updateMat = testTurn;
-    updateMat *= updateMatrix;
-    */
-
-    /*
-    //
-    DirectX::SimpleMath::Matrix updateMat2 = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_car.headingQuat);
-    updateMat2 *= testTurn;
-    updateMat2 *= updateMatrix;
-    updateMat = updateMat2;
-    */
-    //
-
-
-
-
-    /*
-    //DirectX::SimpleMath::Vector3 terrainNorm = m_environment->GetTerrainNormal(m_car.q.position);
-    DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
-    DirectX::SimpleMath::Matrix normRot = DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation + (Utility::GetPi() * 2.0));
-    terrainNorm = DirectX::SimpleMath::Vector3::Transform(terrainNorm, normRot);
-    terrainNorm.Normalize();
-    //DirectX::SimpleMath::Matrix testMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(terrainNorm, m_car.carRotation);
-    //DirectX::SimpleMath::Matrix testMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(m_car.carRotation, terrainNorm.x, 0.0);
-    DirectX::SimpleMath::Matrix testMat = DirectX::SimpleMath::Matrix::Identity;
-    testMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_car.headingQuat);
-    //testMat *= testTurn;
-    testMat *= updateMatrix;
-    //updateMat = testMat;
-    */
 
 
     m_carModel.normAntennaMatrix = m_carModel.localnormAntennaMatrix;
@@ -2192,14 +2131,7 @@ void Vehicle::UpdateModel(const double aTimer)
     // start backwheel spokes
     DirectX::SimpleMath::Matrix rearSpokeRotation = m_carModel.rearAxelRotation * testUpdateMat2;
     DirectX::SimpleMath::Matrix rearSpokeTranslation = m_carModel.rearAxelTranslation * testTurn * updateMatrix;
-    /*
-    m_carModel.wheelSpokeBack1 = m_carModel.rearAxelRotation;
-    m_carModel.wheelSpokeBack1 *= testUpdateMat2;
-    m_carModel.wheelSpokeBack1 *= wheelSpinMat;
-    m_carModel.wheelSpokeBack1 *= m_carModel.rearAxelTranslation;
-    m_carModel.wheelSpokeBack1 *= testTurn;
-    m_carModel.wheelSpokeBack1 *= updateMatrix;
-    */
+
     m_carModel.wheelSpokeBack1 = rearSpokeRotation;
     m_carModel.wheelSpokeBack1 *= wheelSpinMat;
     m_carModel.wheelSpokeBack1 *= rearSpokeTranslation;
