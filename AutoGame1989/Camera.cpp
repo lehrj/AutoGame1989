@@ -392,13 +392,7 @@ void Camera::TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation)
 void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 {
 	UpdateTimer(aTimer);
-	/*
-	m_farPlane += aTimer.GetElapsedSeconds();
-	//m_nearPlane += cos(aTimer.GetTotalSeconds());
-	UpdateOrthoganalMatrix();
-	UpdateProjectionMatrix();
-	UpdateViewMatrix();
-	*/
+
 	if (m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
 	{
 		UpdateFirstPersonCamera();
@@ -476,7 +470,6 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
 	{
 		m_springTarget.position = m_vehicleFocus->GetPos();
-		//m_springTarget.forward = m_vehicleFocus->GetHeading();
 		DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
 		DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetCarRotation());
 
@@ -530,8 +523,6 @@ void Camera::SetSpinCameraStart()
 	float yaw = Utility::ToRadians(90.0);
 	float pitch = Utility::ToRadians(10.0);
 	DirectX::SimpleMath::Quaternion quatRot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, pitch);
-	//m_actualPosition = DirectX::SimpleMath::Vector3::Transform(m_actualPosition, quatRot);
-	//m_springTarget.forward = DirectX::SimpleMath::Vector3::Transform(m_springTarget.forward, quatRot);
 
 	m_followCamPos = DirectX::SimpleMath::Vector3::Transform(m_followCamPos, quatRot);
 	m_spinCamOffset = m_followCamPos - m_followCamTarget;
@@ -539,17 +530,12 @@ void Camera::SetSpinCameraStart()
 
 void Camera::UpdateSpinCamera(DX::StepTimer const& aTimer)
 {
-    //m_spinCamOffset = m_actualPosition - m_springTarget.position;
-	//m_spinCamOffset = m_followCamPos - m_followCamTarget;
 	const float timeDelta = static_cast<float>(aTimer.GetElapsedSeconds());
-	//m_carmeraSpin += m_carmeraSpinSpeed * (1.0 + aTimeDelta);
 	m_carmeraSpin += m_carmeraSpinSpeed * timeDelta;
 	m_carmeraSpinPitch -= m_carmeraSpinPitchSpeed * timeDelta;
 	DirectX::SimpleMath::Vector3 newCamPos = m_spinCamOffset;
 	DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_carmeraSpin);
-	//DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_carmeraSpin, -m_carmeraSpinPitch, 0.0);
 	DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_carmeraSpin, m_carmeraSpinPitch, 0.0);
-	//newCamPos = DirectX::SimpleMath::Vector3::Transform(newCamPos, rotMat);
 	newCamPos = DirectX::SimpleMath::Vector3::Transform(newCamPos, rotQuat);
 	newCamPos += m_vehicleFocus->GetPos();
 	m_followCamPos = newCamPos;
@@ -645,7 +631,6 @@ void Camera::UpdateSpringCamera(DX::StepTimer const& aTimeDelta)
 	DirectX::SimpleMath::Vector3 displacement = m_actualPosition - idealPosition;
 	DirectX::SimpleMath::Vector3 springAccel = (-m_springConstant * displacement) - (m_dampConstant * m_velocity);
 	m_velocity += springAccel * static_cast<float>(aTimeDelta.GetElapsedSeconds());
-	//m_actualPosition = idealPosition;
 	m_actualPosition += m_velocity * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 	ComputeSpringMatrix();
 }

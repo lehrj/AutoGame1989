@@ -1125,7 +1125,6 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.steeringAngle = Utility::ToRadians(0.0);
     m_car.steeringAngleMax = Utility::ToRadians(26.0);
     m_car.headingVec = -DirectX::SimpleMath::Vector3::UnitZ;
-    m_car.headingQuat = DirectX::SimpleMath::Quaternion::Identity;
     m_car.forward = DirectX::SimpleMath::Vector3::UnitX;
     m_car.up = DirectX::SimpleMath::Vector3::UnitY;
     m_car.right = m_car.forward.Cross(m_car.up);
@@ -1201,7 +1200,7 @@ void Vehicle::Jump(double aTimer)
 }
 
 void Vehicle::LandVehicle()
-{
+{   
     DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
     DirectX::SimpleMath::Vector3 landingVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 landingVelocityNorm = landingVelocity;
@@ -1217,10 +1216,9 @@ void Vehicle::LandVehicle()
     updateVelocity = m_car.q.velocity * -impact;
     updateVelocity = m_car.q.velocity;
     updateVelocity.y = 0.0;
-
-
+    
     ///////////////////////////////
-    // Testing new landing equation
+    // Testing new landing equation, from golf ball
     //  ::: Vnew = b * (-2 * (V dot N) * N + V)
     // const float b = .3f;
     // DirectX::SimpleMath::Vector3 terrainNorm = pBallEnvironment->GetTerrainNormal(GetBallPosInEnviron(m_ball.q.position));
@@ -1231,9 +1229,7 @@ void Vehicle::LandVehicle()
 
     DirectX::SimpleMath::Vector3 testUpdateVel = b * (-2 * (v.Dot(n)) * n + v);
     testUpdateVel.y = 0.0;
-    ///////////////////////////////
 
-    //m_car.q.velocity = updateVelocity;
     m_car.q.velocity = testUpdateVel;
 }
 
@@ -1317,17 +1313,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     //  Compute the intermediate values of the 
     //  dependent variables.
     Motion newQ;
-
-    //newQ.position = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->position;
-    //newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
-    ////////////////newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
-
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
-
-
-    //newQ.bodyVelocity= aQ->bodyVelocity + static_cast<float>(aQScale) * aDeltaQ->bodyVelocity;
-    //newQ.engineVelocity = aQ->engineVelocity + static_cast<float>(aQScale) * aDeltaQ->engineVelocity;
 
     //  Compute the constants that define the
     //  torque curve line.
@@ -1351,7 +1338,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         torque = 457.2;
     }
 
-    //d = d * m_car.throttleInput;
     if (m_isFuelOn == false)
     {
         torque = 0.0;
@@ -1393,11 +1379,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
 
     float c1 = -frontDragResistance / mass;
     float tmp = gearRatio * finalDriveRatio / wheelRadius;
-    //DebugPushUILineDecimalNumber("tmp1 = ", tmp, "");
-    //tmp *= m_car.throttleInput;
-    //torque *= m_car.throttleInput;
-    //DebugPushUILineDecimalNumber("tmp2 = ", tmp, "");
-    //DebugPushUILineDecimalNumber("torque = ", torque, "");
     float testTmp = ((gearRatio * aCar->throttleInput) * finalDriveRatio) / wheelRadius;
     tmp = testTmp;
     float c2 = 60.0f * tmp * tmp * powerCurve * v / (2.0f * pi * mass);
@@ -1440,7 +1421,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     velocityUpdate = (static_cast<float>(aTimeDelta) * (c1 + c2 + c3 + c4)) * headingVec;
     if (m_car.throttleInput > 0.0 || m_isFuelOn == false)
     {
-        //aDQ->velocity = (aTimeDelta * (c1 + c2 + c3)) * headingVec;
         aDQ->velocity = velocityUpdate;
     }
     else if (m_car.brakeInput > 0.0)  // braking 
@@ -1448,9 +1428,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //  Only brake if the velocity is positive.
         if (newQ.velocity.Length() > 0.1)
         {
-            //velocityUpdate = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
-            //aDQ->velocity = (aTimeDelta * ((-aCar->brakeInput * aCar->maxBrakeRate) + (c1 + c2 + c3 + c4))) * headingVec;
-
             velocityUpdate = ((static_cast<float>(aTimeDelta) * (c1 + c2 + c3 + c4)) * headingVec) + brakeForce;
             aDQ->velocity = ((static_cast<float>(aTimeDelta) * (c1 + c2 + c3 + c4)) * headingVec) + brakeForce;
 
@@ -1473,7 +1450,6 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         {
             velocityUpdate = (static_cast<float>(aTimeDelta) * (c1 + c2 + c3 + c4)) * headingVec;
             velocityUpdate = (static_cast<float>(aTimeDelta) * (c1  + c3 + c4)) * headingVec;
-            //aDQ->velocity = (static_cast<float>(aTimeDelta) * (c1 + c2 + c3)) * headingVec;
             aDQ->velocity = (static_cast<float>(aTimeDelta) * (c1 + c2 + c3 + c4)) * headingVec;
             velocityUpdate = (static_cast<float>(aTimeDelta) * (c1 + c4)) * headingVec;
         }        
@@ -1774,13 +1750,6 @@ void Vehicle::UpdateCarAlignment()
     m_car.right = m_car.forward.Cross(m_car.up);
     m_car.right.Normalize();
     m_car.forward = m_car.up.Cross(m_car.right);
-    
-    /*
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), m_car.up, 4.0, 0.0, DirectX::Colors::Blue);
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), m_car.forward, 4.0, 0.0, DirectX::Colors::Orange);
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), -m_car.forward, 4.0, 0.0, DirectX::Colors::Orange);
-    DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.5), m_car.right, 4.0, 0.0, DirectX::Colors::Red);
-    */
 }
 
 void Vehicle::UpdateHeadingVec()
@@ -1788,51 +1757,16 @@ void Vehicle::UpdateHeadingVec()
     m_car.headingVec = m_car.forward;
 }
 
-void Vehicle::UpdateHeadingQuat()
-{  
-    //DirectX::SimpleMath::Vector3 terrainNorm = m_environment->GetTerrainNormal(m_car.q.position);
-    DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
-    DirectX::SimpleMath::Matrix normRot = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.carRotation);
-    //m_car.headingVec = DirectX::SimpleMath::Vector3::Transform(m_car.headingVec, normRot);
-
-    terrainNorm = DirectX::SimpleMath::Vector3::Transform(terrainNorm, normRot);
-
-    //terrainNorm = DirectX::SimpleMath::Vector3(1.0, 1.0, 0.0);
-   // terrainNorm.Normalize();
-    //DirectX::SimpleMath::Vector3 headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation));
-    DirectX::SimpleMath::Vector3 headingVec = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Matrix::CreateRotationY(m_car.carRotation));
-    headingVec = DirectX::SimpleMath::Vector3::UnitY;
-    //headingVec.Normalize();
-    DirectX::SimpleMath::Vector3 crossProd = headingVec.Cross(terrainNorm);    
-    //DirectX::SimpleMath::Vector3 crossProd = terrainNorm.Cross(headingVec);
-    //crossProd.Normalize();
-    //float w = sqrt((terrainNorm.Length() * terrainNorm.Length()) * (headingVec.Length() * headingVec.Length())) + terrainNorm.Dot(headingVec);
-    float w = sqrt((terrainNorm.Length() * terrainNorm.Length()) * (headingVec.Length() * headingVec.Length())) + headingVec.Dot(terrainNorm);
-    
-    m_car.headingQuat.x += crossProd.x;
-    m_car.headingQuat.y += crossProd.y;
-    m_car.headingQuat.z += crossProd.z;
-    m_car.headingQuat.w += w;
-    m_car.headingQuat.Normalize();
-    
-    DirectX::SimpleMath::Vector3 testLine = -DirectX::SimpleMath::Vector3::UnitZ;
-    testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_car.headingQuat);
-
-    //DebugPushTestLine(m_car.q.position, testLine, 4.0, 2.0, DirectX::Colors::White);
-    //DebugPushTestLine(m_car.testModelPos, testLine, 4.0, 2.0, DirectX::Colors::White);
-
-    m_car.headingQuat = DirectX::SimpleMath::Quaternion::Identity;
-}
-
 void Vehicle::UpdateModel(const double aTimer)
 {
-    float wheelTurnRads = GetWheelRotationRadians(aTimer) + m_testRotation;
-    m_testRotation = wheelTurnRads;
+    float wheelTurnRadsFront = GetWheelRotationRadians(aTimer) + m_testRotation;
+    wheelTurnRadsFront = Utility::WrapAngle(wheelTurnRadsFront);
+    m_testRotation = wheelTurnRadsFront;
     float wheelTurnRadsRear = GetWheelRotationRadiansRear(aTimer) + m_testRotation;
 
     m_testRotationRear = wheelTurnRadsRear;
 
-
+    DebugPushUILineDecimalNumber("wheelTurnRads ", m_testRotation, " ");
 
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::Identity;
     updateMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_car.q.position, -m_car.right, m_car.up);
@@ -1846,7 +1780,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.bodyTopMatrix *= updateMat;
     ///////
 
-    DirectX::SimpleMath::Matrix wheelSpinMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRads);
+    DirectX::SimpleMath::Matrix wheelSpinMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRadsFront);
     DirectX::SimpleMath::Matrix wheelSpinRearMat = DirectX::SimpleMath::Matrix::CreateRotationZ(-wheelTurnRadsRear);
 
     DirectX::SimpleMath::Matrix stearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
@@ -1868,7 +1802,7 @@ void Vehicle::UpdateModel(const double aTimer)
     m_carModel.rearTireMatrix *= updateMat;
 
     /// Independant Wheels
-    DirectX::SimpleMath::Matrix wheelSpin = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRads);
+    DirectX::SimpleMath::Matrix wheelSpin = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRadsFront);
     DirectX::SimpleMath::Matrix stearingRotation = DirectX::SimpleMath::Matrix::CreateRotationZ(m_car.steeringAngle);
     m_carModel.wheelFrontRightMatrix = wheelSpin * stearingRotation;
     m_carModel.wheelFrontRightMatrix *= m_carModel.wheelFrontRightTranslation;
@@ -1991,19 +1925,14 @@ void Vehicle::UpdateModel(const double aTimer)
 
     // Rims
     m_carModel.wheelRimFrontMatrix = m_carModel.frontAxelMatrix;
-    m_carModel.wheelRimBackMatrix = m_carModel.rearTireMatrix;
-    
+    m_carModel.wheelRimBackMatrix = m_carModel.rearAxelMatrix;
+
     // Hubs
     DirectX::SimpleMath::Matrix testHubRotate = DirectX::SimpleMath::Matrix::CreateRotationY(-wheelTurnRadsRear);
     DirectX::SimpleMath::Matrix hubStearingTurn = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
 
-    
-    DirectX::SimpleMath::Matrix testAxisEndTranslate = m_carModel.localHubFrontRightMatrix;
-    testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);;
-    
-    
-    testAxisEndTranslate = m_carModel.localHubFrontLeftMatrix;
-    testAxisEndTranslate *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.steeringAngle);
+
+
     // Front Left Hub
     m_carModel.hubFrontLeftMatrix = wheelSpin * m_carModel.localHubFrontLeftMatrix * stearingRotation * m_carModel.wheelFrontLeftTranslation * updateMat;
     m_carModel.hubInteriorFrontLeftMatrix = wheelSpin * m_carModel.localHubInteriorFrontLeftMatrix * stearingRotation * m_carModel.wheelFrontLeftTranslation * updateMat;
@@ -2159,12 +2088,6 @@ void Vehicle::UpdateTerrainNorm()
 
     // test switch smoothing to m_car.up
     m_car.terrainNormal = m_environment->GetTerrainNormal(m_car.q.position);
-
-    /*
-    DebugPushTestLine(m_car.q.position + (m_car.terrainNormal * 2.0), updateTerrainNorm, 4.0, 0.0, DirectX::Colors::White);
-    DebugPushTestLine(m_car.q.position + (m_car.terrainNormal * 2.0), m_environment->GetTerrainNormal(m_car.q.position), 4.0, 0.0, DirectX::Colors::White);
-    */
-    
 }
 
 void Vehicle::UpdateTransmission(const double aTimeDelta)
@@ -2261,15 +2184,9 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     {
         m_car.isVelocityBackwards = false;
     }
-
-    
+  
     UpdateVelocity(aTimeDelta);
-
-    DirectX::SimpleMath::Vector3 testVelocity = m_car.q.velocity;
-    testVelocity.Normalize();
-
     UpdateHeadingVec();
-
     UpdateTransmission(aTimeDelta);
 
     m_car.speed = m_car.q.velocity.Length();
@@ -2303,12 +2220,7 @@ void Vehicle::UpdateVelocity(double aTimeDelta)
     DirectX::SimpleMath::Vector3 backwardsFriction = -testVelocity * backwardsFrictionFactor;
     testVelocity += (backwardsFriction + lateralFriction) * static_cast<float>(aTimeDelta);
 
-    DirectX::SimpleMath::Vector3 velocityLine = testVelocity;
-    velocityLine.Normalize();
-    //DebugPushTestLine(m_car.q.position + (m_car.testTerrainNormal * 2.0), velocityLine, 4.0, 0.0, DirectX::Colors::Red);
-    //////////////////////////
-
-    float lerpSize = 0.5;
+    const float lerpSize = 0.5;
     if (m_car.isCarAirborne == true)
     {
 
@@ -2319,16 +2231,13 @@ void Vehicle::UpdateVelocity(double aTimeDelta)
         {
             m_car.q.totalVelocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.totalVelocity, -m_car.forward * m_car.q.totalVelocity.Length(), lerpSize);
             m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.velocity, -m_car.forward * m_car.q.velocity.Length(), lerpSize);
-            //m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(testVelocity, -m_car.forward * m_car.q.velocity.Length(), lerpSize);
         }
         else
         {
             m_car.q.totalVelocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.totalVelocity, m_car.forward * m_car.q.totalVelocity.Length(), lerpSize);
             m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(m_car.q.velocity, m_car.forward * m_car.q.velocity.Length(), lerpSize);
-            //m_car.q.velocity = DirectX::SimpleMath::Vector3::Lerp(testVelocity, m_car.forward * m_car.q.velocity.Length(), lerpSize);
         }
     }
-    //m_car.q.velocity = testVelocity;
 }
 
 void Vehicle::DebugPushTestLine(DirectX::SimpleMath::Vector3 aLineBase, DirectX::SimpleMath::Vector3 aLineEnd, float aLength, float aYOffset, DirectX::XMVECTORF32 aColor)

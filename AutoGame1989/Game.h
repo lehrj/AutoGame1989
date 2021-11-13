@@ -59,7 +59,6 @@ private:
     void DrawCameraFocus();
     void DrawCar();
     void DrawCar2();
-    void DrawCarTest();
     void DrawDebugLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
     void DrawDebugNormalLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
     void DrawDebugLinesVector();
@@ -72,7 +71,6 @@ private:
     void DrawLogoScreen();
     void DrawMenuEnvironmentSelect();
     void DrawMenuMain();
-    void DrawShape();
     void DrawStartScreen();
     void DrawTeaserScreen();
     void DrawTerrain();

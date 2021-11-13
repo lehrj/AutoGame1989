@@ -65,7 +65,6 @@ struct Car
     float steeringAngleMax;
     float steeringSpeed; 
 
-    DirectX::SimpleMath::Quaternion headingQuat;
     float carRotation;
     DirectX::SimpleMath::Vector3 headingVec;          // direction the vehicle is facing
     float shiftCooldown;           // cooldown timer after gear is changed, before engine power is direct to driver train
@@ -326,7 +325,6 @@ struct CarModel
     DirectX::SimpleMath::Matrix sideMirrorRightMatrix;
     DirectX::SimpleMath::Matrix localSideMirrorRightMatrix;
 
-
     std::unique_ptr<DirectX::GeometricPrimitive> fenderFlare;
     DirectX::SimpleMath::Matrix fenderFlareFrontLeftMatrix;
     DirectX::SimpleMath::Matrix localfenderFlareFrontLeftMatrix;
@@ -368,7 +366,6 @@ public:
     std::vector<std::string> DebugGetUIVector() { return m_debugUIVector; };
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32>> DebugGetTestLines() const { return m_debugLinesVec; };
 
-
     void DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProj);
     void GearDown();
     void GearUp();
@@ -395,8 +392,7 @@ public:
     DirectX::SimpleMath::Vector3 GetVehicleUp() const { return m_car.up; };
     DirectX::SimpleMath::Vector3 GetVelocity() { return m_car.q.velocity; };
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_car.q.velocity; };
-
-    
+  
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
     void Jump(double aTimer);
@@ -450,13 +446,9 @@ private:
     void TurnVehicle(double aTimeDelta);
     void UpdateCarAlignment();
 
-    void UpdateHeadingQuat();
-    void UpdateHeadingQuat2();
-    void UpdateHeadingQuat3();
     void UpdateHeadingVec();
     
     void UpdateModel(const double aTimer);
-    void UpdateModel2(const double aTimer);
     void UpdateResistance();
     void UpdateTerrainNorm();
     void UpdateTransmission(const double aTimeDelta);

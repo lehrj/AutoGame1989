@@ -690,52 +690,6 @@ void Game::DrawCar2()
     VertexPositionNormalTexture v12(tailTop, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector2(0, 1));
 }
 
-void Game::DrawCarTest()
-{
-    m_effect->SetTexture(m_textureJI.Get());
-    m_effect->SetNormalTexture(m_normalMapJI.Get());
-    m_effect->SetSpecularTexture(m_specularJI.Get());
-
-    DirectX::SimpleMath::Matrix transMatrix = DirectX::SimpleMath::Matrix::CreateRotationX(static_cast<float>(m_timer.GetTotalSeconds()));
-    DirectX::SimpleMath::Matrix testMatrix = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix world = m_world;
-    //DirectX::SimpleMath::Matrix view = m_view;
-    DirectX::SimpleMath::Matrix view = m_camera->GetViewMatrix();
-    //view = view.CreateRotationX(static_cast<float>(m_timer.GetTotalSeconds()));
-    DirectX::SimpleMath::Matrix proj = m_proj;
-
-    DirectX::SimpleMath::Matrix testView = DirectX::SimpleMath::Matrix::CreateLookAt(SimpleMath::Vector3::Zero, SimpleMath::Vector3(1.0, 1.0, 1.0), SimpleMath::Vector3::UnitY);
-
-    SimpleMath::Matrix testMat1 = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
-
-    //m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XM_PI / 4.f, static_cast<float>(m_clientWidth) / static_cast<float>(m_clientHeight), m_nearPlane, m_farPlane);
-    //m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
-
-    SimpleMath::Vector3 transVec(0.5, 0.5, 1.5);
-    SimpleMath::Matrix transWorld = SimpleMath::Matrix::CreateWorld(SimpleMath::Vector3::Zero, SimpleMath::Vector3::UnitX, SimpleMath::Vector3::UnitY);
-
-    SimpleMath::Matrix transMat = SimpleMath::Matrix::CreateTranslation(transVec);
-    //proj += transMat;
-
-    //m_shape->Draw(m_world, m_view, m_proj);
-    //m_shape->Draw(m_world, m_view, m_proj, Colors::White, m_textureBMW.Get());
-    //m_shape->Draw(transWorld, testMatrix, testMatrix);
-
-    DirectX::SimpleMath::Vector3 testVec(1.10, 1.10, 1.10);
-    //static void __cdecl CreateBox(std::vector<VertexType>&vertices, std::vector<uint16_t>&indices, const XMFLOAT3 & size, bool rhcoords = true, bool invertn = false);
-    //static std::unique_ptr<GeometricPrimitive> __cdecl CreateBox(_In_ ID3D11DeviceContext * deviceContext, const XMFLOAT3 & size, bool rhcoords = true, bool invertn = false);
-
-    //m_shape = GeometricPrimitive::CreateCube(m_d3dContext.Get());
-    //m_shape->CreateBox(m_d3dContext.Get(), testVec);
-    //m_carShapeTest->Draw(m_world, m_view, m_proj);
-
-    //world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.5, 0.0));
-    world = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(cos(static_cast<float>(m_timer.GetTotalSeconds())), 1.0, 1.0));
-
-    //m_carShapeTest->Draw(m_effect.get(), m_inputLayout.Get());
-    m_carShapeTest->Draw(world, view, proj);
-}
-
 void Game::DrawDebugLines(const  DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor)
 {
     const float line = .25f;
@@ -1611,26 +1565,6 @@ void Game::DrawMenuMain()
     {
         m_font->DrawString(m_spriteBatch.get(), menuObj2String.c_str(), menuObj2Pos, Colors::White, 0.f, menuObj2Origin);
     }
-    /*
-    if (m_menuSelect == 3)
-    {
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos + DirectX::SimpleMath::Vector2(4.f, 4.f), Colors::White, 0.f, menuObjHydraOrigin);
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos + DirectX::SimpleMath::Vector2(-4.f, 4.f), Colors::White, 0.f, menuObjHydraOrigin);
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos + DirectX::SimpleMath::Vector2(-4.f, -4.f), Colors::White, 0.f, menuObjHydraOrigin);
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos + DirectX::SimpleMath::Vector2(4.f, -4.f), Colors::White, 0.f, menuObjHydraOrigin);
-
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos + DirectX::SimpleMath::Vector2(2.f, 2.f), Colors::Black, 0.f, menuObjHydraOrigin);
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos + DirectX::SimpleMath::Vector2(-2.f, 2.f), Colors::Black, 0.f, menuObjHydraOrigin);
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos + DirectX::SimpleMath::Vector2(-2.f, -2.f), Colors::Black, 0.f, menuObjHydraOrigin);
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos + DirectX::SimpleMath::Vector2(2.f, -2.f), Colors::Black, 0.f, menuObjHydraOrigin);
-
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos, Colors::White, 0.f, menuObjHydraOrigin);
-    }
-    else
-    {
-        m_font->DrawString(m_spriteBatch.get(), menuObjHydraString.c_str(), menuObjHydraPos, Colors::White, 0.f, menuObjHydraOrigin);
-    }
-    */
     if (m_menuSelect == 3)
     {
         m_font->DrawString(m_spriteBatch.get(), menuObj3String.c_str(), menuObj3Pos + DirectX::SimpleMath::Vector2(4.f, 4.f), Colors::White, 0.f, menuObj3Origin);
@@ -1649,33 +1583,6 @@ void Game::DrawMenuMain()
     {
         m_font->DrawString(m_spriteBatch.get(), menuObj3String.c_str(), menuObj3Pos, Colors::White, 0.f, menuObj3Origin);
     }
-}
-
-void Game::DrawShape()
-{
-    DirectX::SimpleMath::Matrix testMatrix = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix world = m_world;
-    DirectX::SimpleMath::Matrix view = m_view;
-    DirectX::SimpleMath::Matrix proj = m_proj;
-
-    DirectX::SimpleMath::Matrix testView = DirectX::SimpleMath::Matrix::CreateLookAt(SimpleMath::Vector3::Zero, SimpleMath::Vector3(1.0, 1.0, 1.0), SimpleMath::Vector3::UnitY);
-
-    SimpleMath::Matrix testMat1 = SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0, 1.0, 1.0));
-
-    //m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XM_PI / 4.f, static_cast<float>(m_clientWidth) / static_cast<float>(m_clientHeight), m_nearPlane, m_farPlane);
-    //m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
-
-    SimpleMath::Vector3 transVec(0.5, 0.5, 1.5);
-    SimpleMath::Matrix transWorld = SimpleMath::Matrix::CreateWorld(SimpleMath::Vector3::Zero, SimpleMath::Vector3::UnitX, SimpleMath::Vector3::UnitY);
-
-    SimpleMath::Matrix transMat = SimpleMath::Matrix::CreateTranslation(transVec);
-    //proj += transMat;
-
-   // world = SimpleMath::Matrix::Transform(
-
-    m_shape->Draw(m_world, m_view, m_proj);
-    //m_shape->Draw(m_world, m_view, m_proj, Colors::White, m_textureBMW.Get());
-    //m_shape->Draw(transWorld, testMatrix, testMatrix);
 }
 
 void Game::DrawStartScreen()
@@ -2421,19 +2328,14 @@ void Game::Initialize(HWND window, int width, int height)
 // Testing Terrain Vertex
 bool Game::InitializeTerrainArray()
 {
-    //std::vector<DirectX::VertexPositionColor> vertexPC = pGolf->GetTerrainVertex();
     std::vector<DirectX::VertexPositionColor> vertexPC = m_environment->GetTerrainColorVertex();
 
     m_terrainVertexCount = vertexPC.size();
     m_terrainVertexArray = new DirectX::VertexPositionColor[m_terrainVertexCount];
     m_terrainVertexArrayBase = new DirectX::VertexPositionColor[m_terrainVertexCount];
 
-    //lawngreen = { { { 0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f } } };
-    //DirectX::XMFLOAT4 lineColor(0.0, 0.501960814f, 0.0, 1.0);
     DirectX::XMFLOAT4 lineColor(.486274540f, .988235354f, 0.0, 1.0);
     DirectX::XMFLOAT4 baseColor(0.0, 0.0, 0.0, 1.0);
-    //DirectX::XMFLOAT4 baseColor2(0.3, 0.3, 0.3, 1.0);
-    //DirectX::XMFLOAT4 baseColor2(1.0, 1.0, 1.0, 1.0);
     DirectX::XMFLOAT4 baseColor2(0.0, 0.0, 0.0, 1.0);
 
     DirectX::XMFLOAT4 sandColor1(0.956862807f, 0.643137276f, 0.376470625f, 1.0);
@@ -2446,14 +2348,6 @@ bool Game::InitializeTerrainArray()
 
     DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
 
-    //baseColor = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
-    //baseColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
-    //XMGLOBALCONST XMVECTORF32 SandyBrown = { { { 0.956862807f, 0.643137276f, 0.376470625f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 Beige = { { { 0.960784376f, 0.960784376f, 0.862745166f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 Green = { { { 0.000000000f, 0.501960814f, 0.000000000f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 LawnGreen = { { { 0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 ForestGreen          = { { { 0.133333340f, 0.545098066f, 0.133333340f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 DarkGreen            = { { { 0.000000000f, 0.392156899f, 0.000000000f, 1.000000000f } } };
     for (int i = 0; i < m_terrainVertexCount; ++i)
     {
         m_terrainVertexArray[i].position = vertexPC[i].position;
@@ -2484,13 +2378,9 @@ bool Game::InitializeTerrainArray2()
     m_terrainVertexArray2 = new DirectX::VertexPositionNormalColor[m_terrainVertexCount2];
     m_terrainVertexArrayBase2 = new DirectX::VertexPositionNormalColor[m_terrainVertexCount2];
 
-    //lawngreen = { { { 0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f } } };
-    //DirectX::XMFLOAT4 lineColor(0.0, 0.501960814f, 0.0, 1.0);
     DirectX::XMFLOAT4 lineColor(.486274540f, .988235354f, 0.0, 1.0);
     DirectX::XMFLOAT4 baseColor(0.0, 0.0, 0.0, 1.0);
-    //DirectX::XMFLOAT4 baseColor2(0.3, 0.3, 0.3, 1.0);
     DirectX::XMFLOAT4 baseColor2(1.0, 1.0, 1.0, 1.0);
-    //DirectX::XMFLOAT4 baseColor2(0.0, 0.0, 0.0, 1.0);
 
     DirectX::XMFLOAT4 sandColor1(0.956862807f, 0.643137276f, 0.376470625f, 1.0);
     DirectX::XMFLOAT4 sandColor2(0.960784376f, 0.960784376f, 0.862745166f, 1.0);
@@ -2503,16 +2393,7 @@ bool Game::InitializeTerrainArray2()
     DirectX::XMFLOAT4 testBlue = DirectX::XMFLOAT4(0.000000000f, 0.000000000f, 1.0, 1.0);
     DirectX::XMFLOAT4 testGray = DirectX::XMFLOAT4(0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f);
     DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
-    //DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(0.3, 0.3, 0.3, 1.0);
-    //testWhite = testGray;
-    //baseColor = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
-    //baseColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
-    //XMGLOBALCONST XMVECTORF32 SandyBrown = { { { 0.956862807f, 0.643137276f, 0.376470625f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 Beige = { { { 0.960784376f, 0.960784376f, 0.862745166f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 Green = { { { 0.000000000f, 0.501960814f, 0.000000000f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 LawnGreen = { { { 0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 ForestGreen          = { { { 0.133333340f, 0.545098066f, 0.133333340f, 1.000000000f } } };
-    //XMGLOBALCONST XMVECTORF32 DarkGreen            = { { { 0.000000000f, 0.392156899f, 0.000000000f, 1.000000000f } } };
+
     for (int i = 0; i < m_terrainVertexCount2; ++i)
     {
         DirectX::SimpleMath::Vector3 flipNormal = vertexPC[i].normal;
@@ -2585,22 +2466,13 @@ void Game::InitializeWorldGrid()
 
     const DirectX::SimpleMath::Vector3 gridNorm = DirectX::SimpleMath::Vector3::UnitY;
     const int hightLightIncrement = 10;
-    /*
-    const float maxX = 2.0;
-    const float maxY = 1.0;
-    const float maxZ = 2.0;
-    const float minX = -2.0;
-    const float minY = -1.0;
-    const float minZ = -2.0;
-    const float increment = 0.1;
-    */
+
     const float maxX = 2000.0;
     const float maxY = 1.0;
     const float maxZ = 2000.0;
     const float minX = -2000.0;
     const float minY = -1.0;
     const float minZ = -2000.0;
-    //const float increment = 10.0;
     const float increment = 0.2;
     const float yOffset = 0.005;
 
@@ -2974,13 +2846,10 @@ void Game::TestDraw()
         ++testBreak;
     }
 
-    //if (m_currentLightingState != LightingState::LIGHTINGSTATE_MANUAL)
     if (m_lighting->GetLightingState() != Lighting::LightingState::LIGHTINGSTATE_MANUAL)
     {
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
-        //SetLighting(LightingState::LIGHTINGSTATE_JI);
     }
-    //m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
     m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
 
     m_effect->SetTexture(m_textureAutoGame.Get());
@@ -3430,9 +3299,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
         if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
         {
-            //m_flightStepTimer.ResetElapsedTime(); // piggy backing on this variable for the moment
-            //m_currentGameState = GameState::GAMESTATE_TEASERSCREEN;
-            //m_currentGameState = GameState::GAMESTATE_MAINMENU;
+
         }
     }
     if (m_kbStateTracker.pressed.Up)
@@ -3699,20 +3566,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             DirectX::SimpleMath::Vector3 endPos(11.0, 2.0f, 0.0f);
             DirectX::SimpleMath::Vector3 targetEndPos = m_vehicle->GetPos();
-            //DirectX::SimpleMath::Vector3 targetEndPos(0.0, 0.0, 0.0);
             DirectX::SimpleMath::Vector3 centerPointPos = m_vehicle->GetPos();
-            //DirectX::SimpleMath::Vector3 centerPointPos(0.0, 00.0, 0.0);
             float rotation = Utility::ToRadians(90.0);
             m_camera->SetCameraStartPos(m_camera->GetPos());
-            //m_camera->SetCameraEndPos(m_camera->GetSwingCamPos(pGolf->GetShotStartPos(), pGolf->GetDirectionToHoleInRads()));
             m_camera->SetCameraEndPos(endPos);
             m_camera->SetTargetStartPos(m_camera->GetTargetPos());
-            //m_camera->SetTargetEndPos(m_camera->GetSwingTargPos(pGolf->GetShotStartPos(), pGolf->GetDirectionToHoleInRads()));
             m_camera->SetTargetEndPos(targetEndPos);
-            //m_camera->TurnEndPosAroundPoint(Utility::ToRadians(pPlay->GetShotDirection()), pGolf->GetShotStartPos());
             m_camera->TurnEndPosAroundPoint(rotation, centerPointPos);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
-            
+            m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);           
         }
     }
     if (kb.I)

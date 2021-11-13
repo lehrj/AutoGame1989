@@ -1,12 +1,6 @@
 #include "pch.h"
 #include "Lighting.h"
 
-/*
-Lighting::Lighting()
-{
-
-}
-*/
 
 Lighting::LightingState Lighting::GetLightingState()
 {
@@ -411,34 +405,5 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             m_lightPos2 = light2;
         }
     }
-
-    ///////////////////////////////////////////////////////////////
-    // m_effect2 update     
-    /*
-    auto ilights2 = dynamic_cast<DirectX::IEffectLights*>(m_effect2.get());
-    if (ilights2)
-    {
-        ilights2->SetLightEnabled(0, true);
-
-        auto time = static_cast<float>(aTimer);
-
-        float yaw = time * 0.4f;
-        float pitch = time * 0.7f;
-        float roll = time * 1.1f;
-
-        auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, yaw, roll);
-
-        auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat);
-
-        m_effect2->SetFogStart(.4);
-        m_effect2->SetFogEnd(1.9);
-        light2 = m_lightPos1;
-        light2 = DirectX::SimpleMath::Vector3::UnitY;
-        ilights2->SetLightDirection(0, light2);
-        ilights2->SetLightDirection(2, light2);
-    }
-
-    m_effect2->EnableDefaultLighting();
-    */
 }
 
