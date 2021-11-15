@@ -1194,7 +1194,6 @@ void Vehicle::InitializeWheels()
 
 void Vehicle::Jump(double aTimer)
 {
-    m_testTimer = aTimer;
     float jumpHeight = 10.0;
     m_car.q.velocity.y += jumpHeight;
 }
@@ -1342,8 +1341,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     {
         torque = 0.0;
     }
-    //DebugPushUILineDecimalNumber("torque ", torque, "");
-    //torque = 10.0;
+
     //  Compute the velocity magnitude. The 1.0e-8 term
     //  ensures there won't be a divide by zero later on
     //  if all of the velocity components are zero.
@@ -1563,7 +1561,6 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     DirectX::SimpleMath::Vector3 gravityVelocityUpdate = (dq1.gravityForce + 2.0 * dq2.gravityForce + 2.0 * dq3.gravityForce + dq4.gravityForce) / numEqns;
     DirectX::SimpleMath::Vector3 totalVelocityUpdate = (dq1.totalVelocity + 2.0 * dq2.totalVelocity + 2.0 * dq3.totalVelocity + dq4.totalVelocity) / numEqns;
 
-
     const float stopTolerance = 0.1;
     // To prevent the car from continuing to roll forward if car velocity is less thatn the tollerance value and update velocity is zero
     if (q.velocity.Length() < stopTolerance && velocityUpdate == DirectX::SimpleMath::Vector3::Zero)
@@ -1581,25 +1578,13 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     q.airResistance += airResistnaceVelocityUpdate;
     q.gravityForce += gravityVelocityUpdate;
     q.slopeForce += slopeVelocityUpdate;
-    //q.totalVelocity += totalVelocityUpdate;
     q.totalVelocity += velocityUpdate;
-    //q.totalVelocity = q.engineForce + q.brakeForce + q.slopeForce + q.airResistance;// +q.gravityForce;
-    //q.totalVelocity = q.engineForce;
-    DirectX::SimpleMath::Vector3 testVel = q.totalVelocity;
-    testVel.Normalize();
-    //DebugPushTestLine(m_car.testModelPos + (m_car.testTerrainNormal * 2.1), testVel, 4.0, 0.0, DirectX::Colors::Green);
-    //velocityUpdate = engineForce + brakeForce + slopeForce + airResistance;
-    //aCar->q = q;
-    //q.velocity = q.totalVelocity;
+
     aCar->q.engineForce = q.engineForce;
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
 
     aCar->q = q;
-
-    // Test rear torque
-    //m_car.testRearAnglularVelocity += (total torque / (Mass * radius ^ 2 / 2)) * time step
-    //m_car.testRearAnglularVelocity = (m_car.testTorque / (m_car.testRearCylinderMass * (m_car.wheelRadius * m_car.wheelRadius) / 2)) * aTimeDelta;
 
     return;
 }
@@ -2140,7 +2125,6 @@ void Vehicle::UpdateTransmission(const double aTimeDelta)
 
 void Vehicle::UpdateVehicle(const double aTimeDelta)
 {
-    m_testTimerTotal += aTimeDelta;
     DebugClearUI();
     DirectX::SimpleMath::Vector3 prevVelocity = m_car.q.velocity;
     DirectX::SimpleMath::Vector3 prevPos = m_car.q.position;
@@ -2291,7 +2275,6 @@ void Vehicle::TestGetForceLateral()
     DebugPushUILine("Force Lateral Y ", testForceLat.y);
     DebugPushUILine("Force Lateral Z ", testForceLat.z);
 
-
     DirectX::SimpleMath::Vector3 testHeading = m_car.q.velocity;
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(-m_car.carRotation);
     testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
@@ -2302,35 +2285,5 @@ void Vehicle::TestGetForceLateral()
     DebugPushUILine("slipAngle 2", Utility::ToDegrees(slipAngle) - Utility::ToDegrees(m_car.carRotation));
     DebugPushUILine("slipAngle 3", Utility::ToDegrees(slipAngle) + 90.0f - Utility::ToDegrees(m_car.carRotation));
     DebugPushUILine("m_car.carRotation ", Utility::ToDegrees(m_car.carRotation));
-}
-
-
-DirectX::SimpleMath::Vector3 Vehicle::TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading)
-{
-    DirectX::SimpleMath::Vector3 terrainNorm = m_car.terrainNormal;
-    DirectX::SimpleMath::Vector3 terrainAcceleration = terrainNorm;
-
-    terrainAcceleration.x *= (-m_car.gravity.y);
-    terrainAcceleration.y *= (-m_car.gravity.y);
-    terrainAcceleration.z *= (-m_car.gravity.y);
-
-    DirectX::SimpleMath::Vector3 headingNorm = aHeading;
-    headingNorm.y = 0.0f;
-    headingNorm.Normalize();
-
-    DirectX::SimpleMath::Vector3 testNorm = terrainAcceleration;
-    testNorm.y = 0.0f;
-    testNorm.Normalize();
-
-    DirectX::SimpleMath::Vector3 testSlope = m_car.terrainNormal;
-    testSlope.y = 0.0f;
-    terrainAcceleration = testSlope;
-    testSlope.Normalize();
-
-    DirectX::SimpleMath::Vector3 newTerrainNorm = m_environment->GetTerrainNormal(m_car.q.position);
-    DirectX::SimpleMath::Vector3 newTerrainNorm2 = newTerrainNorm;
-
-    return terrainAcceleration;
-    //return newAccel;
 }
 

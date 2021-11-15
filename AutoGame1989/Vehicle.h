@@ -441,7 +441,6 @@ private:
     void RungeKutta4(struct Car* aCar, double aTimeDelta);
     
     void TestGetForceLateral();
-    DirectX::SimpleMath::Vector3 TestTerrainSlide(DirectX::SimpleMath::Vector3 aHeading);
 
     void TurnVehicle(double aTimeDelta);
     void UpdateCarAlignment();
@@ -500,8 +499,6 @@ private:
     bool m_isFuelOn = true;
 
     float m_testVelocity = 0.0;
-    double m_testTimer = 0.0;
-    double m_testTimerTotal = 0.0;
 
     float m_testEnginePower = 0.0;
 };
