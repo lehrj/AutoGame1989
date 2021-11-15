@@ -43,106 +43,97 @@
     <Image Include="directx.ico">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="PowerbarImpact.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Chacter0SpriteSheet.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="logoJI.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="logoBMW.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="EnvironmentSelectAlien.jpg">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="EnvironmentSelectCalm.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="EnvironmentSelectBreezy.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Chacter1SpriteSheet.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Chacter2SpriteSheet.png">
-      <Filter>Assets</Filter>
-    </Image>
     <Image Include="Icon.ico">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="CharacterBackground.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="ChacterSpriteSheet.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="PowerbarBackswing.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="PowerbarMeter.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="PowerbarFrame.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="TestMetalNormalMap.dds">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="BlankTexture.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Texture.jpg">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="NormalMap.dds">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Art\logoAutoGame.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Art\logoBMW.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Art\logoJI.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Art\NormalMapAutoGame.dds">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Art\NormalMapBMW.dds">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Art\NormalMapJI.dds">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Art\NormalMapTeaser.dds">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Art\logoTeaser.png">
       <Filter>Assets</Filter>
     </Image>
     <Image Include="Art\road.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Art\PacSprite.png">
+    <Image Include="Art\NormalMaps\NormalMapTeaser.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Art\specularTeaser.png">
+    <Image Include="Art\NormalMaps\normalUV.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Art\NormalMapTest.dds">
+    <Image Include="Art\NormalMaps\normBMW.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Art\logoTest.png">
+    <Image Include="Art\NormalMaps\normBMW2.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Art\specularTest.png">
+    <Image Include="Art\NormalMaps\normJI.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Art\specularAutoGame.png">
+    <Image Include="Art\NormalMaps\TestOP.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\SpecJI.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularBMW.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularJI.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularJI2.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularTeaser.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularTeaser1.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularUV.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\blankTexture.jpg">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\Chacter0SpriteSheet.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\Chacter1SpriteSheet.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\Chacter2SpriteSheet.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\ChacterSpriteSheet.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\CharacterBackground.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\EnvironmentSelectAlien.jpg">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\EnvironmentSelectBreezy.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\EnvironmentSelectCalm.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\logoBMW.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\logoJI.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\logoJI2.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\logoTeaser.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\PacSprite.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\TestOP.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textureUV.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>
@@ -155,16 +146,22 @@
     <None Include="packages.config" />
     <None Include="titleFont.spritefont" />
     <None Include="myfile.spritefont" />
-    <None Include="bitwise24.spritefont">
+    <None Include="Art\Audio\AudioBank.xwb">
       <Filter>Assets</Filter>
     </None>
-    <None Include="bitwise20.spritefont">
+    <None Include="Art\Fonts\bitwise16.spritefont">
       <Filter>Assets</Filter>
     </None>
-    <None Include="bitwise16.spritefont">
+    <None Include="Art\Fonts\bitwise20.spritefont">
       <Filter>Assets</Filter>
     </None>
-    <None Include="AudioBank.xwb">
+    <None Include="Art\Fonts\bitwise24.spritefont">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Art\Fonts\myfile.spritefont">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Art\Fonts\titleFont.spritefont">
       <Filter>Assets</Filter>
     </None>
   </ItemGroup>
