@@ -187,7 +187,7 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.reverseLight->Draw(m_carModel.reverseLightLeftMatrix, view, proj, reverseLightColor);
 
     // test powered wheel model draw
-    m_carModel.testWheel->Draw(m_carModel.testWorldWheelMatrix, view, proj, testColor);
+    //m_carModel.testWheel->Draw(m_carModel.testWorldWheelMatrix, view, proj, testColor);
 }
 
 void Vehicle::GearDown()
@@ -1751,7 +1751,7 @@ void Vehicle::UpdateModel(const double aTimer)
 
     m_testRotationRear = wheelTurnRadsRear;
 
-    DebugPushUILineDecimalNumber("wheelTurnRads ", m_testRotation, " ");
+    //DebugPushUILineDecimalNumber("wheelTurnRads ", m_testRotation, " ");
 
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::Identity;
     updateMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_car.q.position, -m_car.right, m_car.up);
@@ -2185,6 +2185,14 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_car.testAcceleration = (m_car.q.velocity - prevVelocity) / static_cast<float>(aTimeDelta);
     m_car.testAcceleration = m_car.testAcceleration / m_car.q.velocity;
     
+    DirectX::XMVECTORF32 testVec;// = DirectX::XMVECTORF32::f(1.0, 1.0, 1.0, 1.0);
+    testVec.f[0] = 1.0f;
+    testVec.f[1] = 0.0f;
+    testVec.f[2] = 0.0f;
+    testVec.f[3] = 1.0f;
+
+    DebugPushTestLine(m_car.q.position, DirectX::SimpleMath::Vector3::UnitY, 5.0, 0.0, testVec);
+
     UpdateResistance();
 
     DirectX::SimpleMath::Vector3 postPos = m_car.q.position;
