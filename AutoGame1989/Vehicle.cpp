@@ -1139,7 +1139,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_car.isAccelerating = false;
     m_car.isBraking = false;
     m_car.isRevlimitHit = false;
-    m_car.isTransmissionManual = false;
+    m_car.isTransmissionManual = true;
     m_car.isCarAirborne = false;
     m_car.isCarLanding = false;
     m_car.isVelocityBackwards = false;
@@ -1194,8 +1194,8 @@ void Vehicle::InitializeWheels()
 
 void Vehicle::Jump(double aTimer)
 {
-    float jumpHeight = 10.0;
-    m_car.q.velocity.y += jumpHeight;
+    float jumpHeight = 1000.0;
+    m_car.q.position.y += jumpHeight;
 }
 
 void Vehicle::LandVehicle()
@@ -1565,11 +1565,11 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     // To prevent the car from continuing to roll forward if car velocity is less thatn the tollerance value and update velocity is zero
     if (q.velocity.Length() < stopTolerance && velocityUpdate == DirectX::SimpleMath::Vector3::Zero)
     {
-        //q.velocity = DirectX::SimpleMath::Vector3::Zero;
+        q.velocity = DirectX::SimpleMath::Vector3::Zero;
     }
     else
     {
-        //q.velocity += velocityUpdate;
+        q.velocity += velocityUpdate;
     }
     q.velocity += velocityUpdate;
 
@@ -2139,6 +2139,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     if (m_car.q.position.y - m_car.terrainHightAtPos > 0.1)
     {
         m_car.isCarAirborne = true;
+        m_testTimer += aTimeDelta;
     }
     else
     {
@@ -2146,6 +2147,8 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
         {
             LandVehicle();
             m_car.isCarLanding = true;
+            m_testTimer2 = m_testTimer;
+            m_testTimer = 0.0f;
         }
         m_car.isCarAirborne = false;
         m_car.q.position.y = m_car.terrainHightAtPos;
@@ -2199,6 +2202,8 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 deltaPos = prevPos - postPos;
     float deltaLength = deltaPos.Length();
     m_testVelocity = deltaLength / static_cast<float>(aTimeDelta);
+    DebugPushUILineDecimalNumber("m_testTimer : ", m_testTimer, "");
+    DebugPushUILineDecimalNumber("m_testTimer2 : ", m_testTimer2, "");
 }
 
 void Vehicle::UpdateVelocity(double aTimeDelta)
