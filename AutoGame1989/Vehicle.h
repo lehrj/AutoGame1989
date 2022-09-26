@@ -395,7 +395,7 @@ public:
   
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
-    void Jump(double aTimer);
+    void Jump();
 
     void PressBrake(const float aBrakeInput);
     void PressClutch(const bool aClutchInput);

@@ -67,8 +67,6 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
         tailLightColor = DirectX::SimpleMath::Vector4(0.9, 0.0, 0.0,  1.0);
     }
 
-
-
     m_carModel.tire->Draw(m_carModel.wheelFrontRightMatrix, view, proj, tireColor);
     m_carModel.tire->Draw(m_carModel.wheelFrontLeftMatrix, view, proj, tireColor);
     m_carModel.tire->Draw(m_carModel.wheelRearRightMatrix, view, proj, tireColor);
@@ -1192,7 +1190,7 @@ void Vehicle::InitializeWheels()
     m_wheels[3].InitializeWheel(wheelLocPos, wheelWorldPos, true, m_car.wheelRadius, m_car.wheelWidth, m_car.wheelMass);
 }
 
-void Vehicle::Jump(double aTimer)
+void Vehicle::Jump()
 {
     float jumpHeight = 1000.0;
     m_car.q.position.y += jumpHeight;
@@ -2139,7 +2137,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     if (m_car.q.position.y - m_car.terrainHightAtPos > 0.1)
     {
         m_car.isCarAirborne = true;
-        m_testTimer += aTimeDelta;
+        m_testTimer += static_cast<float>(aTimeDelta);
     }
     else
     {
