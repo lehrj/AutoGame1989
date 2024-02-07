@@ -1162,6 +1162,26 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     InitializeModel(aContext);
 
     InitializeWheels();
+
+    //////////////////////////////////
+    const float length = 4.3942f;
+    const float width = 1.8034f;
+    const float heightTotal = 1.27f;
+    const float height = heightTotal * 0.6f;
+    DirectX::SimpleMath::Vector3 carBodySize(length, height, width);
+
+    float xExtent = length;
+    float yExtent = height;
+    float zExtent = width;
+    float mass = m_car.mass;
+    m_car.inertiaTensor = DirectX::SimpleMath::Matrix::Identity;
+    // cuboid
+    m_car.inertiaTensor._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+    m_car.inertiaTensor._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+    m_car.inertiaTensor._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
+   
+    m_car.inverseInertiaTensor = m_car.inertiaTensor;
+    m_car.inverseInertiaTensor = m_car.inverseInertiaTensor.Invert();
 }
 
 void Vehicle::InitializeWheels()

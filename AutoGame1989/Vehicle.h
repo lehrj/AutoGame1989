@@ -99,6 +99,9 @@ struct Car
     float testTorque;
     float testRearAnglularVelocity;
     float testRearAngularVelocityAngle;
+
+    DirectX::SimpleMath::Matrix inertiaTensor;
+    DirectX::SimpleMath::Matrix inverseInertiaTensor;
 };
 
 struct CarModel
