@@ -18,6 +18,8 @@ struct Motion
     DirectX::SimpleMath::Vector3 airResistance;
     DirectX::SimpleMath::Vector3 gravityForce;
     DirectX::SimpleMath::Vector3 totalVelocity;
+
+    DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct Car
