@@ -1332,6 +1332,7 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     Motion newQ;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+    newQ.angularVelocity = aQ->angularVelocity + static_cast<float>(aQScale) * aDeltaQ->angularVelocity;
 
     //  Compute the constants that define the
     //  torque curve line.
@@ -1505,6 +1506,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
         //velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     }
 
+    DirectX::SimpleMath::Vector3 angularUpdate = DirectX::SimpleMath::Vector3::Zero;
+
     //  Compute right-hand side values.
     //aDQ->engineForce = engineForce;
     aDQ->engineForce = testEngineForce * headingVec;
@@ -1517,6 +1520,8 @@ void Vehicle::RightHandSide(struct Car* aCar, Motion* aQ, Motion* aDeltaQ, doubl
     aDQ->totalVelocity = velocityUpdate;
   
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
+
+    aDQ->angularVelocity = static_cast<float>(aTimeDelta) * angularUpdate;
 
     return;
 }
@@ -1579,6 +1584,8 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     DirectX::SimpleMath::Vector3 gravityVelocityUpdate = (dq1.gravityForce + 2.0 * dq2.gravityForce + 2.0 * dq3.gravityForce + dq4.gravityForce) / numEqns;
     DirectX::SimpleMath::Vector3 totalVelocityUpdate = (dq1.totalVelocity + 2.0 * dq2.totalVelocity + 2.0 * dq3.totalVelocity + dq4.totalVelocity) / numEqns;
 
+    DirectX::SimpleMath::Vector3 angularVelocityUpdate = (dq1.angularVelocity + 2.0 * dq2.angularVelocity + 2.0 * dq3.angularVelocity + dq4.angularVelocity) / numEqns;
+
     const float stopTolerance = 0.1;
     // To prevent the car from continuing to roll forward if car velocity is less thatn the tollerance value and update velocity is zero
     if (q.velocity.Length() < stopTolerance && velocityUpdate == DirectX::SimpleMath::Vector3::Zero)
@@ -1598,9 +1605,12 @@ void Vehicle::RungeKutta4(struct Car* aCar, double aTimeDelta)
     q.slopeForce += slopeVelocityUpdate;
     q.totalVelocity += velocityUpdate;
 
+    q.angularVelocity += angularVelocityUpdate;
+
     aCar->q.engineForce = q.engineForce;
     aCar->q.position = q.position;
     aCar->q.velocity = q.velocity;
+    aCar->q.angularVelocity = q.angularVelocity;
 
     aCar->q = q;
 
