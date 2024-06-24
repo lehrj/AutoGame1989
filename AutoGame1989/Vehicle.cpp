@@ -76,7 +76,6 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.hubCap->Draw(m_carModel.wheelRearRightMatrix, view, proj, rimColor);
     m_carModel.hubCap->Draw(m_carModel.wheelRearLeftMatrix, view, proj, rimColor);
 
-
     m_carModel.fenderFlare->Draw(m_carModel.fenderFlareFrontLeftMatrix, view, proj, volvoYellow);
     m_carModel.fenderFlareInterior->Draw(m_carModel.fenderFlareFrontLeftInteriorMatrix, view, proj, fenderFlareShadowColor);
     m_carModel.fenderFlare->Draw(m_carModel.fenderFlareFrontRightMatrix, view, proj, volvoYellow);
@@ -86,7 +85,6 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.fenderRearFlareInterior->Draw(m_carModel.fenderFlareRearLeftInteriorMatrix, view, proj, fenderFlareShadowColor);
     m_carModel.fenderRearFlare->Draw(m_carModel.fenderFlareRearRightMatrix, view, proj, volvoYellow);
     m_carModel.fenderRearFlareInterior->Draw(m_carModel.fenderFlareRearRightInteriorMatrix, view, proj, fenderFlareShadowColor);
-
 
     m_carModel.bodyTop->Draw(m_carModel.bodyTopMatrix, view, proj, volvoYellow);
     m_carModel.body->Draw(m_carModel.bodyMatrix, view, proj, volvoYellow);
@@ -114,8 +112,6 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.licensePlateRearOutline->Draw(m_carModel.licensePlateRearMatrix, view, proj, testColor4);
     m_carModel.licensePlateRear->Draw(m_carModel.licensePlateRearMatrix, view, proj, DirectX::Colors::White);
 
-
-
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFL1, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFL2, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeFL3, view, proj, spokeColor);
@@ -140,8 +136,6 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeRearRight4, view, proj, spokeColor);
     m_carModel.wheelSpoke->Draw(m_carModel.wheelSpokeRearRight5, view, proj, spokeColor);
 
-
-
     m_carModel.sideMirror->Draw(m_carModel.sideMirrorLeftMatrix, view, proj, sideMirrorColor);
     m_carModel.sideMirror->Draw(m_carModel.sideMirrorRightMatrix, view, proj, sideMirrorColor);
 
@@ -164,9 +158,6 @@ void Vehicle::DrawModel(DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath:
     m_carModel.tireEdge->Draw(m_carModel.hubFrontLeftMatrix, view, proj, tireColor);
     m_carModel.rimEdge->Draw(m_carModel.hubInteriorFrontLeftMatrix, view, proj, spokeColor);
     m_carModel.tireEdge->Draw(m_carModel.hubInteriorFrontLeftMatrix, view, proj, tireColor);
-
-
-
 
     m_carModel.headLight->Draw(m_carModel.headLightLeftMatrix, view, proj, headLightColor);
     m_carModel.headLight->Draw(m_carModel.headLightRightMatrix, view, proj, headLightColor);
