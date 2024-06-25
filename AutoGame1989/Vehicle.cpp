@@ -1756,6 +1756,11 @@ void Vehicle::UpdateCarAlignment()
     m_car.forward = m_car.up.Cross(m_car.right);
 }
 
+void Vehicle::UpdateForces(struct Car& aCar)
+{
+
+}
+
 void Vehicle::UpdateHeadingVec()
 {
     m_car.headingVec = m_car.forward;

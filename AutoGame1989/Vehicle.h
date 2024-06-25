@@ -450,6 +450,8 @@ private:
     void TurnVehicle(double aTimeDelta);
     void UpdateCarAlignment();
 
+    void UpdateForces(struct Car& aCar);
+
     void UpdateHeadingVec();
     
     void UpdateModel(const double aTimer);
