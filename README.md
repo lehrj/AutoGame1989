@@ -15,3 +15,11 @@ Teaser trailer at : https://youtu.be/yfxJeCJw8X8
 
 
 WIP : Suspension and tire mechanics
+
+
+### Works Cited:
+
+Bourg and Baywalec. (2013). Physics for Game Developers. CA USA. O’Reilly
+
+Palmer, G. (2005). Physics for Game Programmers. NY NY. Springer-Verlag
+
